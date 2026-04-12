@@ -6,6 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Nodes;
 
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Sabre\DAV\Collection;
+use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\INode;
 
 final class StorageRootCollection extends Collection
@@ -34,21 +35,18 @@ final class StorageRootCollection extends Collection
             return [];
         }
 
-        $directories = $fs->directories($this->rootPath);
-        $files = $fs->files($this->rootPath);
-
         $children = [];
 
-        foreach ($directories as $dir) {
+        foreach ($fs->directories($this->rootPath) as $directory) {
             $children[] = new StorageDirectory(
-                name: basename($dir),
+                name: basename($directory),
                 disk: $this->disk,
-                path: $dir,
+                path: $directory,
                 filesystem: $this->filesystem,
             );
         }
 
-        foreach ($files as $file) {
+        foreach ($fs->files($this->rootPath) as $file) {
             $children[] = new StorageFile(
                 name: basename($file),
                 disk: $this->disk,
@@ -62,63 +60,73 @@ final class StorageRootCollection extends Collection
 
     public function getChild($name): INode
     {
+        $path = $this->buildChildPath((string)$name);
         $fs = $this->filesystem->disk($this->disk);
 
-        $path = $this->rootPath.'/'.$name;
+        if (!$fs->exists($path)) {
+            throw new NotFound("Node '{$name}' not found.");
+        }
 
-        if ($fs->exists($path)) {
-            if ($this->isDirectory($path)) {
-                return new StorageDirectory(
-                    name: $name,
-                    disk: $this->disk,
-                    path: $path,
-                    filesystem: $this->filesystem,
-                );
-            }
-
-            return new StorageFile(
-                name: $name,
+        if ($this->isDirectory($path)) {
+            return new StorageDirectory(
+                name: (string)$name,
                 disk: $this->disk,
                 path: $path,
                 filesystem: $this->filesystem,
             );
         }
 
-        throw new \Sabre\DAV\Exception\NotFound("Node '{$name}' not found");
+        return new StorageFile(
+            name: (string)$name,
+            disk: $this->disk,
+            path: $path,
+            filesystem: $this->filesystem,
+        );
     }
 
     public function childExists($name): bool
     {
-        $fs = $this->filesystem->disk($this->disk);
-
-        return $fs->exists($this->rootPath.'/'.$name);
+        return $this->filesystem
+            ->disk($this->disk)
+            ->exists($this->buildChildPath((string)$name));
     }
 
     public function createDirectory($name): void
     {
-        $fs = $this->filesystem->disk($this->disk);
-
-        $fs->makeDirectory($this->rootPath.'/'.$name);
+        $this->filesystem
+            ->disk($this->disk)
+            ->makeDirectory($this->buildChildPath((string)$name));
     }
 
     public function createFile($name, $data = null): void
     {
+        $path = $this->buildChildPath((string)$name);
         $fs = $this->filesystem->disk($this->disk);
 
-        $path = $this->rootPath.'/'.$name;
-
         if (is_resource($data)) {
-            $fs->put($path, stream_get_contents($data));
+            $contents = stream_get_contents($data);
+
+            if ($contents === false) {
+                throw new \RuntimeException('Failed to read file stream.');
+            }
+
+            $fs->put($path, $contents);
             return;
         }
 
-        $fs->put($path, (string)$data);
+        $fs->put($path, (string)($data ?? ''));
+    }
+
+    private function buildChildPath(string $name): string
+    {
+        return trim($this->rootPath, '/').'/'.ltrim($name, '/');
     }
 
     private function isDirectory(string $path): bool
     {
         $fs = $this->filesystem->disk($this->disk);
+        $parent = dirname($path);
 
-        return in_array($path, $fs->directories(dirname($path)), true);
+        return in_array($path, $fs->directories($parent), true);
     }
 }
