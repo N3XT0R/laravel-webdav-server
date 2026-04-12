@@ -10,6 +10,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInt
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
 use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
+use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 use Illuminate\Container\Container as Application;
@@ -60,6 +61,11 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
         $this->app->bindIf(
             CredentialValidatorInterface::class,
             DatabaseCredentialValidator::class,
+        );
+
+        $this->app->bindIf(
+            SpaceResolverInterface::class,
+            DefaultSpaceResolver::class,
         );
     }
 }
