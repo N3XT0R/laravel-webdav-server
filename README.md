@@ -13,6 +13,29 @@ Flysystem disk through the WebDAV protocol.
 
 ![Laravel WebDAV Server Logo](art/logo.png)
 
+## Overview
+
+Laravel WebDAV Server provides a native WebDAV server implementation for Laravel applications, built on top of SabreDAV.
+
+The primary goal of this package is to bridge the gap between:
+
+- the **WebDAV protocol** (via SabreDAV)
+- and **Laravel's filesystem abstraction** (Flysystem)
+
+Instead of working with local filesystem paths directly, this package maps WebDAV nodes to Laravel disks, making it
+possible to expose any configured storage (local, S3, etc.) through a WebDAV interface.
+
+## Features
+
+- WebDAV server powered by SabreDAV
+- Native integration with Laravel filesystem disks
+- User-based storage mapping via pluggable resolvers
+- Pluggable authentication layer (no coupling to Laravel auth)
+- Clean separation between transport (WebDAV) and domain logic
+- Fully extensible architecture (custom storage, auth, authorization)
+
+---
+
 ## Requirements
 
 - PHP **8.4+**
@@ -70,39 +93,19 @@ Route::any('/webdav/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDa
 
 ---
 
-## Overview
+## Extension Points
 
-Laravel WebDAV Server provides a native WebDAV server implementation for Laravel applications, built on top of SabreDAV.
+All default bindings use `bindIf()` – bind your own implementation in `AppServiceProvider::register()` and it takes
+precedence automatically.
 
-The primary goal of this package is to bridge the gap between:
+| Contract | Default | Override to… |
+|---|---|---|
+| `CredentialValidatorInterface` | `DatabaseCredentialValidator` | Custom auth (LDAP, tokens, …) |
+| `WebDavAccountRepositoryInterface` | `EloquentWebDavAccountRepository` | Non-Eloquent user stores |
+| `SpaceResolverInterface` | `DefaultSpaceResolver` | Per-user disk / path routing |
+| `PathAuthorizationInterface` | `GatePathAuthorization` | Replace Gate with ACL, RBAC, … |
 
-- the **WebDAV protocol** (via SabreDAV)
-- and **Laravel's filesystem abstraction** (Flysystem)
-
-Instead of working with local filesystem paths directly, this package maps WebDAV nodes to Laravel disks, making it
-possible to expose any configured storage (local, S3, etc.) through a WebDAV interface.
-
-## Features
-
-- WebDAV server powered by SabreDAV
-- Native integration with Laravel filesystem disks
-- User-based storage mapping via pluggable resolvers
-- Pluggable authentication layer (no coupling to Laravel auth)
-- Clean separation between transport (WebDAV) and domain logic
-- Fully extensible architecture (custom storage, auth, authorization)
-
----
-
-## Requirements
-
-| Contract                           | Default                           | Override to…                   |
-|------------------------------------|-----------------------------------|--------------------------------|
-| `CredentialValidatorInterface`     | `DatabaseCredentialValidator`     | Custom auth (LDAP, tokens, …)  |
-| `WebDavAccountRepositoryInterface` | `EloquentWebDavAccountRepository` | Non-Eloquent user stores       |
-| `SpaceResolverInterface`           | `DefaultSpaceResolver`            | Per-user disk / path routing   |
-| `PathAuthorizationInterface`       | `GatePathAuthorization`           | Replace Gate with ACL, RBAC, … |
-
-**Default storage mapping:** `webdav.storage.prefix` / `{principal.id}` on `webdav.storage.disk`.
+**Default storage mapping:** `webdav.storage.prefix/{principal.id}` on `webdav.storage.disk`.
 
 ---
 
@@ -114,13 +117,13 @@ filesystem operation. The resource passed to the policy is always `WebDavPathRes
 
 **The five policy abilities:**
 
-| Ability           | When                                       |
-|-------------------|--------------------------------------------|
-| `read`            | PROPFIND, GET, file metadata               |
-| `write`           | PUT (overwrite)                            |
-| `delete`          | DELETE (recursively checked on every node) |
-| `createDirectory` | MKCOL                                      |
-| `createFile`      | PUT (new file)                             |
+| Ability | When |
+|---|---|
+| `read` | PROPFIND, GET, file metadata |
+| `write` | PUT (overwrite) |
+| `delete` | DELETE (recursively checked on every node) |
+| `createDirectory` | MKCOL |
+| `createFile` | PUT (new file) |
 
 > The service provider auto-registers `App\Policies\WebDavPathPolicy` – **you must create this class** in your
 > application. A ready-to-use reference implementation is shipped in [`src/Policies/WebDavPathPolicy.php`](src/Policies/WebDavPathPolicy.php).
