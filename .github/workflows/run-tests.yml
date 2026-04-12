@@ -2,19 +2,9 @@ name: run-tests
 
 on:
   push:
-    paths:
-      - '**.php'
-      - '.github/workflows/run-tests.yml'
-      - 'phpunit.xml.dist'
-      - 'composer.json'
-      - 'composer.lock'
+    branches: [ '*/*', 'develop', 'main' ]
   pull_request:
-    paths:
-      - '**.php'
-      - '.github/workflows/run-tests.yml'
-      - 'phpunit.xml.dist'
-      - 'composer.json'
-      - 'composer.lock'
+    branches: [ '*/*', 'develop', 'main' ]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -27,8 +17,8 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest, windows-latest]
-        php: [8.4, 8.3]
+        os: [ubuntu-latest]
+        php: [8.4, 8.5]
         laravel: [13.*, 12.*]
         stability: [prefer-lowest, prefer-stable]
         include:
