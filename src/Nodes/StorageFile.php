@@ -24,30 +24,47 @@ final class StorageFile extends File
 
     public function get(): string
     {
-        return $this->filesystem->disk($this->disk)->get($this->path);
+        return $this->filesystem
+            ->disk($this->disk)
+            ->get($this->path);
     }
 
     public function put($data): void
     {
+        $fs = $this->filesystem->disk($this->disk);
+
         if (is_resource($data)) {
-            $data = stream_get_contents($data);
+            $contents = stream_get_contents($data);
+
+            if ($contents === false) {
+                throw new \RuntimeException('Failed to read file stream.');
+            }
+
+            $fs->put($this->path, $contents);
+            return;
         }
 
-        $this->filesystem->disk($this->disk)->put($this->path, (string)$data);
+        $fs->put($this->path, (string)$data);
     }
 
     public function delete(): void
     {
-        $this->filesystem->disk($this->disk)->delete($this->path);
+        $this->filesystem
+            ->disk($this->disk)
+            ->delete($this->path);
     }
 
     public function getSize(): int
     {
-        return $this->filesystem->disk($this->disk)->size($this->path);
+        return $this->filesystem
+            ->disk($this->disk)
+            ->size($this->path);
     }
 
     public function getLastModified(): int
     {
-        return $this->filesystem->disk($this->disk)->lastModified($this->path);
+        return $this->filesystem
+            ->disk($this->disk)
+            ->lastModified($this->path);
     }
 }
