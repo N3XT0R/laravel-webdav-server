@@ -9,6 +9,5 @@ final readonly class WebDavStorageSpace
     public function __construct(
         public string $disk,
         public string $rootPath,
-    ) {
-    }
+    ) {}
 }

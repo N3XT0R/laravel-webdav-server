@@ -14,8 +14,7 @@ final class StorageFile extends File
         private readonly string $disk,
         private readonly string $path,
         private readonly FilesystemManager $filesystem,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {
@@ -41,10 +40,11 @@ final class StorageFile extends File
             }
 
             $fs->put($this->path, $contents);
+
             return;
         }
 
-        $fs->put($this->path, (string)$data);
+        $fs->put($this->path, (string) $data);
     }
 
     public function delete(): void

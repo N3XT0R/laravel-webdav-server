@@ -2,6 +2,7 @@
 
 namespace N3XT0R\LaravelWebdavServer;
 
+use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Filesystem\Factory;
 use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
@@ -13,7 +14,6 @@ use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use Illuminate\Container\Container as Application;
 
 class LaravelWebdavServerServiceProvider extends PackageServiceProvider
 {

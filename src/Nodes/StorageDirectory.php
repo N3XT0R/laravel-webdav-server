@@ -16,8 +16,7 @@ final class StorageDirectory extends Collection
         private readonly string $disk,
         private readonly string $path,
         private readonly FilesystemManager $filesystem,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {
@@ -31,7 +30,7 @@ final class StorageDirectory extends Collection
     {
         $fs = $this->filesystem->disk($this->disk);
 
-        if (!$fs->exists($this->path)) {
+        if (! $fs->exists($this->path)) {
             return [];
         }
 
@@ -60,16 +59,16 @@ final class StorageDirectory extends Collection
 
     public function getChild($name): INode
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
         $fs = $this->filesystem->disk($this->disk);
 
-        if (!$fs->exists($path)) {
+        if (! $fs->exists($path)) {
             throw new NotFound("Node '{$name}' not found.");
         }
 
         if ($this->isDirectory($path)) {
             return new self(
-                name: (string)$name,
+                name: (string) $name,
                 disk: $this->disk,
                 path: $path,
                 filesystem: $this->filesystem,
@@ -77,7 +76,7 @@ final class StorageDirectory extends Collection
         }
 
         return new StorageFile(
-            name: (string)$name,
+            name: (string) $name,
             disk: $this->disk,
             path: $path,
             filesystem: $this->filesystem,
@@ -88,19 +87,19 @@ final class StorageDirectory extends Collection
     {
         return $this->filesystem
             ->disk($this->disk)
-            ->exists($this->buildChildPath((string)$name));
+            ->exists($this->buildChildPath((string) $name));
     }
 
     public function createDirectory($name): void
     {
         $this->filesystem
             ->disk($this->disk)
-            ->makeDirectory($this->buildChildPath((string)$name));
+            ->makeDirectory($this->buildChildPath((string) $name));
     }
 
     public function createFile($name, $data = null): void
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
         $fs = $this->filesystem->disk($this->disk);
 
         if (is_resource($data)) {
@@ -111,10 +110,11 @@ final class StorageDirectory extends Collection
             }
 
             $fs->put($path, $contents);
+
             return;
         }
 
-        $fs->put($path, (string)($data ?? ''));
+        $fs->put($path, (string) ($data ?? ''));
     }
 
     public function delete(): void
