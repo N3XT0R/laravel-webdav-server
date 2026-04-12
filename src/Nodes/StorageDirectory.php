@@ -6,6 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Nodes;
 
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Sabre\DAV\Collection;
+use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\INode;
 
 final class StorageDirectory extends Collection
@@ -59,7 +60,7 @@ final class StorageDirectory extends Collection
         $fs = $this->filesystem->disk($this->disk);
 
         if (!$fs->exists($path)) {
-            throw new \Sabre\DAV\Exception\NotFound();
+            throw new NotFound();
         }
 
         if (in_array($path, $fs->directories(dirname($path)), true)) {
