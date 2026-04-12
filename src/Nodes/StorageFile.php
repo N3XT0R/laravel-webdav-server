@@ -11,7 +11,6 @@ final class StorageFile extends File
 {
     public function __construct(
         private readonly string $name,
-        private readonly string $disk,
         private readonly string $path,
         private readonly StorageNodeContextDto $context,
     ) {
@@ -26,12 +25,12 @@ final class StorageFile extends File
     {
         $this->context->authorization->authorizeRead(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $this->path,
         );
 
         return $this->context->filesystem
-            ->disk($this->disk)
+            ->disk($this->context->disk)
             ->get($this->path);
     }
 
@@ -39,11 +38,11 @@ final class StorageFile extends File
     {
         $this->context->authorization->authorizeWrite(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $this->path,
         );
 
-        $fs = $this->context->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->context->disk);
 
         if (is_resource($data)) {
             $contents = stream_get_contents($data);
@@ -64,12 +63,12 @@ final class StorageFile extends File
     {
         $this->context->authorization->authorizeDelete(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $this->path,
         );
 
         $this->context->filesystem
-            ->disk($this->disk)
+            ->disk($this->context->disk)
             ->delete($this->path);
     }
 
@@ -77,12 +76,12 @@ final class StorageFile extends File
     {
         $this->context->authorization->authorizeRead(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $this->path,
         );
 
         return $this->context->filesystem
-            ->disk($this->disk)
+            ->disk($this->context->disk)
             ->size($this->path);
     }
 
@@ -90,12 +89,12 @@ final class StorageFile extends File
     {
         $this->context->authorization->authorizeRead(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $this->path,
         );
 
         return $this->context->filesystem
-            ->disk($this->disk)
+            ->disk($this->context->disk)
             ->lastModified($this->path);
     }
 }

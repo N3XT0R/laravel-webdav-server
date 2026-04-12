@@ -13,7 +13,6 @@ final class StorageDirectory extends Collection
 {
     public function __construct(
         private readonly string $name,
-        private readonly string $disk,
         private readonly string $path,
         private readonly StorageNodeContextDto $context,
     ) {
@@ -31,11 +30,11 @@ final class StorageDirectory extends Collection
     {
         $this->context->authorization->authorizeRead(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $this->path,
         );
 
-        $fs = $this->context->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->context->disk);
 
         if (!$fs->exists($this->path)) {
             return [];
@@ -46,7 +45,7 @@ final class StorageDirectory extends Collection
         foreach ($fs->directories($this->path) as $directory) {
             $children[] = new self(
                 name: basename($directory),
-                disk: $this->disk,
+                disk: $this->context->disk,
                 path: $directory,
                 context: $this->context,
             );
@@ -55,7 +54,7 @@ final class StorageDirectory extends Collection
         foreach ($fs->files($this->path) as $file) {
             $children[] = new StorageFile(
                 name: basename($file),
-                disk: $this->disk,
+                disk: $this->context->disk,
                 path: $file,
                 context: $this->context,
             );
@@ -70,11 +69,11 @@ final class StorageDirectory extends Collection
 
         $this->context->authorization->authorizeRead(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $path,
         );
 
-        $fs = $this->context->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->context->disk);
 
         if (!$fs->exists($path)) {
             throw new NotFound("Node '{$name}' not found.");
@@ -83,7 +82,7 @@ final class StorageDirectory extends Collection
         if ($this->isDirectory($path)) {
             return new self(
                 name: (string)$name,
-                disk: $this->disk,
+                disk: $this->context->disk,
                 path: $path,
                 context: $this->context,
             );
@@ -91,7 +90,7 @@ final class StorageDirectory extends Collection
 
         return new StorageFile(
             name: (string)$name,
-            disk: $this->disk,
+            disk: $this->context->disk,
             path: $path,
             context: $this->context,
         );
@@ -104,7 +103,7 @@ final class StorageDirectory extends Collection
         try {
             $this->context->authorization->authorizeRead(
                 $this->context->principal,
-                $this->disk,
+                $this->context->disk,
                 $path,
             );
         } catch (\Throwable) {
@@ -112,7 +111,7 @@ final class StorageDirectory extends Collection
         }
 
         return $this->context->filesystem
-            ->disk($this->disk)
+            ->disk($this->context->disk)
             ->exists($path);
     }
 
@@ -122,12 +121,12 @@ final class StorageDirectory extends Collection
 
         $this->context->authorization->authorizeCreateDirectory(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $path,
         );
 
         $this->context->filesystem
-            ->disk($this->disk)
+            ->disk($this->context->disk)
             ->makeDirectory($path);
     }
 
@@ -137,11 +136,11 @@ final class StorageDirectory extends Collection
 
         $this->context->authorization->authorizeCreateFile(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $path,
         );
 
-        $fs = $this->context->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->context->disk);
 
         if (is_resource($data)) {
             $contents = stream_get_contents($data);
@@ -162,11 +161,11 @@ final class StorageDirectory extends Collection
     {
         $this->context->authorization->authorizeDelete(
             $this->context->principal,
-            $this->disk,
+            $this->context->disk,
             $this->path,
         );
 
-        $fs = $this->context->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->context->disk);
 
         $this->deleteRecursively($fs, $this->path);
     }
@@ -176,7 +175,7 @@ final class StorageDirectory extends Collection
         foreach ($fs->files($path) as $file) {
             $this->context->authorization->authorizeDelete(
                 $this->context->principal,
-                $this->disk,
+                $this->context->disk,
                 $file,
             );
 
@@ -186,7 +185,7 @@ final class StorageDirectory extends Collection
         foreach ($fs->directories($path) as $directory) {
             $this->context->authorization->authorizeDelete(
                 $this->context->principal,
-                $this->disk,
+                $this->context->disk,
                 $directory,
             );
 
@@ -203,7 +202,7 @@ final class StorageDirectory extends Collection
 
     private function isDirectory(string $path): bool
     {
-        $fs = $this->context->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->context->disk);
         $parent = dirname($path);
 
         return in_array($path, $fs->directories($parent), true);

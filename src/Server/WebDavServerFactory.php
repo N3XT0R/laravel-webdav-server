@@ -38,7 +38,6 @@ final readonly class WebDavServerFactory
 
         $root = new StorageRootCollection(
             name: $principal->id,
-            disk: $space->disk,
             rootPath: $space->rootPath,
             context: new StorageNodeContextDto(
                 disk: $space->disk,
