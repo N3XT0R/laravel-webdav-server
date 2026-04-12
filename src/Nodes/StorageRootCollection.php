@@ -6,6 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Nodes;
 
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
+use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 use Sabre\DAV\Collection;
 use Sabre\DAV\Exception\NotFound;
@@ -17,10 +18,9 @@ final class StorageRootCollection extends Collection
         private readonly string $name,
         private readonly string $disk,
         private readonly string $rootPath,
-        private readonly FilesystemManager $filesystem,
-        private readonly WebDavPrincipal $principal,
-        private readonly PathAuthorizationInterface $authorization,
-    ) {}
+        private readonly StorageNodeContextDto $context,
+    ) {
+    }
 
     public function getName(): string
     {
@@ -32,15 +32,15 @@ final class StorageRootCollection extends Collection
      */
     public function getChildren(): array
     {
-        $this->authorization->authorizeRead(
-            $this->principal,
+        $this->context->authorization->authorizeRead(
+            $this->context->principal,
             $this->disk,
             $this->rootPath,
         );
 
-        $fs = $this->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->disk);
 
-        if (! $fs->exists($this->rootPath)) {
+        if (!$fs->exists($this->rootPath)) {
             return [];
         }
 
@@ -51,9 +51,9 @@ final class StorageRootCollection extends Collection
                 name: basename($directory),
                 disk: $this->disk,
                 path: $directory,
-                filesystem: $this->filesystem,
-                principal: $this->principal,
-                authorization: $this->authorization,
+                filesystem: $this->context->filesystem,
+                principal: $this->context->principal,
+                authorization: $this->context->authorization,
             );
         }
 
@@ -62,9 +62,9 @@ final class StorageRootCollection extends Collection
                 name: basename($file),
                 disk: $this->disk,
                 path: $file,
-                filesystem: $this->filesystem,
-                principal: $this->principal,
-                authorization: $this->authorization,
+                filesystem: $this->context->filesystem,
+                principal: $this->context->principal,
+                authorization: $this->context->authorization,
             );
         }
 
@@ -73,48 +73,48 @@ final class StorageRootCollection extends Collection
 
     public function getChild($name): INode
     {
-        $path = $this->buildChildPath((string) $name);
+        $path = $this->buildChildPath((string)$name);
 
-        $this->authorization->authorizeRead(
-            $this->principal,
+        $this->context->authorization->authorizeRead(
+            $this->context->principal,
             $this->disk,
             $path,
         );
 
-        $fs = $this->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->disk);
 
-        if (! $fs->exists($path)) {
+        if (!$fs->exists($path)) {
             throw new NotFound("Node '{$name}' not found.");
         }
 
         if ($this->isDirectory($path)) {
             return new StorageDirectory(
-                name: (string) $name,
+                name: (string)$name,
                 disk: $this->disk,
                 path: $path,
-                filesystem: $this->filesystem,
-                principal: $this->principal,
-                authorization: $this->authorization,
+                filesystem: $this->context->filesystem,
+                principal: $this->context->principal,
+                authorization: $this->context->authorization,
             );
         }
 
         return new StorageFile(
-            name: (string) $name,
+            name: (string)$name,
             disk: $this->disk,
             path: $path,
-            filesystem: $this->filesystem,
-            principal: $this->principal,
-            authorization: $this->authorization,
+            filesystem: $this->context->filesystem,
+            principal: $this->context->principal,
+            authorization: $this->context->authorization,
         );
     }
 
     public function childExists($name): bool
     {
-        $path = $this->buildChildPath((string) $name);
+        $path = $this->buildChildPath((string)$name);
 
         try {
-            $this->authorization->authorizeRead(
-                $this->principal,
+            $this->context->authorization->authorizeRead(
+                $this->context->principal,
                 $this->disk,
                 $path,
             );
@@ -122,37 +122,37 @@ final class StorageRootCollection extends Collection
             return false;
         }
 
-        return $this->filesystem
+        return $this->context->filesystem
             ->disk($this->disk)
             ->exists($path);
     }
 
     public function createDirectory($name): void
     {
-        $path = $this->buildChildPath((string) $name);
+        $path = $this->buildChildPath((string)$name);
 
-        $this->authorization->authorizeCreateDirectory(
-            $this->principal,
+        $this->context->authorization->authorizeCreateDirectory(
+            $this->context->principal,
             $this->disk,
             $path,
         );
 
-        $this->filesystem
+        $this->context->filesystem
             ->disk($this->disk)
             ->makeDirectory($path);
     }
 
     public function createFile($name, $data = null): void
     {
-        $path = $this->buildChildPath((string) $name);
+        $path = $this->buildChildPath((string)$name);
 
-        $this->authorization->authorizeCreateFile(
-            $this->principal,
+        $this->context->authorization->authorizeCreateFile(
+            $this->context->principal,
             $this->disk,
             $path,
         );
 
-        $fs = $this->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->disk);
 
         if (is_resource($data)) {
             $contents = stream_get_contents($data);
@@ -166,7 +166,7 @@ final class StorageRootCollection extends Collection
             return;
         }
 
-        $fs->put($path, (string) ($data ?? ''));
+        $fs->put($path, (string)($data ?? ''));
     }
 
     private function buildChildPath(string $name): string
@@ -176,7 +176,7 @@ final class StorageRootCollection extends Collection
 
     private function isDirectory(string $path): bool
     {
-        $fs = $this->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->disk);
         $parent = dirname($path);
 
         return in_array($path, $fs->directories($parent), true);
