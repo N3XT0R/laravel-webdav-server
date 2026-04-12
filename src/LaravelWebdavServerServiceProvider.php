@@ -53,8 +53,8 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
             SpaceResolverInterface::class,
             DefaultSpaceResolver::class,
         );
-        
-        $this->app->singleton(WebDavServerFactory::class, function (Application $app): WebDavServerFactory {
+
+        $this->app->scopedIf(WebDavServerFactory::class, function (Application $app): WebDavServerFactory {
             return new WebDavServerFactory(
                 validator: $app->make(CredentialValidatorInterface::class),
                 spaceResolver: $app->make(SpaceResolverInterface::class),
