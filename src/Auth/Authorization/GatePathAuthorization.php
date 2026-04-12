@@ -5,16 +5,15 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Auth\Authorization;
 
 use Illuminate\Contracts\Auth\Access\Gate;
-use N3XT0R\LaravelWebdavServer\Auth\Data\WebDavPathResource;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 use Sabre\DAV\Exception\Forbidden;
 
-final class GatePathAuthorization implements PathAuthorizationInterface
+final readonly class GatePathAuthorization implements PathAuthorizationInterface
 {
     public function __construct(
-        private readonly Gate $gate,
+        private Gate $gate,
     ) {
     }
 
