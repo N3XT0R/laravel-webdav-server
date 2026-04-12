@@ -61,5 +61,5 @@ jobs:
         uses: ./.github/actions/coverage
         with:
           artifact-name: clover-coverage-${{ matrix.laravel_label }}-${{ matrix.php }}
-          coverage-file: coverage/clover.xml
+          coverage-file: build/clover.xml
           qlty-token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
