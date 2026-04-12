@@ -23,7 +23,7 @@ final class WebDavController extends Controller
         ob_start();
 
         try {
-            $server->exec();
+            $server->start();
             $content = (string)ob_get_clean();
         } catch (\Throwable $e) {
             ob_end_clean();
