@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Auth;
+namespace N3XT0R\LaravelWebdavServer\Auth\Validator;
 
 use Illuminate\Contracts\Hashing\Hasher;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
