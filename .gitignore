@@ -26,5 +26,4 @@ _ide_helper_models.php
 
 # Misc
 phpstan.neon
-/docs
 /coverage
