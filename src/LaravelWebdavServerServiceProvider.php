@@ -39,20 +39,6 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->singleton(WebDavServerFactory::class, function (Application $app): WebDavServerFactory {
-            return new WebDavServerFactory(
-                validator: $app->make(CredentialValidatorInterface::class),
-                spaceResolver: $app->make(SpaceResolverInterface::class),
-                filesystem: $app->make(Factory::class),
-            );
-        });
-    }
-
-    public function packageBooted(): void
-    {
-        parent::packageBooted();
-        $this->registerRoutes();
-
         $this->app->bindIf(
             WebDavAccountRepositoryInterface::class,
             EloquentWebDavAccountRepository::class,
@@ -67,5 +53,19 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
             SpaceResolverInterface::class,
             DefaultSpaceResolver::class,
         );
+        
+        $this->app->singleton(WebDavServerFactory::class, function (Application $app): WebDavServerFactory {
+            return new WebDavServerFactory(
+                validator: $app->make(CredentialValidatorInterface::class),
+                spaceResolver: $app->make(SpaceResolverInterface::class),
+                filesystem: $app->make(Factory::class),
+            );
+        });
+    }
+
+    public function packageBooted(): void
+    {
+        parent::packageBooted();
+        $this->registerRoutes();
     }
 }
