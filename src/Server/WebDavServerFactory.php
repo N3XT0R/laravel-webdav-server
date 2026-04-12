@@ -7,6 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\Server;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use RuntimeException;
@@ -17,8 +18,10 @@ final readonly class WebDavServerFactory
     public function __construct(
         private CredentialValidatorInterface $validator,
         private SpaceResolverInterface $spaceResolver,
+        private PathAuthorizationInterface $authorization,
         private FilesystemManager $filesystem,
-    ) {}
+    ) {
+    }
 
     public function make(Request $request): Server
     {
@@ -37,10 +40,12 @@ final readonly class WebDavServerFactory
             disk: $space->disk,
             rootPath: $space->rootPath,
             filesystem: $this->filesystem,
+            principal: $principal,
+            authorization: $this->authorization,
         );
 
         $server = new Server($root);
-        $server->setBaseUri((string) config('webdav.base_uri', '/webdav/'));
+        $server->setBaseUri((string)config('webdav.base_uri', '/webdav/'));
 
         return $server;
     }
@@ -53,7 +58,7 @@ final readonly class WebDavServerFactory
         $username = $request->getUser();
         $password = $request->getPassword();
 
-        if (! is_string($username) || ! is_string($password)) {
+        if (!is_string($username) || !is_string($password)) {
             throw new RuntimeException('Missing Basic Auth credentials.');
         }
 
