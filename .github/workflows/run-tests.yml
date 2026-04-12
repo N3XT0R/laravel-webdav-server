@@ -17,10 +17,10 @@ jobs:
     strategy:
       fail-fast: true
       matrix:
-        os: [ubuntu-latest]
-        php: [8.4, 8.5]
-        laravel: [13.*, 12.*]
-        stability: [prefer-lowest, prefer-stable]
+        os: [ ubuntu-latest ]
+        php: [ 8.4, 8.5 ]
+        laravel: [ 13.*, 12.* ]
+        stability: [ prefer-lowest, prefer-stable ]
         include:
           - laravel: 12.*
             testbench: 10.*
@@ -43,11 +43,6 @@ jobs:
           php-version: ${{ matrix.php }}
           extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo
           coverage: none
-
-      - name: Setup problem matchers
-        run: |
-          echo "::add-matcher::${{ runner.tool_cache }}/php.json"
-          echo "::add-matcher::${{ runner.tool_cache }}/phpunit.json"
 
       - name: Prepare test environment
         uses: ./.github/actions/prepare-tests
