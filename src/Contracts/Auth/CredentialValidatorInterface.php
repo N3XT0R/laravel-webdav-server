@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Contracts;
+namespace N3XT0R\LaravelWebdavServer\Contracts\Auth;
 
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 

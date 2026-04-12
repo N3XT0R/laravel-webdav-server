@@ -3,7 +3,9 @@
 namespace N3XT0R\LaravelWebdavServer;
 
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
+use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
 use N3XT0R\LaravelWebdavServer\Http\Server\WebDavServerFactory;
+use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -40,5 +42,10 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
     {
         parent::packageBooted();
         $this->registerRoutes();
+
+        $this->app->bind(
+            WebDavAccountRepositoryInterface::class,
+            EloquentWebDavAccountRepository::class,
+        );
     }
 }
