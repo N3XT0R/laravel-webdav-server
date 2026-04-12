@@ -25,12 +25,11 @@ final class WebDavController extends Controller
         try {
             $server->start();
             $content = (string)ob_get_clean();
+            return response($content);
         } catch (\Throwable $e) {
             throw $e;
         } finally {
             ob_end_clean();
         }
-
-        return response($content);
     }
 }
