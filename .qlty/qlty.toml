@@ -45,7 +45,7 @@ language = "php"
 coverage = true
 
 [coverage]
-report = "coverage/clover.xml"
+report = "build/clover.xml"
 tool = "phpunit"
 
 
