@@ -2,15 +2,17 @@
 
 namespace N3XT0R\LaravelWebdavServer;
 
-use N3XT0R\LaravelWebdavServer\Auth\Backends\BasicAuthBackend;
+use Illuminate\Contracts\Filesystem\Factory;
 use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
 use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
+use Illuminate\Container\Container as Application;
 
 class LaravelWebdavServerServiceProvider extends PackageServiceProvider
 {
@@ -36,9 +38,11 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->singleton(WebDavServerFactory::class, function ($app): WebDavServerFactory {
+        $this->app->singleton(WebDavServerFactory::class, function (Application $app): WebDavServerFactory {
             return new WebDavServerFactory(
-                authBackend: $app->make(BasicAuthBackend::class),
+                validator: $app->make(CredentialValidatorInterface::class),
+                spaceResolver: $app->make(SpaceResolverInterface::class),
+                filesystem: $app->make(Factory::class),
             );
         });
     }
