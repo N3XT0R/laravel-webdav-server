@@ -1,6 +1,7 @@
 <?php
 
-// config for N3XT0R/LaravelWebdavServer
+declare(strict_types=1);
+
 return [
     'route_prefix' => 'webdav',
     'base_uri' => '/webdav/',
