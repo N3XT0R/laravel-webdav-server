@@ -4,20 +4,20 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Server;
 
+use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use RuntimeException;
-use Sabre\DAV\Auth\Backend\AbstractBasic;
-use Sabre\DAV\Auth\Plugin as AuthPlugin;
 use Sabre\DAV\Server;
 
-final class WebDavServerFactory
+final readonly class WebDavServerFactory
 {
     public function __construct(
-        private readonly CredentialValidatorInterface $validator,
-        private readonly SpaceResolverInterface $spaceResolver,
+        private CredentialValidatorInterface $validator,
+        private SpaceResolverInterface $spaceResolver,
+        private FilesystemManager $filesystem,
     ) {
     }
 
@@ -37,6 +37,7 @@ final class WebDavServerFactory
             name: $principal->id,
             disk: $space->disk,
             rootPath: $space->rootPath,
+            filesystem: $this->filesystem,
         );
 
         $server = new Server($root);
