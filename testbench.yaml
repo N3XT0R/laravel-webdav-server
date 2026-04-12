@@ -21,6 +21,7 @@ workbench:
     factories: true
     views: true
   build:
+    - package:drop-sqlite-db
     - asset-publish
     - create-sqlite-db
     - db-wipe
