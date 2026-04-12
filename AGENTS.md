@@ -2,7 +2,8 @@
 
 ## Project Overview
 
-Laravel package (`n3xt0r/laravel-webdav-server`) that wraps **SabreDAV** to expose Laravel Flysystem storage disks as a WebDAV endpoint. Requires PHP 8.4+ and Laravel 12+.
+Laravel package (`n3xt0r/laravel-webdav-server`) that wraps **SabreDAV** to expose Laravel Flysystem storage disks as a
+WebDAV endpoint. Requires PHP 8.4+ and Laravel 12+.
 
 ---
 
@@ -22,7 +23,8 @@ HTTP Request (Basic Auth)
               → Laravel Filesystem (Flysystem disk)
 ```
 
-Key files: `src/Server/WebDavServerFactory.php`, `src/Nodes/StorageRootCollection.php`, `src/Http/Controllers/WebDavController.php`.
+Key files: `src/Server/WebDavServerFactory.php`, `src/Nodes/StorageRootCollection.php`,
+`src/Http/Controllers/WebDavController.php`.
 
 ---
 
@@ -30,17 +32,17 @@ Key files: `src/Server/WebDavServerFactory.php`, `src/Nodes/StorageRootCollectio
 
 All implementations are bound with `bindIf()` – override any of these in your app's `ServiceProvider`:
 
-| Contract | Default Implementation | Override to… |
-|---|---|---|
-| `CredentialValidatorInterface` | `DatabaseCredentialValidator` | Custom auth (LDAP, API token, …) |
-| `WebDavAccountRepositoryInterface` | `EloquentWebDavAccountRepository` | Non-Eloquent user stores |
-| `SpaceResolverInterface` | `DefaultSpaceResolver` | Per-user disk/path routing |
-| `PathAuthorizationInterface` | `GatePathAuthorization` | Custom authorization logic |
+| Contract                           | Default Implementation            | Override to…                     |
+|------------------------------------|-----------------------------------|----------------------------------|
+| `CredentialValidatorInterface`     | `DatabaseCredentialValidator`     | Custom auth (LDAP, API token, …) |
+| `WebDavAccountRepositoryInterface` | `EloquentWebDavAccountRepository` | Non-Eloquent user stores         |
+| `SpaceResolverInterface`           | `DefaultSpaceResolver`            | Per-user disk/path routing       |
+| `PathAuthorizationInterface`       | `GatePathAuthorization`           | Custom authorization logic       |
 
 `DefaultSpaceResolver` maps `principal.id` → `webdav.storage.prefix/{id}` on `webdav.storage.disk`.
 
 ---
-
+ 
 ## Authorization (Policies)
 
 `GatePathAuthorization` calls `Gate::forUser($principal->user)->inspect($ability, $resource)`.  
@@ -58,7 +60,8 @@ The service provider auto-registers `App\Policies\WebDavPathPolicy` – ensure t
 Config file: `config/webdav-server.php` (publish with `--tag="laravel-webdav-server-config"`).  
 Accessed in code under the `webdav.*` key (e.g. `webdav.storage.disk`, `webdav.base_uri`).
 
-`webdav.auth.model` **must** be set to a concrete Eloquent model class for the default `EloquentWebDavAccountRepository` to work.
+`webdav.auth.model` **must** be set to a concrete Eloquent model class for the default `EloquentWebDavAccountRepository`
+to work.
 
 ---
 
@@ -79,7 +82,8 @@ composer run serve      # http://0.0.0.0:8000
 composer run build
 ```
 
-Tests live in `tests/`. Extend `N3XT0R\LaravelWebdavServer\Tests\TestCase` (Orchestra Testbench + `WithWorkbench`). The workbench Laravel app is in `workbench/`.
+Tests live in `tests/`. Extend `N3XT0R\LaravelWebdavServer\Tests\TestCase` (Orchestra Testbench + `WithWorkbench`). The
+workbench Laravel app is in `workbench/`.
 
 ---
 
@@ -89,7 +93,8 @@ Tests live in `tests/`. Extend `N3XT0R\LaravelWebdavServer\Tests\TestCase` (Orch
 - Concrete implementations use `final readonly class` with constructor property promotion.
 - Contracts are PHP interfaces under `src/Contracts/` – never add logic there.
 - DTOs and value objects (`WebDavPrincipal`, `WebDavStorageSpace`, `WebDavPathResourceDto`) are all `readonly`.
-- SabreDAV exceptions (`Sabre\DAV\Exception\Forbidden`, `NotFound`) are thrown directly from nodes – do not wrap them in Laravel HTTP exceptions.
+- SabreDAV exceptions (`Sabre\DAV\Exception\Forbidden`, `NotFound`) are thrown directly from nodes – do not wrap them in
+  Laravel HTTP exceptions.
 
 ---
 
