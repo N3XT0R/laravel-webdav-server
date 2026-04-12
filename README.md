@@ -11,6 +11,8 @@ A WebDAV server implementation for Laravel based on SabreDAV, with seamless inte
 
 ---
 
+![Laravel WebDAV Server Logo](art/logo.png)
+
 ## Overview
 
 **Laravel WebDAV Server** provides a native WebDAV server implementation for Laravel applications, built on top of
