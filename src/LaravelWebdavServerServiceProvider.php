@@ -2,7 +2,9 @@
 
 namespace N3XT0R\LaravelWebdavServer;
 
+use N3XT0R\LaravelWebdavServer\Auth\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
 use N3XT0R\LaravelWebdavServer\Http\Server\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
@@ -43,9 +45,14 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
         parent::packageBooted();
         $this->registerRoutes();
 
-        $this->app->bind(
+        $this->app->bindIf(
             WebDavAccountRepositoryInterface::class,
             EloquentWebDavAccountRepository::class,
+        );
+
+        $this->app->bindIf(
+            CredentialValidatorInterface::class,
+            DatabaseCredentialValidator::class,
         );
     }
 }
