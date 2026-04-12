@@ -1,0 +1,65 @@
+name: "branch Coverage"
+
+on:
+  push:
+    tags: [ '*' ]
+    branches: [ 'develop', 'main' ]
+  pull_request:
+    branches: [ 'develop', 'main' ]
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        php: [ 8.4, 8.5 ]
+        laravel: [ "12.*", "13.*" ]
+        stability: [ prefer-stable ]
+        include:
+          - laravel: 12.*
+            laravel_label: "12"
+            testbench: 10.*
+            carbon: 3.*
+            collision: 8.*
+          - laravel: 13.*
+            laravel_label: "13"
+            testbench: 11.*
+            carbon: 3.*
+            collision: 8.*
+
+    name: P${{ matrix.php }} - L${{ matrix.laravel }} - ${{ matrix.stability }} - ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: dom, curl, libxml, mbstring, zip, pcntl, pdo, sqlite, pdo_sqlite, bcmath, soap, intl, gd, exif, iconv, imagick, fileinfo, xdebug
+          coverage: xdebug
+
+      - name: Prepare test environment
+        uses: ./.github/actions/prepare-tests
+        with:
+          php-version: ${{ matrix.php }}
+          laravel: ${{ matrix.laravel }}
+          testbench: ${{ matrix.testbench }}
+          carbon: ${{ matrix.carbon }}
+          stability: ${{ matrix.stability }}
+
+      - name: Execute tests
+        run: vendor/bin/paratest --coverage-clover=build/clover.xml --coverage-html=report
+      - name: Upload HTML coverage report
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report-${{ matrix.laravel_label }}-${{ matrix.php }}
+          path: report/
+
+      - name: Publish coverage
+        uses: ./.github/actions/coverage
+        with:
+          artifact-name: clover-coverage-${{ matrix.laravel_label }}-${{ matrix.php }}
+          coverage-file: coverage/clover.xml
+          qlty-token: ${{ secrets.QLTY_COVERAGE_TOKEN }}
