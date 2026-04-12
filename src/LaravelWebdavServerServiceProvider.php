@@ -3,6 +3,7 @@
 namespace N3XT0R\LaravelWebdavServer;
 
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
+use N3XT0R\LaravelWebdavServer\Http\Server\WebDavServerFactory;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -21,5 +22,12 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
             ->hasViews()
             ->hasMigration('create_laravel_webdav_server_table')
             ->hasCommand(LaravelWebdavServerCommand::class);
+    }
+
+    public function packageRegistered(): void
+    {
+        $this->app->scoped(WebDavServerFactory::class, function ($app) {
+            return new WebDavServerFactory($app);
+        });
     }
 }
