@@ -77,10 +77,7 @@
     "laravel": {
       "providers": [
         "N3XT0R\\LaravelWebdavServer\\LaravelWebdavServerServiceProvider"
-      ],
-      "aliases": {
-        "LaravelWebdavServer": "N3XT0R\\LaravelWebdavServer\\Facades\\LaravelWebdavServer"
-      }
+      ]
     }
   },
   "minimum-stability": "dev",
