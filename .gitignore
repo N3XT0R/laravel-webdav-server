@@ -26,6 +26,5 @@ _ide_helper_models.php
 
 # Misc
 phpstan.neon
-testbench.yaml
 /docs
 /coverage
