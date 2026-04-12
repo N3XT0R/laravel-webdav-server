@@ -70,7 +70,30 @@ Route::any('/webdav/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDa
 
 ---
 
-## Extension Points
+## Overview
+
+Laravel WebDAV Server provides a native WebDAV server implementation for Laravel applications, built on top of SabreDAV.
+
+The primary goal of this package is to bridge the gap between:
+
+- the **WebDAV protocol** (via SabreDAV)
+- and **Laravel's filesystem abstraction** (Flysystem)
+
+Instead of working with local filesystem paths directly, this package maps WebDAV nodes to Laravel disks, making it
+possible to expose any configured storage (local, S3, etc.) through a WebDAV interface.
+
+## Features
+
+- WebDAV server powered by SabreDAV
+- Native integration with Laravel filesystem disks
+- User-based storage mapping via pluggable resolvers
+- Pluggable authentication layer (no coupling to Laravel auth)
+- Clean separation between transport (WebDAV) and domain logic
+- Fully extensible architecture (custom storage, auth, authorization)
+
+---
+
+## Requirements
 
 | Contract                           | Default                           | Override to…                   |
 |------------------------------------|-----------------------------------|--------------------------------|
