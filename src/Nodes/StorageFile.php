@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Nodes;
 
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 use Sabre\DAV\File;
 
 final class StorageFile extends File
@@ -14,7 +16,10 @@ final class StorageFile extends File
         private readonly string $disk,
         private readonly string $path,
         private readonly FilesystemManager $filesystem,
-    ) {}
+        private readonly WebDavPrincipal $principal,
+        private readonly PathAuthorizationInterface $authorization,
+    ) {
+    }
 
     public function getName(): string
     {
@@ -23,6 +28,12 @@ final class StorageFile extends File
 
     public function get(): string
     {
+        $this->authorization->authorizeRead(
+            $this->principal,
+            $this->disk,
+            $this->path,
+        );
+
         return $this->filesystem
             ->disk($this->disk)
             ->get($this->path);
@@ -30,6 +41,12 @@ final class StorageFile extends File
 
     public function put($data): void
     {
+        $this->authorization->authorizeWrite(
+            $this->principal,
+            $this->disk,
+            $this->path,
+        );
+
         $fs = $this->filesystem->disk($this->disk);
 
         if (is_resource($data)) {
@@ -40,15 +57,20 @@ final class StorageFile extends File
             }
 
             $fs->put($this->path, $contents);
-
             return;
         }
 
-        $fs->put($this->path, (string) $data);
+        $fs->put($this->path, (string)$data);
     }
 
     public function delete(): void
     {
+        $this->authorization->authorizeDelete(
+            $this->principal,
+            $this->disk,
+            $this->path,
+        );
+
         $this->filesystem
             ->disk($this->disk)
             ->delete($this->path);
@@ -56,6 +78,12 @@ final class StorageFile extends File
 
     public function getSize(): int
     {
+        $this->authorization->authorizeRead(
+            $this->principal,
+            $this->disk,
+            $this->path,
+        );
+
         return $this->filesystem
             ->disk($this->disk)
             ->size($this->path);
@@ -63,6 +91,12 @@ final class StorageFile extends File
 
     public function getLastModified(): int
     {
+        $this->authorization->authorizeRead(
+            $this->principal,
+            $this->disk,
+            $this->path,
+        );
+
         return $this->filesystem
             ->disk($this->disk)
             ->lastModified($this->path);
