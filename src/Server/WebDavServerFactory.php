@@ -10,14 +10,13 @@ final readonly class WebDavServerFactory
 {
     public function __construct(
         private BasicAuthBackend $authBackend,
-    ) {
-    }
+    ) {}
 
     public function make(): WebDavServer
     {
         return new WebDavServer(
             authBackend: $this->authBackend,
-            baseUri: (string)config('webdav.base_uri', '/webdav/'),
+            baseUri: (string) config('webdav.base_uri', '/webdav/'),
         );
     }
 }

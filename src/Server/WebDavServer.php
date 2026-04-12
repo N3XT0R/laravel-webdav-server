@@ -14,8 +14,7 @@ final readonly class WebDavServer
     public function __construct(
         private BasicAuthBackend $authBackend,
         private string $baseUri = '/webdav/',
-    ) {
-    }
+    ) {}
 
     public function create(): Server
     {

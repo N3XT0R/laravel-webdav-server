@@ -15,14 +15,13 @@ class BasicAuthBackend extends AbstractBasic
     public function __construct(
         protected readonly CredentialValidatorInterface $validator,
         protected $realm = 'Laravel WebDAV',
-    ) {
-    }
+    ) {}
 
     protected function validateUserPass($username, $password): bool
     {
-        $principal = $this->validator->validate((string)$username, (string)$password);
+        $principal = $this->validator->validate((string) $username, (string) $password);
 
-        if (!$principal) {
+        if (! $principal) {
             return false;
         }
 

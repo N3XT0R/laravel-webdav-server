@@ -7,8 +7,8 @@ use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
-use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
+use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
