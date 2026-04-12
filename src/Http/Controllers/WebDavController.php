@@ -6,17 +6,30 @@ namespace N3XT0R\LaravelWebdavServer\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use N3XT0R\LaravelWebdavServer\Http\Server\WebDavServerFactory;
+use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
 use Symfony\Component\HttpFoundation\Response;
 
-class WebDavController extends Controller
+final class WebDavController extends Controller
 {
     public function __construct(
         private readonly WebDavServerFactory $factory,
-    ) {}
+    ) {
+    }
 
     public function __invoke(Request $request): Response
     {
-        return $this->factory->make()->handle($request);
+        $server = $this->factory->make()->create();
+
+        ob_start();
+
+        try {
+            $server->exec();
+            $content = (string)ob_get_clean();
+        } catch (\Throwable $e) {
+            ob_end_clean();
+            throw $e;
+        }
+
+        return response($content);
     }
 }
