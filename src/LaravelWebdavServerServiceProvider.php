@@ -6,9 +6,11 @@ use App\Policies\WebDavPathPolicy;
 use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Support\Facades\Gate;
+use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
 use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
@@ -57,10 +59,16 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
             DefaultSpaceResolver::class,
         );
 
+        $this->app->bindIf(
+            PathAuthorizationInterface::class,
+            GatePathAuthorization::class,
+        );
+
         $this->app->scopedIf(WebDavServerFactory::class, function (Application $app): WebDavServerFactory {
             return new WebDavServerFactory(
                 validator: $app->make(CredentialValidatorInterface::class),
                 spaceResolver: $app->make(SpaceResolverInterface::class),
+                authorization: $app->make(PathAuthorizationInterface::class),
                 filesystem: $app->make(Factory::class),
             );
         });
