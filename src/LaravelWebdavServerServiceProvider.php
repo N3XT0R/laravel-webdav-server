@@ -2,13 +2,16 @@
 
 namespace N3XT0R\LaravelWebdavServer;
 
+use App\Policies\WebDavPathPolicy;
 use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Filesystem\Factory;
+use Illuminate\Support\Facades\Gate;
 use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
 use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
@@ -67,5 +70,6 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
     {
         parent::packageBooted();
         $this->registerRoutes();
+        Gate::policy(WebDavPathResourceDto::class, WebDavPathPolicy::class);
     }
 }
