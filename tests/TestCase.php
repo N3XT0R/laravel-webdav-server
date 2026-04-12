@@ -3,8 +3,8 @@
 namespace N3XT0R\LaravelWebdavServer\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use Orchestra\Testbench\TestCase as Orchestra;
 use N3XT0R\LaravelWebdavServer\LaravelWebdavServerServiceProvider;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
