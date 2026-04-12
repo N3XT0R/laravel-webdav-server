@@ -48,9 +48,7 @@ final class StorageRootCollection extends Collection
                 name: basename($directory),
                 disk: $this->disk,
                 path: $directory,
-                filesystem: $this->context->filesystem,
-                principal: $this->context->principal,
-                authorization: $this->context->authorization,
+                context: $this->context,
             );
         }
 
@@ -59,9 +57,7 @@ final class StorageRootCollection extends Collection
                 name: basename($file),
                 disk: $this->disk,
                 path: $file,
-                filesystem: $this->context->filesystem,
-                principal: $this->context->principal,
-                authorization: $this->context->authorization,
+                context: $this->context,
             );
         }
 
@@ -89,9 +85,7 @@ final class StorageRootCollection extends Collection
                 name: (string)$name,
                 disk: $this->disk,
                 path: $path,
-                filesystem: $this->context->filesystem,
-                principal: $this->context->principal,
-                authorization: $this->context->authorization,
+                context: $this->context,
             );
         }
 
@@ -99,9 +93,7 @@ final class StorageRootCollection extends Collection
             name: (string)$name,
             disk: $this->disk,
             path: $path,
-            filesystem: $this->context->filesystem,
-            principal: $this->context->principal,
-            authorization: $this->context->authorization,
+            context: $this->context,
         );
     }
 
