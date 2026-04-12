@@ -11,6 +11,13 @@ Flysystem disk through the WebDAV protocol.
 
 ---
 
+> [!WARNING]
+> This package is currently under active development and not yet production-ready.
+> APIs, configuration keys, and behaviour may change without notice between releases.
+> Use in production at your own risk.
+
+---
+
 ![Laravel WebDAV Server Logo](art/logo.png)
 
 ## Overview
