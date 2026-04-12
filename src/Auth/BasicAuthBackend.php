@@ -20,7 +20,7 @@ class BasicAuthBackend extends AbstractBasic
 
     protected function validateUserPass($username, $password): bool
     {
-        $principal = $this->validator->validate($username, $password);
+        $principal = $this->validator->validate((string)$username, (string)$password);
 
         if (!$principal) {
             return false;
