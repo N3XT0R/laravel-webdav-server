@@ -4,10 +4,13 @@ namespace N3XT0R\LaravelWebdavServer\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use N3XT0R\LaravelWebdavServer\LaravelWebdavServerServiceProvider;
+use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
 
 class TestCase extends Orchestra
 {
+    use WithWorkbench;
+
     protected function setUp(): void
     {
         parent::setUp();
