@@ -11,33 +11,38 @@ final class WebDavPathPolicy
 {
     public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return $this->isWithinUserRoot($user, $resource);
+        return $this->isAllowed($user, $resource);
     }
 
     public function write(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return $this->isWithinUserRoot($user, $resource);
+        return $this->isAllowed($user, $resource);
     }
 
     public function delete(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return $this->isWithinUserRoot($user, $resource);
+        return $this->isAllowed($user, $resource);
     }
 
     public function createDirectory(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return $this->isWithinUserRoot($user, $resource);
+        return $this->isAllowed($user, $resource);
     }
 
     public function createFile(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return $this->isWithinUserRoot($user, $resource);
+        return $this->isAllowed($user, $resource);
     }
 
-    private function isWithinUserRoot(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    private function isAllowed(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
+        $expectedDisk = (string)config('webdav.storage.disk', 'local');
         $prefix = trim((string)config('webdav.storage.prefix', 'webdav'), '/');
         $path = trim($resource->path, '/');
+
+        if ($resource->disk !== $expectedDisk) {
+            return false;
+        }
 
         $userRoot = $prefix.'/'.$user->getAuthIdentifier();
 
