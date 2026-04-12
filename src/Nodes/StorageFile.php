@@ -13,8 +13,7 @@ final class StorageFile extends File
         private readonly string $name,
         private readonly string $path,
         private readonly StorageNodeContextDto $context,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {
@@ -56,7 +55,7 @@ final class StorageFile extends File
             return;
         }
 
-        $fs->put($this->path, (string)$data);
+        $fs->put($this->path, (string) $data);
     }
 
     public function delete(): void

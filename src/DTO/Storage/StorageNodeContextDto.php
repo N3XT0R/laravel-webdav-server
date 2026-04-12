@@ -15,6 +15,5 @@ final readonly class StorageNodeContextDto
         public FilesystemManager $filesystem,
         public WebDavPrincipal $principal,
         public PathAuthorizationInterface $authorization,
-    ) {
-    }
+    ) {}
 }

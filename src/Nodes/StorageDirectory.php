@@ -15,8 +15,7 @@ final class StorageDirectory extends Collection
         private readonly string $name,
         private readonly string $path,
         private readonly StorageNodeContextDto $context,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {
@@ -36,7 +35,7 @@ final class StorageDirectory extends Collection
 
         $fs = $this->context->filesystem->disk($this->context->disk);
 
-        if (!$fs->exists($this->path)) {
+        if (! $fs->exists($this->path)) {
             return [];
         }
 
@@ -65,7 +64,7 @@ final class StorageDirectory extends Collection
 
     public function getChild($name): INode
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
 
         $this->context->authorization->authorizeRead(
             $this->context->principal,
@@ -75,13 +74,13 @@ final class StorageDirectory extends Collection
 
         $fs = $this->context->filesystem->disk($this->context->disk);
 
-        if (!$fs->exists($path)) {
+        if (! $fs->exists($path)) {
             throw new NotFound("Node '{$name}' not found.");
         }
 
         if ($this->isDirectory($path)) {
             return new self(
-                name: (string)$name,
+                name: (string) $name,
                 disk: $this->context->disk,
                 path: $path,
                 context: $this->context,
@@ -89,7 +88,7 @@ final class StorageDirectory extends Collection
         }
 
         return new StorageFile(
-            name: (string)$name,
+            name: (string) $name,
             disk: $this->context->disk,
             path: $path,
             context: $this->context,
@@ -98,7 +97,7 @@ final class StorageDirectory extends Collection
 
     public function childExists($name): bool
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
 
         try {
             $this->context->authorization->authorizeRead(
@@ -117,7 +116,7 @@ final class StorageDirectory extends Collection
 
     public function createDirectory($name): void
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
 
         $this->context->authorization->authorizeCreateDirectory(
             $this->context->principal,
@@ -132,7 +131,7 @@ final class StorageDirectory extends Collection
 
     public function createFile($name, $data = null): void
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
 
         $this->context->authorization->authorizeCreateFile(
             $this->context->principal,
@@ -154,7 +153,7 @@ final class StorageDirectory extends Collection
             return;
         }
 
-        $fs->put($path, (string)($data ?? ''));
+        $fs->put($path, (string) ($data ?? ''));
     }
 
     public function delete(): void
