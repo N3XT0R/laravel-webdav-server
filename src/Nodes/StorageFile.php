@@ -18,8 +18,7 @@ final class StorageFile extends File
         private readonly FilesystemManager $filesystem,
         private readonly WebDavPrincipal $principal,
         private readonly PathAuthorizationInterface $authorization,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {
@@ -57,10 +56,11 @@ final class StorageFile extends File
             }
 
             $fs->put($this->path, $contents);
+
             return;
         }
 
-        $fs->put($this->path, (string)$data);
+        $fs->put($this->path, (string) $data);
     }
 
     public function delete(): void

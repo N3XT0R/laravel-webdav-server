@@ -9,6 +9,5 @@ readonly class WebDavPathResourceDto
     public function __construct(
         public string $disk,
         public string $path,
-    ) {
-    }
+    ) {}
 }

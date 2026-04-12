@@ -12,8 +12,7 @@ final readonly class WebDavPrincipal
         public string $id,
         public string $displayName,
         public ?Authenticatable $user = null,
-    ) {
-    }
+    ) {}
 
     public function getPrincipalUri(): string
     {

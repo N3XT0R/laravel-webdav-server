@@ -20,8 +20,7 @@ final class StorageRootCollection extends Collection
         private readonly FilesystemManager $filesystem,
         private readonly WebDavPrincipal $principal,
         private readonly PathAuthorizationInterface $authorization,
-    ) {
-    }
+    ) {}
 
     public function getName(): string
     {
@@ -41,7 +40,7 @@ final class StorageRootCollection extends Collection
 
         $fs = $this->filesystem->disk($this->disk);
 
-        if (!$fs->exists($this->rootPath)) {
+        if (! $fs->exists($this->rootPath)) {
             return [];
         }
 
@@ -74,7 +73,7 @@ final class StorageRootCollection extends Collection
 
     public function getChild($name): INode
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
 
         $this->authorization->authorizeRead(
             $this->principal,
@@ -84,13 +83,13 @@ final class StorageRootCollection extends Collection
 
         $fs = $this->filesystem->disk($this->disk);
 
-        if (!$fs->exists($path)) {
+        if (! $fs->exists($path)) {
             throw new NotFound("Node '{$name}' not found.");
         }
 
         if ($this->isDirectory($path)) {
             return new StorageDirectory(
-                name: (string)$name,
+                name: (string) $name,
                 disk: $this->disk,
                 path: $path,
                 filesystem: $this->filesystem,
@@ -100,7 +99,7 @@ final class StorageRootCollection extends Collection
         }
 
         return new StorageFile(
-            name: (string)$name,
+            name: (string) $name,
             disk: $this->disk,
             path: $path,
             filesystem: $this->filesystem,
@@ -111,7 +110,7 @@ final class StorageRootCollection extends Collection
 
     public function childExists($name): bool
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
 
         try {
             $this->authorization->authorizeRead(
@@ -130,7 +129,7 @@ final class StorageRootCollection extends Collection
 
     public function createDirectory($name): void
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
 
         $this->authorization->authorizeCreateDirectory(
             $this->principal,
@@ -145,7 +144,7 @@ final class StorageRootCollection extends Collection
 
     public function createFile($name, $data = null): void
     {
-        $path = $this->buildChildPath((string)$name);
+        $path = $this->buildChildPath((string) $name);
 
         $this->authorization->authorizeCreateFile(
             $this->principal,
@@ -163,10 +162,11 @@ final class StorageRootCollection extends Collection
             }
 
             $fs->put($path, $contents);
+
             return;
         }
 
-        $fs->put($path, (string)($data ?? ''));
+        $fs->put($path, (string) ($data ?? ''));
     }
 
     private function buildChildPath(string $name): string
