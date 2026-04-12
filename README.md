@@ -105,12 +105,12 @@ Route::any('/webdav/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDa
 All default bindings use `bindIf()` – bind your own implementation in `AppServiceProvider::register()` and it takes
 precedence automatically.
 
-| Contract | Default | Override to… |
-|---|---|---|
-| `CredentialValidatorInterface` | `DatabaseCredentialValidator` | Custom auth (LDAP, tokens, …) |
-| `WebDavAccountRepositoryInterface` | `EloquentWebDavAccountRepository` | Non-Eloquent user stores |
-| `SpaceResolverInterface` | `DefaultSpaceResolver` | Per-user disk / path routing |
-| `PathAuthorizationInterface` | `GatePathAuthorization` | Replace Gate with ACL, RBAC, … |
+| Contract                           | Default                           | Override to…                   |
+|------------------------------------|-----------------------------------|--------------------------------|
+| `CredentialValidatorInterface`     | `DatabaseCredentialValidator`     | Custom auth (LDAP, tokens, …)  |
+| `WebDavAccountRepositoryInterface` | `EloquentWebDavAccountRepository` | Non-Eloquent user stores       |
+| `SpaceResolverInterface`           | `DefaultSpaceResolver`            | Per-user disk / path routing   |
+| `PathAuthorizationInterface`       | `GatePathAuthorization`           | Replace Gate with ACL, RBAC, … |
 
 **Default storage mapping:** `webdav.storage.prefix/{principal.id}` on `webdav.storage.disk`.
 
@@ -124,16 +124,17 @@ filesystem operation. The resource passed to the policy is always `WebDavPathRes
 
 **The five policy abilities:**
 
-| Ability | When |
-|---|---|
-| `read` | PROPFIND, GET, file metadata |
-| `write` | PUT (overwrite) |
-| `delete` | DELETE (recursively checked on every node) |
-| `createDirectory` | MKCOL |
-| `createFile` | PUT (new file) |
+| Ability           | When                                       |
+|-------------------|--------------------------------------------|
+| `read`            | PROPFIND, GET, file metadata               |
+| `write`           | PUT (overwrite)                            |
+| `delete`          | DELETE (recursively checked on every node) |
+| `createDirectory` | MKCOL                                      |
+| `createFile`      | PUT (new file)                             |
 
 > The service provider auto-registers `App\Policies\WebDavPathPolicy` – **you must create this class** in your
-> application. A ready-to-use reference implementation is shipped in [`src/Policies/WebDavPathPolicy.php`](src/Policies/WebDavPathPolicy.php).
+> application. A ready-to-use reference implementation is shipped in [
+`src/Policies/WebDavPathPolicy.php`](src/Policies/WebDavPathPolicy.php).
 
 To use a different policy class:
 
@@ -167,6 +168,9 @@ composer run serve      # workbench app → http://0.0.0.0:8000
 
 ---
 
-## License
+## License / Copyright
+
+Copyright (c) 2025 Ilya Beliaev
+This project includes code licensed under MIT.
 
 The MIT License (MIT). See [LICENSE.md](LICENSE.md) for details.
