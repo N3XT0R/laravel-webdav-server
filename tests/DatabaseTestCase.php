@@ -7,6 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\Tests;
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Orchestra\Testbench\Attributes\WithMigration;
+use Workbench\App\Models\User;
 
 #[WithMigration]
 class DatabaseTestCase extends TestCase
@@ -18,6 +19,8 @@ class DatabaseTestCase extends TestCase
         $config = $app->make(Repository::class);
 
         $config->set([
+            'auth.defaults.provider' => 'users',
+            'auth.providers.users.model' => User::class,
             'database.default' => 'testing',
             'database.connections.testing' => [
                 'driver' => 'sqlite',
