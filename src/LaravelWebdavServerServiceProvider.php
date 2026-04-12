@@ -24,10 +24,21 @@ class LaravelWebdavServerServiceProvider extends PackageServiceProvider
             ->hasCommand(LaravelWebdavServerCommand::class);
     }
 
+    protected function registerRoutes(): void
+    {
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+    }
+
     public function packageRegistered(): void
     {
         $this->app->scoped(WebDavServerFactory::class, function ($app) {
             return new WebDavServerFactory($app);
         });
+    }
+
+    public function packageBooted(): void
+    {
+        parent::packageBooted();
+        $this->registerRoutes();
     }
 }
