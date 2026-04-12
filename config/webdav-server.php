@@ -5,6 +5,11 @@ return [
     'route_prefix' => 'webdav',
     'base_uri' => '/webdav/',
 
+    'storage' => [
+        'disk' => 'local',
+        'root' => 'webdav',
+    ],
+
     'auth' => [
         'model' => null,
 
