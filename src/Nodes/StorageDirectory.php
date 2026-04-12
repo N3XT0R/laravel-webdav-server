@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Nodes;
 
-use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use Sabre\DAV\Collection;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\INode;
@@ -17,10 +15,9 @@ final class StorageDirectory extends Collection
         private readonly string $name,
         private readonly string $disk,
         private readonly string $path,
-        private readonly FilesystemManager $filesystem,
-        private readonly WebDavPrincipal $principal,
-        private readonly PathAuthorizationInterface $authorization,
-    ) {}
+        private readonly StorageNodeContextDto $context,
+    ) {
+    }
 
     public function getName(): string
     {
@@ -32,15 +29,15 @@ final class StorageDirectory extends Collection
      */
     public function getChildren(): array
     {
-        $this->authorization->authorizeRead(
-            $this->principal,
+        $this->context->authorization->authorizeRead(
+            $this->context->principal,
             $this->disk,
             $this->path,
         );
 
-        $fs = $this->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->disk);
 
-        if (! $fs->exists($this->path)) {
+        if (!$fs->exists($this->path)) {
             return [];
         }
 
@@ -51,9 +48,7 @@ final class StorageDirectory extends Collection
                 name: basename($directory),
                 disk: $this->disk,
                 path: $directory,
-                filesystem: $this->filesystem,
-                principal: $this->principal,
-                authorization: $this->authorization,
+                context: $this->context,
             );
         }
 
@@ -62,9 +57,7 @@ final class StorageDirectory extends Collection
                 name: basename($file),
                 disk: $this->disk,
                 path: $file,
-                filesystem: $this->filesystem,
-                principal: $this->principal,
-                authorization: $this->authorization,
+                context: $this->context,
             );
         }
 
@@ -73,48 +66,44 @@ final class StorageDirectory extends Collection
 
     public function getChild($name): INode
     {
-        $path = $this->buildChildPath((string) $name);
+        $path = $this->buildChildPath((string)$name);
 
-        $this->authorization->authorizeRead(
-            $this->principal,
+        $this->context->authorization->authorizeRead(
+            $this->context->principal,
             $this->disk,
             $path,
         );
 
-        $fs = $this->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->disk);
 
-        if (! $fs->exists($path)) {
+        if (!$fs->exists($path)) {
             throw new NotFound("Node '{$name}' not found.");
         }
 
         if ($this->isDirectory($path)) {
             return new self(
-                name: (string) $name,
+                name: (string)$name,
                 disk: $this->disk,
                 path: $path,
-                filesystem: $this->filesystem,
-                principal: $this->principal,
-                authorization: $this->authorization,
+                context: $this->context,
             );
         }
 
         return new StorageFile(
-            name: (string) $name,
+            name: (string)$name,
             disk: $this->disk,
             path: $path,
-            filesystem: $this->filesystem,
-            principal: $this->principal,
-            authorization: $this->authorization,
+            context: $this->context,
         );
     }
 
     public function childExists($name): bool
     {
-        $path = $this->buildChildPath((string) $name);
+        $path = $this->buildChildPath((string)$name);
 
         try {
-            $this->authorization->authorizeRead(
-                $this->principal,
+            $this->context->authorization->authorizeRead(
+                $this->context->principal,
                 $this->disk,
                 $path,
             );
@@ -122,37 +111,37 @@ final class StorageDirectory extends Collection
             return false;
         }
 
-        return $this->filesystem
+        return $this->context->filesystem
             ->disk($this->disk)
             ->exists($path);
     }
 
     public function createDirectory($name): void
     {
-        $path = $this->buildChildPath((string) $name);
+        $path = $this->buildChildPath((string)$name);
 
-        $this->authorization->authorizeCreateDirectory(
-            $this->principal,
+        $this->context->authorization->authorizeCreateDirectory(
+            $this->context->principal,
             $this->disk,
             $path,
         );
 
-        $this->filesystem
+        $this->context->filesystem
             ->disk($this->disk)
             ->makeDirectory($path);
     }
 
     public function createFile($name, $data = null): void
     {
-        $path = $this->buildChildPath((string) $name);
+        $path = $this->buildChildPath((string)$name);
 
-        $this->authorization->authorizeCreateFile(
-            $this->principal,
+        $this->context->authorization->authorizeCreateFile(
+            $this->context->principal,
             $this->disk,
             $path,
         );
 
-        $fs = $this->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->disk);
 
         if (is_resource($data)) {
             $contents = stream_get_contents($data);
@@ -166,18 +155,18 @@ final class StorageDirectory extends Collection
             return;
         }
 
-        $fs->put($path, (string) ($data ?? ''));
+        $fs->put($path, (string)($data ?? ''));
     }
 
     public function delete(): void
     {
-        $this->authorization->authorizeDelete(
-            $this->principal,
+        $this->context->authorization->authorizeDelete(
+            $this->context->principal,
             $this->disk,
             $this->path,
         );
 
-        $fs = $this->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->disk);
 
         $this->deleteRecursively($fs, $this->path);
     }
@@ -185,8 +174,8 @@ final class StorageDirectory extends Collection
     private function deleteRecursively(object $fs, string $path): void
     {
         foreach ($fs->files($path) as $file) {
-            $this->authorization->authorizeDelete(
-                $this->principal,
+            $this->context->authorization->authorizeDelete(
+                $this->context->principal,
                 $this->disk,
                 $file,
             );
@@ -195,8 +184,8 @@ final class StorageDirectory extends Collection
         }
 
         foreach ($fs->directories($path) as $directory) {
-            $this->authorization->authorizeDelete(
-                $this->principal,
+            $this->context->authorization->authorizeDelete(
+                $this->context->principal,
                 $this->disk,
                 $directory,
             );
@@ -214,7 +203,7 @@ final class StorageDirectory extends Collection
 
     private function isDirectory(string $path): bool
     {
-        $fs = $this->filesystem->disk($this->disk);
+        $fs = $this->context->filesystem->disk($this->disk);
         $parent = dirname($path);
 
         return in_array($path, $fs->directories($parent), true);

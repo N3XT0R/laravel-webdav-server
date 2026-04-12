@@ -4,10 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Nodes;
 
-use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 use Sabre\DAV\Collection;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\INode;
