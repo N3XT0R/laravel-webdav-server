@@ -1,107 +1,91 @@
 # Laravel WebDAV Server
 
-A WebDAV server implementation for Laravel based on SabreDAV, with seamless integration into Laravel's filesystem.
+A WebDAV server for Laravel powered by [SabreDAV](https://sabre.io/dav/), exposing any configured
+Flysystem disk through the WebDAV protocol.
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/n3xt0r/laravel-webdav-server.svg?style=flat-square)](https://packagist.org/packages/n3xt0r/laravel-webdav-server)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/n3xt0r/laravel-webdav-server/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/N3XT0R/laravel-webdav-server/actions)
 [![Maintainability](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/maintainability.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Total Downloads](https://img.shields.io/packagist/dt/n3xt0r/laravel-webdav-server.svg?style=flat-square)](https://packagist.org/packages/n3xt0r/laravel-webdav-server)
-[![Latest Unstable Version](https://poser.pugx.org/n3xt0r/laravel-webdav-server/v/unstable)](https://packagist.org/packages/n3xt0r/laravel-webdav-server)
 
 ---
 
 ![Laravel WebDAV Server Logo](art/logo.png)
 
-## Overview
+## Requirements
 
-**Laravel WebDAV Server** provides a native WebDAV server implementation for Laravel applications, built on top of
-SabreDAV.
-
-The primary goal of this package is to bridge the gap between:
-
-- the WebDAV protocol (via SabreDAV)
-- and Laravel’s filesystem abstraction (Flysystem)
-
-Instead of working with local filesystem paths directly, this package maps WebDAV nodes to Laravel disks, making it
-possible to expose any configured storage (local, S3, etc.) through a WebDAV interface.
-
----
-
-## Features
-
-- WebDAV server powered by SabreDAV
-- Native integration with Laravel filesystem disks
-- User-based storage mapping via pluggable resolvers
-- Pluggable authentication layer (no coupling to Laravel auth)
-- Clean separation between transport (WebDAV) and domain logic
-- Fully extensible architecture (custom storage, auth, mapping)
-
----
-
-## Architecture
-
-The package is designed as a thin integration layer between SabreDAV and Laravel:
-
-```
-Request (WebDAV)
-    ↓
-SabreDAV Server
-    ↓
-Nodes (Collection / File / Directory)
-    ↓
-Laravel Filesystem (Storage::disk())
-```
-
-Core concepts:
-
-- CredentialValidatorInterface → validates incoming WebDAV credentials
-- WebDavAccountRepositoryInterface → abstracts account lookup
-- SpaceResolverInterface → maps authenticated users to storage locations
-- Storage Nodes → map WebDAV operations to Laravel filesystem operations
+- PHP **8.4+**
+- Laravel **12+**
 
 ---
 
 ## Installation
 
-Install via Composer:
-
-```
+```bash
 composer require n3xt0r/laravel-webdav-server
-```
-
-Publish configuration:
-
-```
 php artisan vendor:publish --tag="laravel-webdav-server-config"
+php artisan migrate
 ```
+
+---
+
+## Architecture
+
+```mermaid
+flowchart TD
+    A([HTTP Request\nBasic Auth]) --> B[WebDavController]
+
+    B --> C[WebDavServerFactory]
+
+    C --> D{CredentialValidatorInterface}
+    D -- invalid --> E([401 Unauthorized])
+    D -- valid --> F[WebDavPrincipal\nid · displayName · user]
+
+    F --> G{SpaceResolverInterface}
+    G --> H[WebDavStorageSpace\ndisk · rootPath]
+
+    H --> I[StorageRootCollection\nSabreDAV tree root]
+
+    I --> J[StorageDirectory]
+    I --> K[StorageFile]
+
+    J & K --> L{PathAuthorizationInterface}
+    L -- denied --> M([403 Forbidden\nSabre\\DAV\\Exception\\Forbidden])
+    L -- allowed --> N[Laravel Filesystem\nStorage::disk]
+```
+
+All extension points use `bindIf()` – bind your own implementation in `AppServiceProvider::register()` and it takes
+precedence automatically.
 
 ---
 
 ## Configuration
 
-Example `config/webdav.php`:
-
 ```php
+// config/webdav-server.php  –  accessed at runtime as webdav.*
 return [
     'base_uri' => '/webdav/',
 
     'storage' => [
-        'disk' => 'local',
-        'prefix' => 'webdav',
+        'disk'   => 'local',   // any disk from config/filesystems.php
+        'prefix' => 'webdav',  // each user's root: {prefix}/{principal_id}
     ],
 
     'auth' => [
-        'realm' => 'Laravel WebDAV',
+        'model'               => null,  // required: App\Models\WebDavAccount::class
+        'username_column'     => 'username',
+        'password_column'     => 'password_encrypted',
+        'enabled_column'      => 'enabled',  // set to '' to skip the check
+        'user_id_column'      => 'user_id',
+        'display_name_column' => 'username',
     ],
 ];
 ```
 
 ---
 
-## Usage
-
-### 1. Define a route
+## Route
 
 ```php
 Route::any('/webdav/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDavController::class)
@@ -110,94 +94,70 @@ Route::any('/webdav/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDa
 
 ---
 
-### 2. Provide your own authentication
+## Extension Points
 
-Implement:
+| Contract                           | Default                           | Override to…                   |
+|------------------------------------|-----------------------------------|--------------------------------|
+| `CredentialValidatorInterface`     | `DatabaseCredentialValidator`     | Custom auth (LDAP, tokens, …)  |
+| `WebDavAccountRepositoryInterface` | `EloquentWebDavAccountRepository` | Non-Eloquent user stores       |
+| `SpaceResolverInterface`           | `DefaultSpaceResolver`            | Per-user disk / path routing   |
+| `PathAuthorizationInterface`       | `GatePathAuthorization`           | Replace Gate with ACL, RBAC, … |
 
-```
-N3XT0R\LaravelWebdavServer\Contracts\Auth\WebDavAccountRepositoryInterface
-```
+**Default storage mapping:** `webdav.storage.prefix` / `{principal.id}` on `webdav.storage.disk`.
 
-and bind it:
+---
+
+## Authorization / Policies
+
+The default `GatePathAuthorization` calls `Gate::forUser($principal->user)->inspect($ability, $resource)` before every
+filesystem operation. The resource passed to the policy is always `WebDavPathResourceDto` with two public properties:
+`disk` and `path`.
+
+**The five policy abilities:**
+
+| Ability           | When                                       |
+|-------------------|--------------------------------------------|
+| `read`            | PROPFIND, GET, file metadata               |
+| `write`           | PUT (overwrite)                            |
+| `delete`          | DELETE (recursively checked on every node) |
+| `createDirectory` | MKCOL                                      |
+| `createFile`      | PUT (new file)                             |
+
+> The service provider auto-registers `App\Policies\WebDavPathPolicy` – **you must create this class** in your
+> application. A ready-to-use reference implementation is shipped in [`src/Policies/WebDavPathPolicy.php`](src/Policies/WebDavPathPolicy.php).
+
+To use a different policy class:
 
 ```php
-$this->app->bind(
-    WebDavAccountRepositoryInterface::class,
-    \App\Repositories\UserWebDavAccountRepository::class
+// AppServiceProvider::boot()
+Gate::policy(
+    \N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto::class,
+    \App\Policies\MyCustomPolicy::class,
 );
 ```
 
+To bypass Gate entirely, bind your own `PathAuthorizationInterface` implementation.
+Throw `Sabre\DAV\Exception\Forbidden` on denial – never a Laravel HTTP exception.
+
 ---
 
-### 3. Customize storage mapping (optional)
+## Supported WebDAV Operations
 
-Override the default space resolver:
+`PROPFIND` · `GET` · `PUT` · `DELETE` · `MKCOL`
 
-```php
-$this->app->bind(
-    SpaceResolverInterface::class,
-    \App\WebDav\UserSpaceResolver::class
-);
+---
+
+## Developer Commands
+
+```bash
+composer run test       # Pest test suite (random order)
+composer run lint       # auto-fix code style (Laravel Pint)
+composer run test:lint  # dry-run style check
+composer run serve      # workbench app → http://0.0.0.0:8000
 ```
-
----
-
-## Example
-
-Once configured, your WebDAV endpoint becomes available at:
-
-```
-http://your-app.test/webdav
-```
-
-You can connect using:
-
-- Finder (macOS)
-- Explorer (Windows)
-- WebDAV clients (Cyberduck, cadaver, etc.)
-
----
-
-## Supported Operations
-
-- PROPFIND (directory listing)
-- GET (download files)
-- PUT (upload files)
-- DELETE (files & directories)
-- MKCOL (create directories)
-
----
-
-## Notes
-
-- Large file uploads may require optimization depending on your use case.
-- The package intentionally avoids coupling to Laravel authentication or user models.
-- All domain-specific behavior should be implemented in the host application.
-
----
-
-## Testing
-
-```
-composer test
-```
-
----
-
-## Contributing
-
-Contributions are welcome. Please ensure all tests pass and follow the existing code style.
-
----
-
-## Credits
-
-- Ilya Beliaev
-- SabreDAV
-- Laravel & Flysystem ecosystem
 
 ---
 
 ## License
 
-The MIT License (MIT). See LICENSE.md for details.
+The MIT License (MIT). See [LICENSE.md](LICENSE.md) for details.
