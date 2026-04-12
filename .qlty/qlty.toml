@@ -40,7 +40,7 @@ test_patterns = [
 ]
 
 [project]
-name = "laravel-passport-modern-scopes"
+name = "laravel-webdav-server"
 language = "php"
 coverage = true
 
