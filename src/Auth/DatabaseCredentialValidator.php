@@ -14,14 +14,13 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
 {
     public function __construct(
         private Config $config,
-    ) {
-    }
+    ) {}
 
     public function validate(string $username, string $password): ?WebDavPrincipal
     {
         $modelClass = $this->config->get('webdav.auth.model');
 
-        if (!$modelClass || !is_subclass_of($modelClass, Model::class)) {
+        if (! $modelClass || ! is_subclass_of($modelClass, Model::class)) {
             throw new \RuntimeException('Invalid or missing webdav.auth.model configuration');
         }
 
@@ -34,22 +33,22 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
         /** @var Model $account */
         $account = $modelClass::query()
             ->where($usernameColumn, $username)
-            ->when($enabledColumn, fn($q) => $q->where($enabledColumn, true))
+            ->when($enabledColumn, fn ($q) => $q->where($enabledColumn, true))
             ->first();
 
-        if (!$account) {
+        if (! $account) {
             return null;
         }
 
         $hashedPassword = $account->{$passwordColumn};
 
-        if (!Hash::check($password, $hashedPassword)) {
+        if (! Hash::check($password, $hashedPassword)) {
             return null;
         }
 
         return new WebDavPrincipal(
-            (string)$account->{$userIdColumn},
-            (string)$account->{$displayNameColumn},
+            (string) $account->{$userIdColumn},
+            (string) $account->{$displayNameColumn},
         );
     }
 }

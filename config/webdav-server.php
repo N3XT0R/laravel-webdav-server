@@ -5,7 +5,6 @@ return [
     'route_prefix' => 'webdav',
     'base_uri' => '/webdav/',
 
-
     'auth' => [
         'model' => null,
 

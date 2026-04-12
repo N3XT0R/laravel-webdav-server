@@ -9,8 +9,7 @@ final readonly class WebDavPrincipal
     public function __construct(
         public string $id,
         public string $displayName,
-    ) {
-    }
+    ) {}
 
     public function getPrincipalUri(): string
     {

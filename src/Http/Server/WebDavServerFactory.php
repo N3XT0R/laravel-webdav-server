@@ -10,11 +10,10 @@ readonly class WebDavServerFactory
 {
     public function __construct(
         private Container $container,
-    ) {
-    }
+    ) {}
 
     public function make(): WebDavServer
     {
-        return new WebDavServer();
+        return new WebDavServer;
     }
 }
