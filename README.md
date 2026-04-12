@@ -170,7 +170,7 @@ composer run serve      # workbench app → http://0.0.0.0:8000
 
 ## License / Copyright
 
-Copyright (c) 2025 Ilya Beliaev
+Copyright (c) 2026 Ilya Beliaev
 This project includes code licensed under MIT.
 
 The MIT License (MIT). See [LICENSE.md](LICENSE.md) for details.
