@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Server;
 
-use N3XT0R\LaravelWebdavServer\Auth\BasicAuthBackend;
+use N3XT0R\LaravelWebdavServer\Auth\Backends\BasicAuthBackend;
 
 final readonly class WebDavServerFactory
 {

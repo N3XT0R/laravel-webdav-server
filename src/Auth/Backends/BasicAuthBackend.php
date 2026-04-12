@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Auth;
+namespace N3XT0R\LaravelWebdavServer\Auth\Backends;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;

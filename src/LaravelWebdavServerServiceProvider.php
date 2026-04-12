@@ -2,7 +2,7 @@
 
 namespace N3XT0R\LaravelWebdavServer;
 
-use N3XT0R\LaravelWebdavServer\Auth\Validator\DatabaseCredentialValidator;
+use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Server;
 
-use N3XT0R\LaravelWebdavServer\Auth\BasicAuthBackend;
+use N3XT0R\LaravelWebdavServer\Auth\Backends\BasicAuthBackend;
 use Sabre\DAV\Auth\Plugin as AuthPlugin;
 use Sabre\DAV\Server;
 use Sabre\DAV\SimpleCollection;
