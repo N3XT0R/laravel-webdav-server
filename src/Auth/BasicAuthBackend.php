@@ -10,7 +10,7 @@ use Sabre\DAV\Auth\Backend\AbstractBasic;
 
 class BasicAuthBackend extends AbstractBasic
 {
-    private ?WebDavPrincipal $principal = null;
+    protected ?WebDavPrincipal $principal = null;
 
     public function __construct(
         protected readonly CredentialValidatorInterface $validator,
