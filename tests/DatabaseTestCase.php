@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests;
+
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
 use Orchestra\Testbench\Attributes\WithMigration;
@@ -11,7 +12,6 @@ use Orchestra\Testbench\Attributes\WithMigration;
 class DatabaseTestCase extends TestCase
 {
     use LazilyRefreshDatabase;
-
 
     protected function defineEnvironment($app): void
     {

@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Tests;
 
 class ExampleTest extends TestCase
 {
-    public function testExample(): void
+    public function test_example(): void
     {
         $this->assertTrue(true);
     }

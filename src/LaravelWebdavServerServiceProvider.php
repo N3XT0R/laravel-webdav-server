@@ -2,9 +2,9 @@
 
 namespace N3XT0R\LaravelWebdavServer;
 
+use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
-use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
 
 class LaravelWebdavServerServiceProvider extends PackageServiceProvider
 {
