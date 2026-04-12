@@ -12,8 +12,8 @@ use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 final readonly class DatabaseCredentialValidator implements CredentialValidatorInterface
 {
     public function __construct(
-        private WebDavAccountRepositoryInterface $repository,
-        private Hasher $hasher,
+        protected WebDavAccountRepositoryInterface $repository,
+        protected Hasher $hasher,
     ) {
     }
 
