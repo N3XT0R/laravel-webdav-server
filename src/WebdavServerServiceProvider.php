@@ -1,6 +1,6 @@
 <?php
 
-namespace N3XT0R\LaravelWebdavServer\Providers;
+namespace N3XT0R\LaravelWebdavServer;
 
 use App\Policies\WebDavPathPolicy;
 use Illuminate\Container\Container as Application;
