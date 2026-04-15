@@ -209,6 +209,7 @@ Throw `Sabre\DAV\Exception\Forbidden` on denial – never a Laravel HTTP excepti
 ## Documentation
 
 - [Getting Started Guide](docs/getting-started.md) – Configuration, policies, authentication, and client setup.
+- [Authentication & Authorization](docs/authentication.md) – Custom validators, policies, and user linking.
 - [Architecture](docs/architecture.md) – Request pipeline and extension points.
 - [Configuration Reference](docs/configuration.md) – All config keys and how they work.
 - [Common Questions & Clarifications](docs/common-questions.md) – Answers to frequent misconceptions.

@@ -135,41 +135,7 @@ public function delete(Authenticatable $user, WebDavPathResourceDto $resource): 
 
 **A: Set `webdav.auth.user_model` in config and use the `user_id` column.**
 
-```php
-// config/webdav-server.php
-'auth' => [
-    'account_model' => \App\Models\WebDavAccount::class,
-    'user_model' => \App\Models\User::class,
-    'user_id_column' => 'user_id',
-],
-```
-
-The `WebDavAccount` model has a `user()` relationship:
-
-```php
-// app/Models/WebDavAccount.php
-public function user(): BelongsTo
-{
-    return $this->belongsTo(config('webdav.auth.user_model'), 'user_id');
-}
-```
-
-In your policy, access the associated user:
-
-```php
-public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
-{
-    // $user is a WebDavAccount (with user relation)
-    $appUser = $user instanceof WebDavAccount ? $user->user : null;
-    
-    if (!$appUser) {
-        return false;
-    }
-    
-    // Now check app-level permissions
-    return $appUser->can('view-files');
-}
-```
+See [docs/authentication.md](authentication.md#linking-webdav-accounts-to-laravel-users) for full details and code examples.
 
 ---
 
