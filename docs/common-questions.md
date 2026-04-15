@@ -27,36 +27,7 @@ So if `principal->id` is `42` and `config('webdav.storage.spaces.default.root')`
 
 **A: No. Use `CredentialValidatorInterface` instead.**
 
-The package provides a contract for authentication:
-
-```php
-// src/Contracts/Auth/CredentialValidatorInterface.php
-public function validate(string $username, string $password): ?WebDavPrincipal;
-```
-
-The default implementation (`DatabaseCredentialValidator`) validates credentials against `webdav.auth.account_model`.
-
-To use custom authentication (LDAP, API tokens, etc.):
-
-```php
-// app/Services/MyCredentialValidator.php
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
-
-class MyCredentialValidator implements CredentialValidatorInterface
-{
-    public function validate(string $username, string $password): ?WebDavPrincipal
-    {
-        // Your logic here
-        // Return WebDavPrincipal on success, null on failure
-    }
-}
-```
-
-Register it in your `AppServiceProvider`:
-
-```php
-$app->bind(CredentialValidatorInterface::class, MyCredentialValidator::class);
-```
+See [docs/authentication.md](authentication.md) for custom authentication examples and best practices.
 
 ---
 
