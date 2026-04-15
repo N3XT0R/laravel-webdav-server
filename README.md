@@ -158,7 +158,7 @@ Throw `Sabre\DAV\Exception\Forbidden` on denial – never a Laravel HTTP excepti
 ## Developer Commands
 
 ```bash
-composer run test       # Pest test suite (random order)
+composer run test       # PHPUnit test suite (random order)
 composer run lint       # auto-fix code style (Laravel Pint)
 composer run test:lint  # dry-run style check
 composer run serve      # workbench app → http://0.0.0.0:8000
