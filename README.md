@@ -4,6 +4,7 @@ A WebDAV server for Laravel powered by [SabreDAV](https://sabre.io/dav/), exposi
 Flysystem disk through the WebDAV protocol.
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/n3xt0r/laravel-webdav-server.svg?style=flat-square)](https://packagist.org/packages/n3xt0r/laravel-webdav-server)
+[![Develop Status](https://img.shields.io/badge/develop-unstable-orange?style=flat-square)](https://github.com/N3XT0R/laravel-webdav-server/tree/develop)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/n3xt0r/laravel-webdav-server/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/N3XT0R/laravel-webdav-server/actions)
 [![Maintainability](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/maintainability.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
