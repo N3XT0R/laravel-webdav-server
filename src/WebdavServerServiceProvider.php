@@ -39,7 +39,7 @@ class WebdavServerServiceProvider extends PackageServiceProvider
 
     protected function registerRoutes(): void
     {
-        $this->loadRoutesFrom(__DIR__.'/../../routes/web.php');
+        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
     }
 
     public function packageRegistered(): void
