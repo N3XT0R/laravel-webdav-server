@@ -22,10 +22,10 @@ return [
 
 ## Top-Level Keys
 
-| Key                   | Default    | Used by                                 |
-|-----------------------|------------|-----------------------------------------|
+| Key                   | Default    | Used by                                              |
+|-----------------------|------------|------------------------------------------------------|
 | `webdav.route_prefix` | `webdav`   | CSRF exclusion path in `WebdavServerServiceProvider` |
-| `webdav.base_uri`     | `/webdav/` | `WebDavServerFactory::setBaseUri()`     | 
+| `webdav.base_uri`     | `/webdav/` | `WebDavServerFactory::setBaseUri()`                  | 
 
 ## Storage Spaces
 
