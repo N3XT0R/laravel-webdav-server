@@ -17,7 +17,7 @@ final class WebDavController extends Controller
 
     public function __invoke(Request $request): Response
     {
-        $server = $this->factory->make()->create();
+        $server = $this->factory->make($request);
 
         ob_start();
 
