@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use N3XT0R\LaravelWebdavServer\Models\WebDavAccount;
 
 return [
     'route_prefix' => 'webdav',
@@ -12,7 +13,8 @@ return [
     ],
 
     'auth' => [
-        'model' => null,
+        'account_model' => WebDavAccount::class,
+        'user_model' => null,
 
         'username_column' => 'username',
         'password_column' => 'password_encrypted',
