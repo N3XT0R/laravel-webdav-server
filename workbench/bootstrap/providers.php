@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+use N3XT0R\LaravelWebdavServer\Providers\WebdavServerServiceProvider;
 
 return [
     /*
@@ -13,5 +14,5 @@ return [
     |
     */
 
-    N3XT0R\LaravelWebdavServer\Providers\WebdavServerServiceProvider::class,
+    WebdavServerServiceProvider::class,
 ];
