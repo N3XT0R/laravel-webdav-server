@@ -35,6 +35,11 @@ return [
 - `webdav.storage.spaces.{space}.disk` (required)
 - `webdav.storage.spaces.{space}.root` (required)
 
+`WebDavServerFactory` determines the `spaceKey` in this order:
+
+1. route parameter `{space}`
+2. fallback `webdav.storage.default_space`
+
 Resolved runtime root is always:
 `{root}/{principal.id}`
 

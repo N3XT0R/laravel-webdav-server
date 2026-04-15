@@ -2,7 +2,6 @@
 
 namespace N3XT0R\LaravelWebdavServer;
 
-use N3XT0R\LaravelWebdavServer\Policies\WebDavPathPolicy;
 use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Support\Facades\Gate;
@@ -14,6 +13,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
+use N3XT0R\LaravelWebdavServer\Policies\WebDavPathPolicy;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
 use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
@@ -84,10 +84,10 @@ class WebdavServerServiceProvider extends PackageServiceProvider
 
     private function registerCsrfException(): void
     {
-        $routePrefix = trim((string)config('webdav.route_prefix', ''), '/');
+        $routePrefix = trim((string) config('webdav.route_prefix', ''), '/');
 
         if ($routePrefix === '') {
-            $routePrefix = trim((string)config('webdav.base_uri', ''), '/');
+            $routePrefix = trim((string) config('webdav.base_uri', ''), '/');
         }
 
         if ($routePrefix === '') {

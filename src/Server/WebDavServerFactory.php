@@ -33,7 +33,8 @@ final readonly class WebDavServerFactory
             throw new RuntimeException('Invalid WebDAV credentials.');
         }
 
-        $space = $this->spaceResolver->resolve($principal);
+        $spaceKey = $this->resolveSpaceKey($request);
+        $space = $this->spaceResolver->resolve($principal, $spaceKey);
 
         $root = new StorageRootCollection(
             name: $principal->id,
@@ -65,5 +66,22 @@ final readonly class WebDavServerFactory
         }
 
         return [$username, $password];
+    }
+
+    private function resolveSpaceKey(Request $request): string
+    {
+        $space = $request->route('space');
+
+        if (is_string($space) && trim($space) !== '') {
+            return trim($space);
+        }
+
+        $defaultSpace = config('webdav.storage.default_space', 'default');
+
+        if (! is_string($defaultSpace) || trim($defaultSpace) === '') {
+            throw new RuntimeException('Missing or invalid webdav.storage.default_space configuration.');
+        }
+
+        return trim($defaultSpace);
     }
 }

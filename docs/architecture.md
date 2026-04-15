@@ -14,7 +14,7 @@ flowchart TD
     F -- invalid --> G["RuntimeException: Invalid WebDAV credentials"]
     F -- valid --> H["WebDavPrincipal (id, displayName, user)"]
 
-    H --> I["SpaceResolverInterface::resolve(principal)"]
+    H --> I["SpaceResolverInterface::resolve(principal, spaceKey)"]
     I --> J["WebDavStorageSpace (disk, rootPath)"]
 
     J --> K["StorageRootCollection (SabreDAV tree root)"]
@@ -39,6 +39,7 @@ precedence automatically.
 - Middleware resolution is version-tolerant: `PreventRequestForgery` (Laravel 13+) with fallback to
   `VerifyCsrfToken` (Laravel 12).
 - CSRF route prefix comes from `webdav.route_prefix` and falls back to `webdav.base_uri`.
-- Route shape includes `{space}` (`routes/web.php`), but the current factory call resolves storage via
-  `SpaceResolverInterface::resolve($principal)` without passing the route space parameter.
+- Route shape includes `{space}` (`routes/web.php`) and the factory resolves storage with
+  `SpaceResolverInterface::resolve($principal, $spaceKey)`.
+- `spaceKey` comes from route parameter `{space}` and falls back to `webdav.storage.default_space`.
 
