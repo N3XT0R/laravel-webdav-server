@@ -68,7 +68,7 @@ to work.
 ## Developer Workflows
 
 ```bash
-# Run tests (Pest, random execution order)
+# Run tests (PHPUnit, random execution order)
 composer run test
 
 # Lint / format code (Laravel Pint)
