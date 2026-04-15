@@ -62,7 +62,8 @@ If you want details, see [docs/architecture.md](docs/architecture.md).
 ## Requirements
 
 - PHP **8.4+**
-- Laravel **12+**
+- Laravel **13.x** (recommended)
+- Laravel **12.x** (supported)
 
 ---
 
