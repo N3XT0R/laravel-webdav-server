@@ -41,6 +41,22 @@ possible to expose any configured storage (local, S3, etc.) through a WebDAV int
 - Clean separation between transport (WebDAV) and domain logic
 - Fully extensible architecture (custom storage, auth, authorization)
 
+## Why this architecture?
+
+Compared to tightly-coupled Laravel + Sabre integrations, this package keeps WebDAV transport and Laravel domain concerns
+explicitly separated:
+
+- **No black box request handling**: the request pipeline is explicit (`WebDavController` -> `WebDavServerFactory` ->
+  validator/resolver/authorization -> storage nodes).
+- **Pluggable by contract, not by fork**: auth, space resolution, and path authorization are all replaceable via
+  interfaces + `bindIf()`.
+- **Storage flexibility at runtime**: routing can resolve different spaces/disks/roots per principal, instead of hard
+  wiring one filesystem path.
+- **Policy-native authorization**: access checks stay in Laravel Gate/Policies (`WebDavPathResourceDto`) where your app
+  logic already lives.
+
+If you want details, see [docs/architecture.md](docs/architecture.md).
+
 ---
 
 ## Requirements
