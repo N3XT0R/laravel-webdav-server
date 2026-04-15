@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Policies;
+namespace N3XT0R\LaravelWebdavServer\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
@@ -36,8 +36,8 @@ final class WebDavPathPolicy
 
     private function isAllowed(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        $expectedDisk = (string) config('webdav.storage.disk', 'local');
-        $prefix = trim((string) config('webdav.storage.prefix', 'webdav'), '/');
+        $expectedDisk = (string)config('webdav.storage.disk', 'local');
+        $prefix = trim((string)config('webdav.storage.prefix', 'webdav'), '/');
         $path = trim($resource->path, '/');
 
         if ($resource->disk !== $expectedDisk) {

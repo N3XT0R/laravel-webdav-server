@@ -68,33 +68,14 @@ php artisan migrate
 
 ## Configuration
 
-```php
-// config/webdav-server.php  –  accessed at runtime as webdav.*
-return [
-    'base_uri' => '/webdav/',
-
-    'storage' => [
-        'disk'   => 'local',   // any disk from config/filesystems.php
-        'prefix' => 'webdav',  // each user's root: {prefix}/{principal_id}
-    ],
-
-    'auth' => [
-        'model'               => null,  // required: App\Models\WebDavAccount::class
-        'username_column'     => 'username',
-        'password_column'     => 'password_encrypted',
-        'enabled_column'      => 'enabled',  // set to '' to skip the check
-        'user_id_column'      => 'user_id',
-        'display_name_column' => 'username',
-    ],
-];
-```
+See the full configuration reference in [docs/configuration.md](docs/configuration.md).
 
 ---
 
 ## Route
 
 ```php
-Route::any('/webdav/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDavController::class)
+Route::any('/webdav/{space}/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDavController::class)
     ->where('path', '.*');
 ```
 
@@ -112,7 +93,7 @@ precedence automatically.
 | `SpaceResolverInterface`           | `DefaultSpaceResolver`            | Per-user disk / path routing   |
 | `PathAuthorizationInterface`       | `GatePathAuthorization`           | Replace Gate with ACL, RBAC, … |
 
-**Default storage mapping:** `webdav.storage.prefix/{principal.id}` on `webdav.storage.disk`.
+**Default storage mapping:** `webdav.storage.spaces.{space}.root/{principal.id}` on `webdav.storage.spaces.{space}.disk`.
 
 ---
 
