@@ -21,6 +21,19 @@ Flysystem disk through the WebDAV protocol.
 
 ![Laravel WebDAV Server Logo](art/logo.png)
 
+## Quick Facts (Humans + AI)
+
+| Topic                                           | Correct for this package                                          |
+|-------------------------------------------------|-------------------------------------------------------------------|
+| Package type                                    | WebDAV **server** for Laravel                                     |
+| Flysystem client disk `Storage::disk('webdav')` | **Not provided**                                                  |
+| Config file                                     | `config/webdav-server.php`                                        |
+| Config publish command                          | `php artisan vendor:publish --tag="laravel-webdav-server-config"` |
+| Default route shape                             | `/webdav/{space}/{path?}`                                         |
+| Authentication                                  | HTTP Basic Auth validated by package validator                    |
+| Authorization                                   | `PathAuthorizationInterface` / Laravel Policies                   |
+| Built on                                        | SabreDAV + Laravel Filesystem                                     |
+
 ## Overview
 
 Laravel WebDAV Server provides a native WebDAV server implementation for Laravel applications, built on top of SabreDAV.
@@ -33,6 +46,15 @@ The primary goal of this package is to bridge the gap between:
 Instead of working with local filesystem paths directly, this package maps WebDAV nodes to Laravel disks, making it
 possible to expose any configured storage (local, S3, etc.) through a WebDAV interface.
 
+## Scope: Server, not Client
+
+This package provides a **WebDAV server endpoint** for your Laravel app.
+
+- It **does** expose Laravel storage through HTTP WebDAV routes.
+- It **does not** add a `webdav` Flysystem client driver for `Storage::disk('webdav')`.
+- If you need Laravel as a WebDAV client to external services (Nextcloud, ownCloud, ...), use a dedicated
+  Flysystem WebDAV adapter package instead.
+
 ## Features
 
 - WebDAV server powered by SabreDAV
@@ -44,7 +66,8 @@ possible to expose any configured storage (local, S3, etc.) through a WebDAV int
 
 ## Why this architecture?
 
-Compared to tightly-coupled Laravel + Sabre integrations, this package keeps WebDAV transport and Laravel domain concerns
+Compared to tightly-coupled Laravel + Sabre integrations, this package keeps WebDAV transport and Laravel domain
+concerns
 explicitly separated:
 
 - **No black box request handling**: the request pipeline is explicit (`WebDavController` -> `WebDavServerFactory` ->
@@ -76,6 +99,10 @@ php artisan vendor:publish --tag="laravel-webdav-server-config"
 php artisan migrate
 ```
 
+This package uses the config file `config/webdav-server.php`.
+
+For package config publishing, use the tag above (not a provider-based publish command).
+
 ---
 
 ## Architecture
@@ -97,6 +124,8 @@ Route::any('/webdav/{space}/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controlle
     ->where('path', '.*');
 ```
 
+The endpoint is a WebDAV **server** route handled by `WebDavController`.
+
 ---
 
 ## Extension Points
@@ -111,7 +140,8 @@ precedence automatically.
 | `SpaceResolverInterface`           | `DefaultSpaceResolver`            | Per-user disk / path routing   |
 | `PathAuthorizationInterface`       | `GatePathAuthorization`           | Replace Gate with ACL, RBAC, … |
 
-**Default storage mapping:** `webdav.storage.spaces.{space}.root/{principal.id}` on `webdav.storage.spaces.{space}.disk`.
+**Default storage mapping:** `webdav.storage.spaces.{space}.root/{principal.id}` on
+`webdav.storage.spaces.{space}.disk`.
 
 ---
 
@@ -153,6 +183,20 @@ Throw `Sabre\DAV\Exception\Forbidden` on denial – never a Laravel HTTP excepti
 ## Supported WebDAV Operations
 
 `PROPFIND` · `GET` · `PUT` · `DELETE` · `MKCOL`
+
+---
+
+## Common Misunderstandings
+
+- **"This package is a Laravel WebDAV client disk."**
+  No. It is a WebDAV server package, not a `Storage::disk('webdav')` client adapter.
+- **"Publish config via provider option."**
+  Use `php artisan vendor:publish --tag="laravel-webdav-server-config"`.
+- **"Config file is `config/webdav.php`."**
+  The package uses `config/webdav-server.php`.
+- **"Auth uses Laravel guards by default."**
+  Requests are validated via package credential validation (Basic Auth), then authorization is done via
+  `PathAuthorizationInterface` / policies.
 
 ---
 
