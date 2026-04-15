@@ -13,5 +13,5 @@ return [
     |
     */
 
-    N3XT0R\LaravelWebdavServer\Providers\LaravelWebdavServerServiceProvider::class,
+    N3XT0R\LaravelWebdavServer\Providers\WebdavServerServiceProvider::class,
 ];
