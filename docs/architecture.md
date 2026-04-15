@@ -1,31 +1,33 @@
 # Architecture
 
-Every WebDAV request passes through this pipeline:
+Every WebDAV request passes through this runtime flow:
 
 ```mermaid
 flowchart TD
-    A([HTTP Request\n/webdav/{space}/{path?}\nBasic Auth]) --> B[WebDavController]
+    A["HTTP Request<br/>/webdav/{space}/{path?}<br/>Basic Auth"] --> B["WebDavController"]
+    B --> C["WebDavServerFactory::make(request)"]
 
-    B --> C[WebDavServerFactory]
+    C --> D{"Basic credentials present?"}
+    D -- no --> E["RuntimeException: Missing Basic Auth credentials"]
+    D -- yes --> F["CredentialValidatorInterface::validate(username, password)"]
 
-    C --> D{CredentialValidatorInterface}
-    D -- invalid --> E([401 Unauthorized])
-    D -- valid --> F[WebDavPrincipal\nid · displayName · user]
+    F -- invalid --> G["RuntimeException: Invalid WebDAV credentials"]
+    F -- valid --> H["WebDavPrincipal (id, displayName, user)"]
 
-    F --> G{SpaceResolverInterface}
-    G --> H[WebDavStorageSpace\ndisk · rootPath]
+    H --> I["SpaceResolverInterface::resolve(principal)"]
+    I --> J["WebDavStorageSpace (disk, rootPath)"]
 
-    H --> I[StorageRootCollection\nSabreDAV tree root]
+    J --> K["StorageRootCollection (SabreDAV tree root)"]
+    K --> L["StorageDirectory"]
+    K --> M["StorageFile"]
 
-    I --> J[StorageDirectory]
-    I --> K[StorageFile]
+    L --> N{"PathAuthorizationInterface"}
+    M --> N
+    N -- denied --> O["SabreDAV Forbidden exception"]
+    N -- allowed --> P["Laravel Filesystem (Storage::disk)"]
 
-    J & K --> L{PathAuthorizationInterface}
-    L -- denied --> M([403 Forbidden\nSabre\DAV\Exception\Forbidden])
-    L -- allowed --> N[Laravel Filesystem\nStorage::disk]
-
-    C --> O[SabreDAV Server]
-    O --> P[base_uri from config\nwebdav.base_uri]
+    C --> Q["SabreDAV Server"]
+    Q --> R["setBaseUri(config('webdav.base_uri', '/webdav/'))"]
 ```
 
 All extension points use `bindIf()` – bind your own implementation in `AppServiceProvider::register()` and it takes
@@ -34,8 +36,9 @@ precedence automatically.
 ## Runtime Notes (Current State)
 
 - CSRF bypass is registered in `WebdavServerServiceProvider::registerCsrfException()`.
-- Middleware resolution is version-tolerant: `PreventRequestForgery` (Laravel 13+) with fallback to `VerifyCsrfToken`
-  (Laravel <=12).
-- Route shape already includes `{space}` (`routes/web.php`), while the default factory path currently resolves storage
-  without consuming the route space parameter.
+- Middleware resolution is version-tolerant: `PreventRequestForgery` (Laravel 13+) with fallback to
+  `VerifyCsrfToken` (Laravel 12).
+- CSRF route prefix comes from `webdav.route_prefix` and falls back to `webdav.base_uri`.
+- Route shape includes `{space}` (`routes/web.php`), but the current factory call resolves storage via
+  `SpaceResolverInterface::resolve($principal)` without passing the route space parameter.
 
