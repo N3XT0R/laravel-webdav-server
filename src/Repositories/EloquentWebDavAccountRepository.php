@@ -19,7 +19,7 @@ final readonly class EloquentWebDavAccountRepository implements WebDavAccountRep
 
     public function findEnabledByUsername(string $username): ?WebDavAccountInterface
     {
-        $modelClass = $this->config->get('webdav.auth.model');
+        $modelClass = $this->config->get('webdav.auth.account_model');
 
         if (! is_string($modelClass) || ! is_subclass_of($modelClass, Model::class)) {
             throw new RuntimeException('Invalid or missing webdav.auth.model configuration');
