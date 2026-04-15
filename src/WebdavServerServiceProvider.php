@@ -2,7 +2,7 @@
 
 namespace N3XT0R\LaravelWebdavServer;
 
-use App\Policies\WebDavPathPolicy;
+use N3XT0R\LaravelWebdavServer\Policies\WebDavPathPolicy;
 use Illuminate\Container\Container as Application;
 use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Support\Facades\Gate;
@@ -77,7 +77,49 @@ class WebdavServerServiceProvider extends PackageServiceProvider
     public function packageBooted(): void
     {
         parent::packageBooted();
+        $this->registerCsrfException();
         $this->registerRoutes();
         Gate::policy(WebDavPathResourceDto::class, WebDavPathPolicy::class);
+    }
+
+    private function registerCsrfException(): void
+    {
+        $routePrefix = trim((string)config('webdav.route_prefix', ''), '/');
+
+        if ($routePrefix === '') {
+            $routePrefix = trim((string)config('webdav.base_uri', ''), '/');
+        }
+
+        if ($routePrefix === '') {
+            return;
+        }
+
+        $csrfMiddleware = $this->resolveCsrfMiddlewareClass();
+
+        if ($csrfMiddleware === null) {
+            return;
+        }
+
+        // Exclude package WebDAV endpoints from CSRF checks.
+        call_user_func([$csrfMiddleware, 'except'], [
+            $routePrefix,
+            $routePrefix.'/*',
+        ]);
+    }
+
+    private function resolveCsrfMiddlewareClass(): ?string
+    {
+        $candidates = [
+            'Illuminate\\Foundation\\Http\\Middleware\\PreventRequestForgery',
+            'Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken',
+        ];
+
+        foreach ($candidates as $middlewareClass) {
+            if (class_exists($middlewareClass) && method_exists($middlewareClass, 'except')) {
+                return $middlewareClass;
+            }
+        }
+
+        return null;
     }
 }
