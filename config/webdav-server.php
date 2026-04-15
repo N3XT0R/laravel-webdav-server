@@ -1,6 +1,7 @@
 <?php
 
 declare(strict_types=1);
+
 use N3XT0R\LaravelWebdavServer\Models\WebDavAccount;
 
 return [
@@ -8,6 +9,13 @@ return [
     'base_uri' => '/webdav/',
 
     'storage' => [
+        'default_space' => 'default',
+        'spaces' => [
+            'default' => [
+                'disk' => 'local',
+                'root' => 'webdav',
+            ],
+        ],
         'disk' => 'local',
         'root' => 'webdav',
     ],
