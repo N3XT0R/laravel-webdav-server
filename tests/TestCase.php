@@ -3,7 +3,7 @@
 namespace N3XT0R\LaravelWebdavServer\Tests;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use N3XT0R\LaravelWebdavServer\Providers\LaravelWebdavServerServiceProvider;
+use N3XT0R\LaravelWebdavServer\Providers\WebdavServerServiceProvider;
 use Orchestra\Testbench\Concerns\WithWorkbench;
 use Orchestra\Testbench\TestCase as Orchestra;
 
@@ -25,7 +25,7 @@ class TestCase extends Orchestra
     protected function getPackageProviders($app): array
     {
         return [
-            LaravelWebdavServerServiceProvider::class,
+            WebdavServerServiceProvider::class,
         ];
     }
 }
