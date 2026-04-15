@@ -1,6 +1,6 @@
 <?php
 
-namespace N3XT0R\LaravelWebdavServer;
+namespace N3XT0R\LaravelWebdavServer\Providers;
 
 use App\Policies\WebDavPathPolicy;
 use Illuminate\Container\Container as Application;
@@ -20,7 +20,7 @@ use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
-class LaravelWebdavServerServiceProvider extends PackageServiceProvider
+class WebdavServerServiceProvider extends PackageServiceProvider
 {
     public function configurePackage(Package $package): void
     {

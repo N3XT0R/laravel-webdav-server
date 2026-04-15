@@ -76,7 +76,7 @@
   "extra": {
     "laravel": {
       "providers": [
-        "N3XT0R\\LaravelWebdavServer\\LaravelWebdavServerServiceProvider"
+        "N3XT0R\\LaravelWebdavServer\\Providers\\WebdavServerServiceProvider"
       ]
     }
   },
