@@ -9,5 +9,5 @@ use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 
 interface SpaceResolverInterface
 {
-    public function resolve(WebDavPrincipal $principal): WebDavStorageSpace;
+    public function resolve(WebDavPrincipal $principal, string $spaceKey): WebDavStorageSpace;
 }

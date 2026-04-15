@@ -15,7 +15,7 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
         private Config $config,
     ) {}
 
-    public function resolve(WebDavPrincipal $principal): WebDavStorageSpace
+    public function resolve(WebDavPrincipal $principal, string $spaceKey): WebDavStorageSpace
     {
         $disk = (string) $this->config->get('webdav.storage.disk', 'local');
         $prefix = (string) $this->config->get('webdav.storage.prefix', 'webdav');
