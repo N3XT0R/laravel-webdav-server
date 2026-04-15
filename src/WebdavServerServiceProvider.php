@@ -33,7 +33,7 @@ class WebdavServerServiceProvider extends PackageServiceProvider
             ->name('laravel-webdav-server')
             ->hasConfigFile()
             ->hasViews()
-            ->hasMigration('create_laravel_webdav_server_table')
+            ->discoversMigrations()
             ->hasCommand(LaravelWebdavServerCommand::class);
     }
 
