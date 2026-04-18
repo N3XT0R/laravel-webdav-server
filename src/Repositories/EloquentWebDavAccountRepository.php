@@ -15,32 +15,33 @@ final readonly class EloquentWebDavAccountRepository implements WebDavAccountRep
 {
     public function __construct(
         private Config $config,
-    ) {}
+    ) {
+    }
 
     public function findEnabledByUsername(string $username): ?WebDavAccountInterface
     {
         $modelClass = $this->config->get('webdav.auth.account_model');
 
-        if (! is_string($modelClass) || ! is_subclass_of($modelClass, Model::class)) {
-            throw new RuntimeException('Invalid or missing webdav.auth.model configuration');
+        if (!is_string($modelClass) || !is_subclass_of($modelClass, Model::class)) {
+            throw new RuntimeException('Invalid or missing webdav.auth.account_model configuration');
         }
 
-        $usernameColumn = (string) $this->config->get('webdav.auth.username_column', 'username');
-        $passwordColumn = (string) $this->config->get('webdav.auth.password_column', 'password');
+        $usernameColumn = (string)$this->config->get('webdav.auth.username_column', 'username');
+        $passwordColumn = (string)$this->config->get('webdav.auth.password_column', 'password');
         $enabledColumn = $this->config->get('webdav.auth.enabled_column', 'enabled');
-        $principalIdColumn = (string) $this->config->get('webdav.auth.user_id_column', 'id');
-        $displayNameColumn = (string) $this->config->get('webdav.auth.display_name_column', $usernameColumn);
+        $principalIdColumn = (string)$this->config->get('webdav.auth.user_id_column', 'id');
+        $displayNameColumn = (string)$this->config->get('webdav.auth.display_name_column', $usernameColumn);
 
         /** @var Model|null $account */
         $account = $modelClass::query()
             ->where($usernameColumn, $username)
             ->when(
                 is_string($enabledColumn) && $enabledColumn !== '',
-                fn ($query) => $query->where($enabledColumn, true)
+                fn($query) => $query->where($enabledColumn, true)
             )
             ->first();
 
-        if (! $account) {
+        if (!$account) {
             return null;
         }
 
@@ -48,14 +49,14 @@ final readonly class EloquentWebDavAccountRepository implements WebDavAccountRep
         $displayName = $account->getAttribute($displayNameColumn);
         $passwordHash = $account->getAttribute($passwordColumn);
 
-        if (! is_scalar($principalId) || ! is_scalar($displayName) || ! is_scalar($passwordHash)) {
+        if (!is_scalar($principalId) || !is_scalar($displayName) || !is_scalar($passwordHash)) {
             throw new RuntimeException('WebDAV auth model returned invalid scalar attributes');
         }
 
         return new WebDavAccountRecordDto(
-            (string) $principalId,
-            (string) $displayName,
-            (string) $passwordHash,
+            (string)$principalId,
+            (string)$displayName,
+            (string)$passwordHash,
         );
     }
 }
