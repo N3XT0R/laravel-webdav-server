@@ -63,7 +63,7 @@ final readonly class WebDavServerFactory
         );
 
         $server = new Server($root);
-        $server->setBaseUri((string)config('webdav.base_uri', '/webdav/'));
+        $server->setBaseUri((string)config('webdav-server.base_uri', '/webdav/'));
 
         return $server;
     }
@@ -134,10 +134,12 @@ final readonly class WebDavServerFactory
             return trim($space);
         }
 
-        $defaultSpace = config('webdav.storage.default_space', 'default');
+        $defaultSpace = config('webdav-server.storage.default_space', 'default');
 
         if (!is_string($defaultSpace) || trim($defaultSpace) === '') {
-            throw new RuntimeException('Missing or invalid webdav.storage.default_space configuration.');
+            throw new RuntimeException(
+                'Missing or invalid webdav-server.storage.default_space configuration.'
+            );
         }
 
         return trim($defaultSpace);

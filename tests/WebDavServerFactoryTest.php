@@ -19,7 +19,7 @@ final class WebDavServerFactoryTest extends TestCase
 {
     public function test_it_uses_route_space_parameter_for_resolving_storage_space(): void
     {
-        config()->set('webdav.base_uri', '/webdav/');
+        config()->set('webdav-server.base_uri', '/webdav/');
 
         $principal = new WebDavPrincipal('42', 'Alice');
 
@@ -49,8 +49,8 @@ final class WebDavServerFactoryTest extends TestCase
 
     public function test_it_falls_back_to_default_space_when_route_space_is_missing(): void
     {
-        config()->set('webdav.base_uri', '/webdav/');
-        config()->set('webdav.storage.default_space', 'default');
+        config()->set('webdav-server.base_uri', '/webdav/');
+        config()->set('webdav-server.storage.default_space', 'default');
 
         $principal = new WebDavPrincipal('42', 'Alice');
 
@@ -89,9 +89,10 @@ final class WebDavServerFactoryTest extends TestCase
             ],
         );
 
-        $request->setRouteResolver(static fn () => new class($space)
-        {
-            public function __construct(private readonly ?string $space) {}
+        $request->setRouteResolver(static fn() => new class($space) {
+            public function __construct(private readonly ?string $space)
+            {
+            }
 
             public function parameter(string $key, mixed $default = null): mixed
             {

@@ -31,11 +31,11 @@ final class WebDavAccount extends Model
 
     public function user(): BelongsTo
     {
-        $model = config('webdav.auth.user_model');
+        $model = config('webdav-server.auth.user_model');
 
         if ($model === null) {
             throw new RuntimeException(
-                'No user model configured. Please set "webdav.auth.user_model" in your config.'
+                'No user model configured. Please set "webdav-server.auth.user_model" in your config.'
             );
         }
 

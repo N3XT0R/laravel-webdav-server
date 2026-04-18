@@ -36,8 +36,8 @@ final class WebDavPathPolicy
 
     private function isAllowed(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        $expectedDisk = (string) config('webdav.storage.disk', 'local');
-        $prefix = trim((string) config('webdav.storage.prefix', 'webdav'), '/');
+        $expectedDisk = (string)config('webdav-server.storage.disk', 'local');
+        $prefix = trim((string)config('webdav-server.storage.prefix', 'webdav'), '/');
         $path = trim($resource->path, '/');
 
         if ($resource->disk !== $expectedDisk) {
