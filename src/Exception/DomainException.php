@@ -7,7 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\Exception;
 abstract class DomainException extends \DomainException
 {
     public function __construct(
-        string $message = "",
+        string $message = '',
         int $code = 0,
         protected array $context = [],
         ?\Throwable $previous = null
