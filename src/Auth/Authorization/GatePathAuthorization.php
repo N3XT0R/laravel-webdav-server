@@ -14,7 +14,8 @@ final readonly class GatePathAuthorization implements PathAuthorizationInterface
 {
     public function __construct(
         private Gate $gate,
-    ) {}
+    ) {
+    }
 
     public function authorizeRead(WebDavPrincipal $principal, string $disk, string $path): void
     {
@@ -43,6 +44,15 @@ final readonly class GatePathAuthorization implements PathAuthorizationInterface
 
     private function authorize(WebDavPrincipal $principal, string $ability, string $disk, string $path): void
     {
+        logger()->error('GatePathAuthorization@authorize called', [
+            'ability' => $ability,
+            'disk' => $disk,
+            'path' => $path,
+            'user_class' => get_debug_type($principal->user),
+            'user_id' => method_exists($principal->user, 'getAuthIdentifier')
+                ? $principal->user->getAuthIdentifier()
+                : null,
+        ]);
         $resource = new WebDavPathResourceDto(
             disk: $disk,
             path: $path,
@@ -50,7 +60,7 @@ final readonly class GatePathAuthorization implements PathAuthorizationInterface
 
         $response = $this->gate->forUser($principal->user)->inspect($ability, $resource);
 
-        if (! $response->allowed()) {
+        if (!$response->allowed()) {
             throw new Forbidden($response->message() ?: 'Access denied.');
         }
     }

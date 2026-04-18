@@ -14,7 +14,8 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
     public function __construct(
         protected WebDavAccountRepositoryInterface $repository,
         protected Hasher $hasher,
-    ) {}
+    ) {
+    }
 
     public function validate(string $username, string $password): ?WebDavPrincipal
     {
@@ -24,13 +25,14 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
             return null;
         }
 
-        if (! $this->hasher->check($password, $account->getPasswordHash())) {
+        if (!$this->hasher->check($password, $account->getPasswordHash())) {
             return null;
         }
 
         return new WebDavPrincipal(
             $account->getPrincipalId(),
             $account->getDisplayName(),
+            $account->getUser()
         );
     }
 }

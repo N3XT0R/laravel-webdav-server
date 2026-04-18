@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Contracts\Auth;
 
+use Illuminate\Contracts\Auth\Authenticatable;
+
 interface WebDavAccountInterface
 {
     public function getPrincipalId(): string;
@@ -11,4 +13,6 @@ interface WebDavAccountInterface
     public function getDisplayName(): string;
 
     public function getPasswordHash(): string;
+
+    public function getUser(): ?Authenticatable;
 }
