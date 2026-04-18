@@ -13,12 +13,11 @@ final class WebDavController extends Controller
 {
     public function __construct(
         private readonly WebDavServerFactory $factory,
-    ) {
-    }
+    ) {}
 
     public function __invoke(Request $request): Response
     {
-        if (!$this->hasBasicAuthAttempt($request)) {
+        if (! $this->hasBasicAuthAttempt($request)) {
             return response('Unauthorized', Response::HTTP_UNAUTHORIZED, [
                 'WWW-Authenticate' => 'Basic realm="WebDAV"',
             ]);
