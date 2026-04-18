@@ -10,6 +10,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\MissingCredentialsException;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use RuntimeException;
@@ -89,7 +90,12 @@ final readonly class WebDavServerFactory
         $defaultSpace = config('webdav.storage.default_space', 'default');
 
         if (!is_string($defaultSpace) || trim($defaultSpace) === '') {
-            throw new RuntimeException('Missing or invalid webdav.storage.default_space configuration.');
+            throw new InvalidCredentialsException(
+                message: 'Invalid default space configuration.',
+                context: [
+                    'config' => config('webdav.storage.default_space'),
+                ],
+            );
         }
 
         return trim($defaultSpace);
