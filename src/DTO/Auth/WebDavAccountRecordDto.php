@@ -14,8 +14,7 @@ readonly class WebDavAccountRecordDto implements WebDavAccountInterface
         protected string $displayName,
         protected string $passwordHash,
         protected ?Authenticatable $user = null,
-    ) {
-    }
+    ) {}
 
     public function getPrincipalId(): string
     {
