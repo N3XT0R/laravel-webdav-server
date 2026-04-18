@@ -15,7 +15,7 @@ class WebDavAccountFactory extends Factory
     {
         return [
             'username' => $this->faker->userName(),
-            'password' => bcrypt('password'),
+            'password_encrypted' => bcrypt('password'),
             'enabled' => true,
             'user_id' => null,
             'display_name' => $this->faker->name(),
@@ -25,21 +25,21 @@ class WebDavAccountFactory extends Factory
 
     public function withUserName(string $username): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'username' => $username,
         ]);
     }
 
     public function withPassword(string $password): self
     {
-        return $this->state(fn (array $attributes) => [
-            'password' => bcrypt($password),
+        return $this->state(fn(array $attributes) => [
+            'password_encrypted' => bcrypt($password),
         ]);
     }
 
     public function withUserId(?int $userId): self
     {
-        return $this->state(fn (array $attributes) => [
+        return $this->state(fn(array $attributes) => [
             'user_id' => $userId,
         ]);
     }
