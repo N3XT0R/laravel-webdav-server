@@ -14,6 +14,7 @@ return [
             'default' => [
                 'disk' => 'local',
                 'root' => 'webdav',
+                'prefix' => '/',
             ],
         ],
         'disk' => 'local',
