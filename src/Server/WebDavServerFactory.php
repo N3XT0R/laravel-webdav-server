@@ -33,7 +33,19 @@ final readonly class WebDavServerFactory
         $principal = $this->validator->validate($username, $password);
 
         if ($principal === null) {
-            throw new RuntimeException('Invalid WebDAV credentials.');
+            throw new InvalidCredentialsException(
+                message: 'Invalid WebDAV credentials.',
+                context: [
+                    'request' => [
+                        'method' => $request->getMethod(),
+                        'uri' => $request->getRequestUri(),
+                        'user_agent' => $request->userAgent(),
+                    ],
+                    'auth' => [
+                        'username' => $username,
+                    ],
+                ],
+            );
         }
 
         $spaceKey = $this->resolveSpaceKey($request);
@@ -64,13 +76,52 @@ final readonly class WebDavServerFactory
         $username = $request->getUser();
         $password = $request->getPassword();
 
-        if (!is_string($username) || !is_string($password)) {
+        if (is_string($username) && is_string($password)) {
+            return [$username, $password];
+        }
+
+        $authorization = $request->headers->get('Authorization');
+
+        if (!is_string($authorization) || !str_starts_with($authorization, 'Basic ')) {
             throw new MissingCredentialsException(
                 message: 'Basic Auth credentials are required to access the WebDAV server.',
                 context: [
                     'request' => [
-                        'content' => $request->getContent(),
-                        'header' => $request->header(),
+                        'method' => $request->getMethod(),
+                        'uri' => $request->getRequestUri(),
+                        'user_agent' => $request->userAgent(),
+                        'headers' => $request->headers->all(),
+                    ],
+                ],
+            );
+        }
+
+        $encoded = substr($authorization, 6);
+        $decoded = base64_decode($encoded, true);
+
+        if (!is_string($decoded) || !str_contains($decoded, ':')) {
+            throw new InvalidCredentialsException(
+                message: 'Malformed Basic Auth header.',
+                context: [
+                    'request' => [
+                        'method' => $request->getMethod(),
+                        'uri' => $request->getRequestUri(),
+                        'user_agent' => $request->userAgent(),
+                    ],
+                ],
+            );
+        }
+
+        [$username, $password] = explode(':', $decoded, 2);
+
+        if ($username === '' || $password === '') {
+            throw new InvalidCredentialsException(
+                message: 'Incomplete Basic Auth credentials.',
+                context: [
+                    'request' => [
+                        'method' => $request->getMethod(),
+                        'uri' => $request->getRequestUri(),
+                        'user_agent' => $request->userAgent(),
                     ],
                 ],
             );
@@ -90,12 +141,7 @@ final readonly class WebDavServerFactory
         $defaultSpace = config('webdav.storage.default_space', 'default');
 
         if (!is_string($defaultSpace) || trim($defaultSpace) === '') {
-            throw new InvalidCredentialsException(
-                message: 'Invalid default space configuration.',
-                context: [
-                    'config' => config('webdav.storage.default_space'),
-                ],
-            );
+            throw new RuntimeException('Missing or invalid webdav.storage.default_space configuration.');
         }
 
         return trim($defaultSpace);
