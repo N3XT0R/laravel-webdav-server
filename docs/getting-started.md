@@ -74,7 +74,7 @@ class WebDavPathPolicy
 
 The package uses **independent Basic Auth**, not Laravel's `auth()` middleware:
 
-- Credentials are validated against `webdav.auth.account_model` table.
+- Credentials are validated against `webdav-server.auth.account_model` table.
 - Username/password columns are configurable.
 - This is **not** dependent on Laravel session/guard auth.
 - The authenticated user is represented as `WebDavPrincipal` (id, displayName, user relation).

@@ -1,13 +1,14 @@
 # Authentication & Authorization
 
-This document explains how authentication and authorization work in the package, with practical examples for common use cases.
+This document explains how authentication and authorization work in the package, with practical examples for common use
+cases.
 
 ## Authentication Overview
 
 The package uses **independent Basic Auth**, validated by `CredentialValidatorInterface`.
 
 - Credentials are **not** validated against Laravel's `auth()` guard.
-- Username/password come from the `webdav.auth.account_model` table.
+- Username/password come from the `webdav-server.auth.account_model` table.
 - On successful validation, a `WebDavPrincipal` is returned (containing id, displayName, and optional user relation).
 
 ---

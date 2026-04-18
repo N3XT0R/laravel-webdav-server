@@ -9,7 +9,8 @@ This document corrects common misconceptions about the package based on its actu
 Instead, user isolation happens via:
 
 - **`SpaceResolverInterface::resolve($principal, $spaceKey)`**: Resolves storage space dynamically at runtime.
-- **Default implementation** (`DefaultSpaceResolver`): Returns a `WebDavStorageSpace` with a path that includes `$principal->id`:
+- **Default implementation** (`DefaultSpaceResolver`): Returns a `WebDavStorageSpace` with a path that includes
+  `$principal->id`:
 
 ```php
 // In DefaultSpaceResolver
@@ -19,7 +20,8 @@ return new WebDavStorageSpace(
 );
 ```
 
-So if `principal->id` is `42` and `config('webdav.storage.spaces.default.root')` is `webdav`, the resolved root is `webdav/42`.
+So if `principal->id` is `42` and `config('webdav.storage.spaces.default.root')` is `webdav`, the resolved root is
+`webdav/42`.
 
 ---
 
@@ -51,7 +53,8 @@ class WebDavPathPolicy
 }
 ```
 
-**Limitation:** WebDAV clients (Windows Explorer, Finder) typically expect full read/write permissions for the mounted directory. Fine-grained per-file authorization is not ideal for WebDAV.
+**Limitation:** WebDAV clients (Windows Explorer, Finder) typically expect full read/write permissions for the mounted
+directory. Fine-grained per-file authorization is not ideal for WebDAV.
 
 ---
 
@@ -106,13 +109,13 @@ $app->bind(SpaceResolverInterface::class, RestrictedSpaceResolver::class);
 
 All five abilities are checked at the right times:
 
-| Ability           | Operation        |
-|-------------------|------------------|
-| `read`            | PROPFIND, GET    |
-| `write`           | PUT (overwrite)  |
-| `delete`          | DELETE           |
-| `createDirectory` | MKCOL            |
-| `createFile`      | PUT (new file)   |
+| Ability           | Operation       |
+|-------------------|-----------------|
+| `read`            | PROPFIND, GET   |
+| `write`           | PUT (overwrite) |
+| `delete`          | DELETE          |
+| `createDirectory` | MKCOL           |
+| `createFile`      | PUT (new file)  |
 
 If a policy denies access, a `Sabre\DAV\Exception\Forbidden` is thrown and the WebDAV client receives a 403 error.
 
@@ -133,22 +136,23 @@ public function delete(Authenticatable $user, WebDavPathResourceDto $resource): 
 
 ## Q: How do I link a WebDAV account to a Laravel user?
 
-**A: Set `webdav.auth.user_model` in config and use the `user_id` column.**
+**A: Set `webdav-server.auth.user_model` in config and use the `user_id` column.**
 
-See [docs/authentication.md](authentication.md#linking-webdav-accounts-to-laravel-users) for full details and code examples.
+See [docs/authentication.md](authentication.md#linking-webdav-accounts-to-laravel-users) for full details and code
+examples.
 
 ---
 
 ## Q: What's the difference between this package and `monicahq/laravel-sabre`?
 
-| Feature | n3xt0r/laravel-webdav-server | monicahq/laravel-sabre |
-|---------|-------------------------------|----------------------|
-| **Focus** | WebDAV (files) only | Full SabreDAV (WebDAV, CalDAV, CardDAV) |
-| **Setup** | Config-based (simple) | Code-based (complex) |
-| **Laravel Filesystem** | Native integration | Manual node mapping |
-| **User isolation** | Built-in via `SpaceResolverInterface` | Manual per-request logic |
-| **Policies** | Per-path checks | Per-node checks |
-| **Extensibility** | Contracts (bindIf) | Direct plugin API |
+| Feature                | n3xt0r/laravel-webdav-server          | monicahq/laravel-sabre                  |
+|------------------------|---------------------------------------|-----------------------------------------|
+| **Focus**              | WebDAV (files) only                   | Full SabreDAV (WebDAV, CalDAV, CardDAV) |
+| **Setup**              | Config-based (simple)                 | Code-based (complex)                    |
+| **Laravel Filesystem** | Native integration                    | Manual node mapping                     |
+| **User isolation**     | Built-in via `SpaceResolverInterface` | Manual per-request logic                |
+| **Policies**           | Per-path checks                       | Per-node checks                         |
+| **Extensibility**      | Contracts (bindIf)                    | Direct plugin API                       |
 
 **Choose n3xt0r if:** You want a quick WebDAV server for file sharing with minimal setup.
 

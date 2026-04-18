@@ -42,7 +42,7 @@ All implementations are bound with `bindIf()` – override any of these in your 
 `DefaultSpaceResolver` maps `principal.id` → `webdav.storage.prefix/{id}` on `webdav.storage.disk`.
 
 ---
- 
+
 ## Authorization (Policies)
 
 `GatePathAuthorization` calls `Gate::forUser($principal->user)->inspect($ability, $resource)`.  
@@ -60,8 +60,8 @@ The service provider auto-registers `App\Policies\WebDavPathPolicy` – ensure t
 Config file: `config/webdav-server.php` (publish with `--tag="laravel-webdav-server-config"`).  
 Accessed in code under the `webdav.*` key (e.g. `webdav.storage.disk`, `webdav.base_uri`).
 
-`webdav.auth.model` **must** be set to a concrete Eloquent model class for the default `EloquentWebDavAccountRepository`
-to work.
+`webdav-server.auth.model` **must** be set to a concrete Eloquent model class for the default
+`EloquentWebDavAccountRepository` to work.
 
 ---
 
