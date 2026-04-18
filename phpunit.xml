@@ -16,8 +16,8 @@
         backupStaticProperties="false"
 >
     <testsuites>
-        <testsuite name="N3XT0R Test Suite">
-            <directory>tests</directory>
+        <testsuite name="Unit Tests">
+            <directory>tests/Unit/</directory>
         </testsuite>
     </testsuites>
     <coverage>

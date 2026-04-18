@@ -1,6 +1,6 @@
 <?php
 
-namespace N3XT0R\LaravelWebdavServer\Tests;
+namespace N3XT0R\LaravelWebdavServer\Tests\Unit;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
@@ -16,9 +16,9 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            static fn (string $modelName) => 'N3XT0R\\LaravelWebdavServer\\Database\\Factories\\'.class_basename(
-                $modelName
-            ).'Factory'
+            static fn(string $modelName) => 'N3XT0R\\LaravelWebdavServer\\Database\\Factories\\'.class_basename(
+                    $modelName
+                ).'Factory'
         );
     }
 

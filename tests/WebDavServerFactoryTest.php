@@ -11,6 +11,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpace;
+use N3XT0R\LaravelWebdavServer\Tests\Unit\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 use Sabre\DAV\Server;
 
@@ -88,9 +89,10 @@ final class WebDavServerFactoryTest extends TestCase
             ],
         );
 
-        $request->setRouteResolver(static fn () => new class($space)
-        {
-            public function __construct(private readonly ?string $space) {}
+        $request->setRouteResolver(static fn() => new class($space) {
+            public function __construct(private readonly ?string $space)
+            {
+            }
 
             public function parameter(string $key, mixed $default = null): mixed
             {
