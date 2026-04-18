@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\DTO\Auth;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\WebDavAccountInterface;
 
 readonly class WebDavAccountRecordDto implements WebDavAccountInterface
@@ -12,7 +13,9 @@ readonly class WebDavAccountRecordDto implements WebDavAccountInterface
         protected string $principalId,
         protected string $displayName,
         protected string $passwordHash,
-    ) {}
+        protected ?Authenticatable $user = null,
+    ) {
+    }
 
     public function getPrincipalId(): string
     {
@@ -27,5 +30,10 @@ readonly class WebDavAccountRecordDto implements WebDavAccountInterface
     public function getPasswordHash(): string
     {
         return $this->passwordHash;
+    }
+
+    public function getUser(): ?Authenticatable
+    {
+        return $this->user;
     }
 }
