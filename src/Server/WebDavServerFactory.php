@@ -89,15 +89,13 @@ final readonly class WebDavServerFactory
                     'request' => [
                         'method' => $request->getMethod(),
                         'uri' => $request->getRequestUri(),
-                        'user_agent' => $request->userAgent(),
                         'headers' => $request->headers->all(),
                     ],
                 ],
             );
         }
 
-        $encoded = substr($authorization, 6);
-        $decoded = base64_decode($encoded, true);
+        $decoded = base64_decode(substr($authorization, 6), true);
 
         if (!is_string($decoded) || !str_contains($decoded, ':')) {
             throw new InvalidCredentialsException(
@@ -106,7 +104,6 @@ final readonly class WebDavServerFactory
                     'request' => [
                         'method' => $request->getMethod(),
                         'uri' => $request->getRequestUri(),
-                        'user_agent' => $request->userAgent(),
                     ],
                 ],
             );
@@ -121,7 +118,6 @@ final readonly class WebDavServerFactory
                     'request' => [
                         'method' => $request->getMethod(),
                         'uri' => $request->getRequestUri(),
-                        'user_agent' => $request->userAgent(),
                     ],
                 ],
             );
