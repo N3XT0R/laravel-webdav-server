@@ -25,23 +25,22 @@ class WebDavAccountFactory extends Factory
 
     public function withUserName(string $username): self
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'username' => $username,
         ]);
     }
 
     public function withPassword(string $password): self
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'password' => bcrypt($password),
         ]);
     }
 
     public function withUserId(?int $userId): self
     {
-        return $this->state(fn(array $attributes) => [
+        return $this->state(fn (array $attributes) => [
             'user_id' => $userId,
         ]);
     }
-
 }

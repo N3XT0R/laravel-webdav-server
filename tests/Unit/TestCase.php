@@ -16,9 +16,9 @@ class TestCase extends Orchestra
         parent::setUp();
 
         Factory::guessFactoryNamesUsing(
-            static fn(string $modelName) => 'N3XT0R\\LaravelWebdavServer\\Database\\Factories\\'.class_basename(
-                    $modelName
-                ).'Factory'
+            static fn (string $modelName) => 'N3XT0R\\LaravelWebdavServer\\Database\\Factories\\'.class_basename(
+                $modelName
+            ).'Factory'
         );
     }
 

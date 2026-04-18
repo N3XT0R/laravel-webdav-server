@@ -21,7 +21,7 @@ class DatabaseSeeder extends Seeder
         $factory = UserFactory::new();
         $webdavAccountFactory = WebDavAccount::factory()
             ->withUserName('testuser');
-        
+
         if (app()->runningInConsole()) {
             $factory->withPassword($password);
             $webdavAccountFactory->withPassword($password);
