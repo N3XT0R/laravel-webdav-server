@@ -6,7 +6,6 @@ namespace N3XT0R\LaravelWebdavServer\Tests;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Foundation\Testing\LazilyRefreshDatabase;
-use N3XT0R\LaravelWebdavServer\Tests\Unit\TestCase;
 use Orchestra\Testbench\Attributes\WithMigration;
 use Workbench\App\Models\User;
 
@@ -17,6 +16,7 @@ class DatabaseTestCase extends TestCase
 
     protected function defineEnvironment($app): void
     {
+        parent::defineEnvironment($app);
         $config = $app->make(Repository::class);
 
         $config->set([
