@@ -3,6 +3,7 @@
 namespace Workbench\App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Workbench\App\Models\User;
 
 class WorkbenchServiceProvider extends ServiceProvider
 {
@@ -11,7 +12,6 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
     }
 
     /**
@@ -19,6 +19,6 @@ class WorkbenchServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        $this->app['config']->set('webdav-server.auth.user_model', User::class);
     }
 }
