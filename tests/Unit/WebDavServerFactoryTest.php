@@ -89,10 +89,9 @@ final class WebDavServerFactoryTest extends TestCase
             ],
         );
 
-        $request->setRouteResolver(static fn() => new class($space) {
-            public function __construct(private readonly ?string $space)
-            {
-            }
+        $request->setRouteResolver(static fn () => new class($space)
+        {
+            public function __construct(private readonly ?string $space) {}
 
             public function parameter(string $key, mixed $default = null): mixed
             {
