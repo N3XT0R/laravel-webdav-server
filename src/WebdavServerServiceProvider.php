@@ -84,10 +84,10 @@ class WebdavServerServiceProvider extends PackageServiceProvider
 
     private function registerCsrfException(): void
     {
-        $routePrefix = trim((string) config('webdav.route_prefix', ''), '/');
+        $routePrefix = trim((string)config('webdav.route_prefix', ''), '/');
 
         if ($routePrefix === '') {
-            $routePrefix = trim((string) config('webdav.base_uri', ''), '/');
+            $routePrefix = trim((string)config('webdav.base_uri', ''), '/');
         }
 
         if ($routePrefix === '') {
