@@ -10,6 +10,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\MissingCredentialsException;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use RuntimeException;
 use Sabre\DAV\Server;
@@ -63,11 +64,15 @@ final readonly class WebDavServerFactory
         $password = $request->getPassword();
 
         if (!is_string($username) || !is_string($password)) {
-            logger()->debug('auth', [
-                'content' => $request->getContent(),
-                'header' => $request->header(),
-            ]);
-            throw new RuntimeException('Missing Basic Auth credentials.');
+            throw new MissingCredentialsException(
+                message: 'Basic Auth credentials are required to access the WebDAV server.',
+                context: [
+                    'request' => [
+                        'content' => $request->getContent(),
+                        'header' => $request->header(),
+                    ],
+                ],
+            );
         }
 
         return [$username, $password];
