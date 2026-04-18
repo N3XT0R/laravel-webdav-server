@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Database\Factories\UserFactory;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use N3XT0R\LaravelWebdavServer\Database\Factories\WebDavAccountFactory;
 use N3XT0R\LaravelWebdavServer\Models\WebDavAccount;
 
 class DatabaseSeeder extends Seeder
@@ -19,7 +20,7 @@ class DatabaseSeeder extends Seeder
         $password = 'password';
 
         $factory = UserFactory::new();
-        $webdavAccountFactory = WebDavAccount::factory()
+        $webdavAccountFactory = WebDavAccountFactory::new()
             ->withUserName('testuser');
 
         if (app()->runningInConsole()) {
