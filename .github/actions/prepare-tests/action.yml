@@ -5,18 +5,23 @@ inputs:
   php-version:
     required: true
     description: "PHP version to set up"
+    type: string
   laravel:
     required: true
     description: "Laravel framework version to install"
+    type: string
   testbench:
     required: true
     description: "Orchestra Testbench version to install"
+    type: string
   carbon:
     required: true
     description: "Nesbot Carbon version to install"
+    type: string
   stability:
     required: true
     description: "Composer stability flag (e.g., prefer-stable, prefer-lowest)"
+    type: string
 
 runs:
   using: "composite"

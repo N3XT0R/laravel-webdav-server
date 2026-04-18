@@ -5,12 +5,15 @@ inputs:
   artifact-name:
     description: Name of the uploaded coverage artifact
     required: true
+    type: string
   coverage-file:
     description: Path to the coverage file
     required: true
+    type: string
   qlty-token:
     description: Qlty coverage token
     required: true
+    type: string
 
 runs:
   using: "composite"
