@@ -20,17 +20,17 @@ final readonly class EloquentWebDavAccountRepository implements WebDavAccountRep
 
     public function findEnabledByUsername(string $username): ?WebDavAccountInterface
     {
-        $modelClass = $this->config->get('webdav.auth.account_model');
+        $modelClass = $this->config->get('webdav-server.auth.account_model');
 
         if (!is_string($modelClass) || !is_subclass_of($modelClass, Model::class)) {
-            throw new RuntimeException('Invalid or missing webdav.auth.account_model configuration');
+            throw new RuntimeException('Invalid or missing webdav-server.auth.account_model configuration');
         }
 
-        $usernameColumn = (string)$this->config->get('webdav.auth.username_column', 'username');
-        $passwordColumn = (string)$this->config->get('webdav.auth.password_column', 'password');
-        $enabledColumn = $this->config->get('webdav.auth.enabled_column', 'enabled');
-        $principalIdColumn = (string)$this->config->get('webdav.auth.user_id_column', 'id');
-        $displayNameColumn = (string)$this->config->get('webdav.auth.display_name_column', $usernameColumn);
+        $usernameColumn = (string)$this->config->get('webdav-server.auth.username_column', 'username');
+        $passwordColumn = (string)$this->config->get('webdav-server.auth.password_column', 'password');
+        $enabledColumn = $this->config->get('webdav-server.auth.enabled_column', 'enabled');
+        $principalIdColumn = (string)$this->config->get('webdav-server.auth.user_id_column', 'id');
+        $displayNameColumn = (string)$this->config->get('webdav-server.auth.display_name_column', $usernameColumn);
 
         /** @var Model|null $account */
         $account = $modelClass::query()
