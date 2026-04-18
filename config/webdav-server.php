@@ -29,6 +29,6 @@ return [
         'enabled_column' => 'enabled',
 
         'user_id_column' => 'user_id',
-        'display_name_column' => 'username',
+        'display_name_column' => 'display_name',
     ],
 ];
