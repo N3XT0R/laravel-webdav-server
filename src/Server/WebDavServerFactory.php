@@ -21,7 +21,8 @@ final readonly class WebDavServerFactory
         private SpaceResolverInterface $spaceResolver,
         private PathAuthorizationInterface $authorization,
         private FilesystemManager $filesystem,
-    ) {}
+    ) {
+    }
 
     public function make(Request $request): Server
     {
@@ -48,7 +49,7 @@ final readonly class WebDavServerFactory
         );
 
         $server = new Server($root);
-        $server->setBaseUri((string) config('webdav.base_uri', '/webdav/'));
+        $server->setBaseUri((string)config('webdav.base_uri', '/webdav/'));
 
         return $server;
     }
@@ -61,7 +62,11 @@ final readonly class WebDavServerFactory
         $username = $request->getUser();
         $password = $request->getPassword();
 
-        if (! is_string($username) || ! is_string($password)) {
+        if (!is_string($username) || !is_string($password)) {
+            logger()->debug('auth', [
+                'content' => $request->getContent(),
+                'header' => $request->header(),
+            ]);
             throw new RuntimeException('Missing Basic Auth credentials.');
         }
 
@@ -78,7 +83,7 @@ final readonly class WebDavServerFactory
 
         $defaultSpace = config('webdav.storage.default_space', 'default');
 
-        if (! is_string($defaultSpace) || trim($defaultSpace) === '') {
+        if (!is_string($defaultSpace) || trim($defaultSpace) === '') {
             throw new RuntimeException('Missing or invalid webdav.storage.default_space configuration.');
         }
 
