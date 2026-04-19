@@ -33,5 +33,3 @@ final readonly class ValidatorPrincipalAuthenticator implements PrincipalAuthent
         return $principal;
     }
 }
-
-

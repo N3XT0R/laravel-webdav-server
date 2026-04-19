@@ -16,8 +16,7 @@ final readonly class WebDavServerFactory
         private RequestContextResolverInterface $requestContextResolver,
         private StorageRootBuilderInterface $storageRootBuilder,
         private ServerConfiguratorInterface $serverConfigurator,
-    ) {
-    }
+    ) {}
 
     public function make(Request $request): Server
     {
@@ -31,4 +30,3 @@ final readonly class WebDavServerFactory
         return $server;
     }
 }
-

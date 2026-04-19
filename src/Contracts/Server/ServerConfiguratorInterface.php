@@ -10,4 +10,3 @@ interface ServerConfiguratorInterface
 {
     public function configure(Server $server, string $spaceKey): void;
 }
-

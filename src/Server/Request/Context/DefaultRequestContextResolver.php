@@ -36,5 +36,3 @@ final readonly class DefaultRequestContextResolver implements RequestContextReso
         );
     }
 }
-
-

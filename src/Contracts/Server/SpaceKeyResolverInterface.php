@@ -10,4 +10,3 @@ interface SpaceKeyResolverInterface
 {
     public function resolve(Request $request): string;
 }
-

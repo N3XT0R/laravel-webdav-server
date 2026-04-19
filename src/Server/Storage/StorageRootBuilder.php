@@ -33,5 +33,3 @@ final readonly class StorageRootBuilder implements StorageRootBuilderInterface
         );
     }
 }
-
-

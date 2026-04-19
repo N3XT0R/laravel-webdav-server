@@ -13,4 +13,3 @@ interface RequestCredentialsExtractorInterface
      */
     public function extract(Request $request): array;
 }
-

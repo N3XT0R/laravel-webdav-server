@@ -10,4 +10,3 @@ interface PrincipalAuthenticatorInterface
 {
     public function authenticate(string $username, string $password): WebDavPrincipal;
 }
-

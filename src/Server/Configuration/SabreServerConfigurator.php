@@ -18,5 +18,3 @@ final readonly class SabreServerConfigurator implements ServerConfiguratorInterf
         $server->setLogger(app('log'));
     }
 }
-
-

@@ -69,5 +69,3 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
         return [$username, $password];
     }
 }
-
-

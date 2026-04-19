@@ -12,4 +12,3 @@ interface StorageRootBuilderInterface
 {
     public function build(WebDavPrincipal $principal, WebDavStorageSpace $space): StorageRootCollection;
 }
-

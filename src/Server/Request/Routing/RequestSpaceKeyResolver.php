@@ -29,5 +29,3 @@ final readonly class RequestSpaceKeyResolver implements SpaceKeyResolverInterfac
         return trim($defaultSpace);
     }
 }
-
-

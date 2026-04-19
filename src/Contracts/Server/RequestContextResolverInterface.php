@@ -11,4 +11,3 @@ interface RequestContextResolverInterface
 {
     public function resolve(Request $request): WebDavRequestContextDto;
 }
-
