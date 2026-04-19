@@ -134,6 +134,20 @@ public function delete(Authenticatable $user, WebDavPathResourceDto $resource): 
 
 ---
 
+## Q: Why not call `Server::start()` directly in `WebDavController`?
+
+**A: Runtime execution is intentionally delegated via `ServerRunnerInterface`.**
+
+`WebDavController` stays focused on request orchestration (auth attempt check + server creation), while runtime
+execution is handled by a dedicated runner.
+
+- Default implementation: `SabreServerRunner`
+- Default behavior: call `Server::start()` and terminate the request lifecycle
+
+This keeps the successful request flow testable in Feature tests without changing SabreDAV runtime behavior.
+
+---
+
 ## Q: How do I link a WebDAV account to a Laravel user?
 
 **A: Set `webdav-server.auth.user_model` in config and use the `user_id` column.**
