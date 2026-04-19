@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
+use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
 use Symfony\Component\HttpFoundation\Response;
 
 final class WebDavController extends Controller

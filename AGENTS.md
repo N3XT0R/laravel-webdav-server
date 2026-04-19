@@ -23,7 +23,7 @@ HTTP Request (Basic Auth)
               → Laravel Filesystem (Flysystem disk)
 ```
 
-Key files: `src/Server/WebDavServerFactory.php`, `src/Nodes/StorageRootCollection.php`,
+Key files: `src/Server/Factory/WebDavServerFactory.php`, `src/Nodes/StorageRootCollection.php`,
 `src/Http/Controllers/WebDavController.php`.
 
 ---
@@ -109,4 +109,3 @@ src/DTO/Auth/         – WebDavPathResourceDto, WebDavAccountRecordDto
 workbench/            – Full Laravel app used for local development
 config/webdav-server.php – Package configuration stub
 ```
-

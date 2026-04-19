@@ -3,7 +3,6 @@
 namespace N3XT0R\LaravelWebdavServer;
 
 use Illuminate\Container\Container as Application;
-use Illuminate\Contracts\Filesystem\Factory;
 use Illuminate\Support\Facades\Gate;
 use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
 use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
@@ -21,13 +20,13 @@ use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
 use N3XT0R\LaravelWebdavServer\Policies\WebDavPathPolicy;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
-use N3XT0R\LaravelWebdavServer\Server\DefaultRequestContextResolver;
-use N3XT0R\LaravelWebdavServer\Server\RequestBasicCredentialsExtractor;
-use N3XT0R\LaravelWebdavServer\Server\RequestSpaceKeyResolver;
-use N3XT0R\LaravelWebdavServer\Server\SabreServerConfigurator;
-use N3XT0R\LaravelWebdavServer\Server\StorageRootBuilder;
-use N3XT0R\LaravelWebdavServer\Server\ValidatorPrincipalAuthenticator;
-use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
+use N3XT0R\LaravelWebdavServer\Server\Auth\ValidatorPrincipalAuthenticator;
+use N3XT0R\LaravelWebdavServer\Server\Configuration\SabreServerConfigurator;
+use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
+use N3XT0R\LaravelWebdavServer\Server\Request\Auth\RequestBasicCredentialsExtractor;
+use N3XT0R\LaravelWebdavServer\Server\Request\Context\DefaultRequestContextResolver;
+use N3XT0R\LaravelWebdavServer\Server\Request\Routing\RequestSpaceKeyResolver;
+use N3XT0R\LaravelWebdavServer\Server\Storage\StorageRootBuilder;
 use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;

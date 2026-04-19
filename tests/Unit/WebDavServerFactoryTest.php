@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Unit;
 
-use Illuminate\Http\Request;
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
+use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerConfiguratorInterface;
@@ -13,7 +13,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Server\WebDavRequestContextDto;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
-use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
+use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpace;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;

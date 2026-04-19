@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
 
 use Illuminate\Http\Request;
-use N3XT0R\LaravelWebdavServer\Server\RequestSpaceKeyResolver;
+use N3XT0R\LaravelWebdavServer\Server\Request\Routing\RequestSpaceKeyResolver;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 
 final class RequestSpaceKeyResolverTest extends TestCase
@@ -36,4 +36,3 @@ final class RequestSpaceKeyResolverTest extends TestCase
         $this->assertSame('default', $resolver->resolve($request));
     }
 }
-

@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
 
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\MissingCredentialsException;
-use N3XT0R\LaravelWebdavServer\Server\RequestBasicCredentialsExtractor;
+use N3XT0R\LaravelWebdavServer\Server\Request\Auth\RequestBasicCredentialsExtractor;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 
 final class RequestBasicCredentialsExtractorTest extends TestCase
@@ -33,4 +33,3 @@ final class RequestBasicCredentialsExtractorTest extends TestCase
         $extractor->extract($request);
     }
 }
-

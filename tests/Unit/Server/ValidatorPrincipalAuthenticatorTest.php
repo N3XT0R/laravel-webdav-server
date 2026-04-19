@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;
-use N3XT0R\LaravelWebdavServer\Server\ValidatorPrincipalAuthenticator;
+use N3XT0R\LaravelWebdavServer\Server\Auth\ValidatorPrincipalAuthenticator;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 
@@ -41,4 +41,3 @@ final class ValidatorPrincipalAuthenticatorTest extends TestCase
         $authenticator->authenticate('alice', 'wrong');
     }
 }
-
