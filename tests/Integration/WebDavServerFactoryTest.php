@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Tests\Unit;
+namespace N3XT0R\LaravelWebdavServer\Tests\Integration;
 
 use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
 use Illuminate\Http\Request;

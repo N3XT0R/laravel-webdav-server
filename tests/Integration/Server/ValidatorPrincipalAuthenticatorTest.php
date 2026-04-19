@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
+namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Server;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;

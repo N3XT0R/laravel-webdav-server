@@ -16,6 +16,12 @@
         backupStaticProperties="false"
 >
     <testsuites>
+        <testsuite name="Feature Tests">
+            <directory>tests/Feature/</directory>
+        </testsuite>
+        <testsuite name="Integration Tests">
+            <directory>tests/Integration/</directory>
+        </testsuite>
         <testsuite name="Unit Tests">
             <directory>tests/Unit/</directory>
         </testsuite>

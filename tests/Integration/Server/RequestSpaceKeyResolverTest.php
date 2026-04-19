@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
+namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Server;
 
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Server\Request\Routing\RequestSpaceKeyResolver;
@@ -15,8 +15,7 @@ final class RequestSpaceKeyResolverTest extends TestCase
         $resolver = new RequestSpaceKeyResolver;
         $request = Request::create('/webdav', 'PROPFIND');
 
-        $request->setRouteResolver(static fn () => new class
-        {
+        $request->setRouteResolver(static fn() => new class {
             public function parameter(string $key, mixed $default = null): mixed
             {
                 return $key === 'space' ? 'team-a' : $default;

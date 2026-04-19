@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
+namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Server;
 
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\MissingCredentialsException;
