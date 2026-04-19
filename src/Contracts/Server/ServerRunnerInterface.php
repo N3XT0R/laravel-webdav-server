@@ -11,4 +11,3 @@ interface ServerRunnerInterface
 {
     public function run(Server $server): Response;
 }
-

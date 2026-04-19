@@ -17,4 +17,3 @@ final readonly class SabreServerRunner implements ServerRunnerInterface
         exit;
     }
 }
-
