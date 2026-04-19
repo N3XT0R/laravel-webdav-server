@@ -2,32 +2,11 @@
 
 namespace N3XT0R\LaravelWebdavServer;
 
-use Illuminate\Container\Container as Application;
 use Illuminate\Support\Facades\Gate;
-use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
-use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Server\PrincipalAuthenticatorInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestCredentialsExtractorInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerConfiguratorInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Server\SpaceKeyResolverInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
 use N3XT0R\LaravelWebdavServer\Policies\WebDavPathPolicy;
-use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
-use N3XT0R\LaravelWebdavServer\Server\Auth\ValidatorPrincipalAuthenticator;
-use N3XT0R\LaravelWebdavServer\Server\Configuration\SabreServerConfigurator;
-use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
-use N3XT0R\LaravelWebdavServer\Server\Request\Auth\RequestBasicCredentialsExtractor;
-use N3XT0R\LaravelWebdavServer\Server\Request\Context\DefaultRequestContextResolver;
-use N3XT0R\LaravelWebdavServer\Server\Request\Routing\RequestSpaceKeyResolver;
-use N3XT0R\LaravelWebdavServer\Server\Storage\StorageRootBuilder;
-use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
+use N3XT0R\LaravelWebdavServer\Providers\Registers\WebDavRegisterFactory;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
 
@@ -55,63 +34,7 @@ class WebdavServerServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        $this->app->bindIf(
-            WebDavAccountRepositoryInterface::class,
-            EloquentWebDavAccountRepository::class,
-        );
-
-        $this->app->bindIf(
-            CredentialValidatorInterface::class,
-            DatabaseCredentialValidator::class,
-        );
-
-        $this->app->bindIf(
-            SpaceResolverInterface::class,
-            DefaultSpaceResolver::class,
-        );
-
-        $this->app->bindIf(
-            PathAuthorizationInterface::class,
-            GatePathAuthorization::class,
-        );
-
-        $this->app->bindIf(
-            RequestCredentialsExtractorInterface::class,
-            RequestBasicCredentialsExtractor::class,
-        );
-
-        $this->app->bindIf(
-            PrincipalAuthenticatorInterface::class,
-            ValidatorPrincipalAuthenticator::class,
-        );
-
-        $this->app->bindIf(
-            SpaceKeyResolverInterface::class,
-            RequestSpaceKeyResolver::class,
-        );
-
-        $this->app->bindIf(
-            RequestContextResolverInterface::class,
-            DefaultRequestContextResolver::class,
-        );
-
-        $this->app->bindIf(
-            StorageRootBuilderInterface::class,
-            StorageRootBuilder::class,
-        );
-
-        $this->app->bindIf(
-            ServerConfiguratorInterface::class,
-            SabreServerConfigurator::class,
-        );
-
-        $this->app->scopedIf(WebDavServerFactory::class, function (Application $app): WebDavServerFactory {
-            return new WebDavServerFactory(
-                requestContextResolver: $app->make(RequestContextResolverInterface::class),
-                storageRootBuilder: $app->make(StorageRootBuilderInterface::class),
-                serverConfigurator: $app->make(ServerConfiguratorInterface::class),
-            );
-        });
+        new WebDavRegisterFactory($this->app)->registerAll();
     }
 
     public function packageBooted(): void
@@ -124,10 +47,10 @@ class WebdavServerServiceProvider extends PackageServiceProvider
 
     private function registerCsrfException(): void
     {
-        $routePrefix = trim((string) config('webdav-server.route_prefix', ''), '/');
+        $routePrefix = trim((string)config('webdav-server.route_prefix', ''), '/');
 
         if ($routePrefix === '') {
-            $routePrefix = trim((string) config('webdav-server.base_uri', ''), '/');
+            $routePrefix = trim((string)config('webdav-server.base_uri', ''), '/');
         }
 
         if ($routePrefix === '') {
