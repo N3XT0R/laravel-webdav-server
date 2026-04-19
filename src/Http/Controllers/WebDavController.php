@@ -6,6 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerRunnerInterface;
 use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -13,6 +14,7 @@ final class WebDavController extends Controller
 {
     public function __construct(
         private readonly WebDavServerFactory $factory,
+        private readonly ServerRunnerInterface $serverRunner,
     ) {}
 
     public function __invoke(Request $request): Response
@@ -22,9 +24,10 @@ final class WebDavController extends Controller
                 'WWW-Authenticate' => 'Basic realm="WebDAV"',
             ]);
         }
+
         $server = $this->factory->make($request);
-        $server->start();
-        exit;
+
+        return $this->serverRunner->run($server);
     }
 
     private function hasBasicAuthAttempt(Request $request): bool
