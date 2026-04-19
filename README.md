@@ -30,7 +30,7 @@ Flysystem disk through the WebDAV protocol.
 | Flysystem client disk `Storage::disk('webdav')` | **Not provided**                                                  |
 | Config file                                     | `config/webdav-server.php`                                        |
 | Config publish command                          | `php artisan vendor:publish --tag="laravel-webdav-server-config"` |
-| Default route shape                             | `/webdav/{space}/{path?}`                                         |
+| Default route shape                             | `/webdav/{path?}`                                                 |
 | Authentication                                  | HTTP Basic Auth validated by package validator                    |
 | Authorization                                   | `PathAuthorizationInterface` / Laravel Policies                   |
 | Built on                                        | SabreDAV + Laravel Filesystem                                     |
@@ -159,8 +159,12 @@ precedence automatically.
 | `SpaceResolverInterface`           | `DefaultSpaceResolver`            | Per-user disk / path routing   |
 | `PathAuthorizationInterface`       | `GatePathAuthorization`           | Replace Gate with ACL, RBAC, … |
 
-**Default storage mapping:** `webdav.storage.spaces.{space}.root/{principal.id}` on
-`webdav.storage.spaces.{space}.disk`.
+**Default storage mapping:**
+`webdav-server.storage.spaces.{space}.root[/prefix]/{principal.id}` on
+`webdav-server.storage.spaces.{space}.disk`.
+
+> Note: with the default package route (`/webdav/{path?}`), `spaceKey` is typically resolved via
+> `webdav-server.storage.default_space`.
 
 ---
 
@@ -180,9 +184,9 @@ filesystem operation. The resource passed to the policy is always `WebDavPathRes
 | `createDirectory` | MKCOL                                      |
 | `createFile`      | PUT (new file)                             |
 
-> The service provider auto-registers `App\Policies\WebDavPathPolicy` – **you must create this class** in your
-> application. A ready-to-use reference implementation is shipped in [
-`src/Policies/WebDavPathPolicy.php`](src/Policies/WebDavPathPolicy.php).
+> The package service provider registers the package policy by default:
+> `N3XT0R\LaravelWebdavServer\Policies\WebDavPathPolicy` for `WebDavPathResourceDto`.
+> A reference implementation is available in [`src/Policies/WebDavPathPolicy.php`](src/Policies/WebDavPathPolicy.php).
 
 To use a different policy class:
 
