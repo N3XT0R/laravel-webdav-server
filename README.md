@@ -47,6 +47,9 @@ The primary goal of this package is to bridge the gap between:
 Instead of working with local filesystem paths directly, this package maps WebDAV nodes to Laravel disks, making it
 possible to expose any configured storage (local, S3, etc.) through a WebDAV interface.
 
+It is intentionally built for high interchangeability: core responsibilities are contract-driven and can be replaced
+independently via container bindings (`bindIf()`), without forking package internals.
+
 ## Scope: Server, not Client
 
 This package provides a **WebDAV server endpoint** for your Laravel app.
@@ -62,6 +65,8 @@ This package provides a **WebDAV server endpoint** for your Laravel app.
 - Native integration with Laravel filesystem disks
 - User-based storage mapping via pluggable resolvers
 - Pluggable authentication layer (no coupling to Laravel auth)
+- High interchangeability through dedicated contracts (`CredentialValidatorInterface`, `SpaceResolverInterface`,
+  `PathAuthorizationInterface`) and override-friendly bindings
 - Clean separation between transport (WebDAV) and domain logic
 - Fully extensible architecture (custom storage, auth, authorization)
 
