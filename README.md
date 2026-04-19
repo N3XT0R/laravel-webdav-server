@@ -30,7 +30,7 @@ Flysystem disk through the WebDAV protocol.
 | Flysystem client disk `Storage::disk('webdav')` | **Not provided**                                                  |
 | Config file                                     | `config/webdav-server.php`                                        |
 | Config publish command                          | `php artisan vendor:publish --tag="laravel-webdav-server-config"` |
-| Default route shape                             | `/webdav/{path?}`                                                 |
+| Default route shape                             | `/webdav/{space}/{path?}`                                         |
 | Authentication                                  | HTTP Basic Auth validated by package validator                    |
 | Authorization                                   | `PathAuthorizationInterface` / Laravel Policies                   |
 | Built on                                        | SabreDAV + Laravel Filesystem                                     |
@@ -145,7 +145,7 @@ Route::match([
     'MOVE',
     'LOCK',
     'UNLOCK',
-], '/webdav/{path?}',  \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDavController::class)->where('path', '.*');
+], '/webdav/{space}/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDavController::class)->where('path', '.*');
 ```
 
 The endpoint is a WebDAV **server** route handled by `WebDavController`.
@@ -174,8 +174,8 @@ precedence automatically.
 `webdav-server.storage.spaces.{space}.root[/prefix]/{principal.id}` on
 `webdav-server.storage.spaces.{space}.disk`.
 
-> Note: with the default package route (`/webdav/{path?}`), `spaceKey` is typically resolved via
-> `webdav-server.storage.default_space`.
+> Note: `spaceKey` comes from the `{space}` route parameter (e.g. `/webdav/default/`).
+> If not matched, `RequestSpaceKeyResolver` falls back to `config('webdav-server.storage.default_space')`.
 
 ---
 

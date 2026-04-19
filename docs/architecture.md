@@ -4,7 +4,7 @@ Every WebDAV request passes through this runtime flow:
 
 ```mermaid
 flowchart TD
-    A["HTTP Request<br/>/webdav/{path?}<br/>Basic Auth"] --> B["WebDavController::__invoke()"]
+    A["HTTP Request<br/>/webdav/{space}/{path?}<br/>Basic Auth"] --> B["WebDavController::__invoke()"]
 
     B --> C{"Basic auth attempt present?"}
     C -- no --> D["401 Unauthorized + WWW-Authenticate"]
@@ -44,8 +44,8 @@ All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, 
 
 ## Runtime Notes (Current State)
 
-- Route shape is currently `'/webdav/{path?}'` in `routes/web.php`.
-- `spaceKey` is resolved from `route('space')`; because the default route has no `{space}` parameter, it usually falls back to `config('webdav-server.storage.default_space', 'default')`.
+- Route shape is `'/webdav/{space}/{path?}'` in `routes/web.php`.
+- `spaceKey` is resolved from the `{space}` route parameter via `RequestSpaceKeyResolver`; falls back to `config('webdav-server.storage.default_space', 'default')` if the parameter is absent.
 - Auth-related extractor/authenticator failures throw domain exceptions:
   - `MissingCredentialsException`
   - `InvalidCredentialsException`

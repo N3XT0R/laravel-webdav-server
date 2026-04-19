@@ -18,4 +18,4 @@ Route::match([
     'MOVE',
     'LOCK',
     'UNLOCK',
-], '/webdav/{path?}', WebDavController::class)->where('path', '.*');
+], '/webdav/{space}/{path?}', WebDavController::class)->where('path', '.*');

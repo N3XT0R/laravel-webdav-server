@@ -16,7 +16,7 @@ final class WebDavControllerTest extends TestCase
 {
     public function test_request_without_basic_auth_returns_401_and_www_authenticate_header(): void
     {
-        $response = $this->get('/webdav');
+        $response = $this->get('/webdav/default');
 
         $response->assertUnauthorized();
         $response->assertHeader('WWW-Authenticate', 'Basic realm="WebDAV"');
@@ -26,8 +26,7 @@ final class WebDavControllerTest extends TestCase
     {
         $this->withoutExceptionHandling();
         $this->expectException(InvalidCredentialsException::class);
-
-        $this->call('PROPFIND', '/webdav', server: [
+        $this->call('PROPFIND', '/webdav/default', server: [
             // base64("foo") => no ":" delimiter after decoding
             'HTTP_AUTHORIZATION' => 'Basic Zm9v',
         ]);
@@ -45,7 +44,7 @@ final class WebDavControllerTest extends TestCase
         $this->withoutExceptionHandling();
         $this->expectException(InvalidCredentialsException::class);
 
-        $this->call('PROPFIND', '/webdav', server: [
+        $this->call('PROPFIND', '/webdav/default', server: [
             'PHP_AUTH_USER' => 'alice',
             'PHP_AUTH_PW' => 'secret',
         ]);
@@ -72,7 +71,7 @@ final class WebDavControllerTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Runner called.');
 
-        $this->call('PROPFIND', '/webdav', server: [
+        $this->call('PROPFIND', '/webdav/default', server: [
             'PHP_AUTH_USER' => 'alice',
             'PHP_AUTH_PW' => 'secret',
         ]);
