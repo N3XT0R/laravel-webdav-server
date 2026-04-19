@@ -33,7 +33,7 @@ final class StorageRootCollection extends Collection
             $this->rootPath,
         );
 
-        $fs = $this->context->filesystem->disk($this->context->disk);
+        $fs = $this->context->filesystem;
 
         if (! $fs->exists($this->rootPath)) {
             return [];
@@ -70,7 +70,7 @@ final class StorageRootCollection extends Collection
             $path,
         );
 
-        $fs = $this->context->filesystem->disk($this->context->disk);
+        $fs = $this->context->filesystem;
 
         if (! $fs->exists($path)) {
             throw new NotFound("Node '{$name}' not found.");
@@ -135,7 +135,7 @@ final class StorageRootCollection extends Collection
             $path,
         );
 
-        $fs = $this->context->filesystem->disk($this->context->disk);
+        $fs = $this->context->filesystem;
 
         if (is_resource($data)) {
             $contents = stream_get_contents($data);
@@ -159,7 +159,7 @@ final class StorageRootCollection extends Collection
 
     private function isDirectory(string $path): bool
     {
-        $fs = $this->context->filesystem->disk($this->context->disk);
+        $fs = $this->context->filesystem;
         $parent = dirname($path);
 
         return in_array($path, $fs->directories($parent), true);

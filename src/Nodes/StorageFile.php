@@ -41,7 +41,7 @@ final class StorageFile extends File
             $this->path,
         );
 
-        $fs = $this->context->filesystem->disk($this->context->disk);
+        $fs = $this->context->filesystem;
 
         if (is_resource($data)) {
             $contents = stream_get_contents($data);

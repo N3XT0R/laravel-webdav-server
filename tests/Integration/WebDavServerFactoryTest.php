@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration;
 
-use Illuminate\Contracts\Filesystem\Factory as FilesystemManager;
+use Illuminate\Contracts\Filesystem\Filesystem;
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface;
@@ -36,7 +36,7 @@ final class WebDavServerFactoryTest extends TestCase
 
         $nodeContext = new StorageNodeContextDto(
             disk: $space->disk,
-            filesystem: $this->createMock(FilesystemManager::class),
+            filesystem: $this->createMock(Filesystem::class),
             principal: $principal,
             authorization: $this->createMock(PathAuthorizationInterface::class),
         );
