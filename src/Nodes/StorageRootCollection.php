@@ -106,7 +106,6 @@ final class StorageRootCollection extends Collection
         }
 
         return $this->context->filesystem
-            ->disk($this->context->disk)
             ->exists($path);
     }
 
@@ -121,7 +120,6 @@ final class StorageRootCollection extends Collection
         );
 
         $this->context->filesystem
-            ->disk($this->context->disk)
             ->makeDirectory($path);
     }
 

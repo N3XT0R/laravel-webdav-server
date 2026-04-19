@@ -29,7 +29,6 @@ final class StorageFile extends File
         );
 
         return $this->context->filesystem
-            ->disk($this->context->disk)
             ->get($this->path);
     }
 
@@ -67,7 +66,6 @@ final class StorageFile extends File
         );
 
         $this->context->filesystem
-            ->disk($this->context->disk)
             ->delete($this->path);
     }
 
@@ -80,7 +78,6 @@ final class StorageFile extends File
         );
 
         return $this->context->filesystem
-            ->disk($this->context->disk)
             ->size($this->path);
     }
 
@@ -93,7 +90,6 @@ final class StorageFile extends File
         );
 
         return $this->context->filesystem
-            ->disk($this->context->disk)
             ->lastModified($this->path);
     }
 }
