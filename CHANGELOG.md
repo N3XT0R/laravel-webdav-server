@@ -23,6 +23,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `RequestBasicCredentialsExtractor`, `RequestSpaceKeyResolver`, and `ValidatorPrincipalAuthenticator`.
     - Added and extended HTTP feature tests for `WebDavController`, including auth-attempt branches and the valid
       Basic Auth happy-path delegation to the runner.
+- **spaces**
+    - Restored `{space}` URL segment (`/webdav/{space}/{path?}`) as the primary driver for per-request disk
+      selection. `RequestSpaceKeyResolver` reads the segment from the route and falls back to
+      `webdav-server.storage.default_space`. `DefaultSpaceResolver` maps the resolved key to a configured
+      `WebDavStorageSpace` (disk + rootPath) via `webdav-server.storage.spaces.{spaceKey}`, so each space in the URL
+      corresponds directly to a distinct Flysystem disk and root path.
+    - `StorageNodeContextDto` carries the already-resolved `FilesystemAdapter` instance for the selected space,
+      eliminating any need to re-select the disk inside node operations.
 
 ### Changed
 
