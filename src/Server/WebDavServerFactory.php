@@ -23,7 +23,8 @@ final readonly class WebDavServerFactory
         private SpaceResolverInterface $spaceResolver,
         private PathAuthorizationInterface $authorization,
         private FilesystemManager $filesystem,
-    ) {}
+    ) {
+    }
 
     public function make(Request $request): Server
     {
@@ -63,6 +64,7 @@ final readonly class WebDavServerFactory
 
         $server = new Server($root);
         $server->setBaseUri($this->resolveBaseUri($spaceKey));
+        $server->setLogger(app('log'));
 
         return $server;
     }
@@ -81,7 +83,7 @@ final readonly class WebDavServerFactory
 
         $authorization = $request->headers->get('Authorization');
 
-        if (! is_string($authorization) || ! str_starts_with($authorization, 'Basic ')) {
+        if (!is_string($authorization) || !str_starts_with($authorization, 'Basic ')) {
             throw new MissingCredentialsException(
                 message: 'Basic Auth credentials are required to access the WebDAV server.',
                 context: [
@@ -96,7 +98,7 @@ final readonly class WebDavServerFactory
 
         $decoded = base64_decode(substr($authorization, 6), true);
 
-        if (! is_string($decoded) || ! str_contains($decoded, ':')) {
+        if (!is_string($decoded) || !str_contains($decoded, ':')) {
             throw new InvalidCredentialsException(
                 message: 'Malformed Basic Auth header.',
                 context: [
@@ -135,7 +137,7 @@ final readonly class WebDavServerFactory
 
         $defaultSpace = config('webdav-server.storage.default_space', 'default');
 
-        if (! is_string($defaultSpace) || trim($defaultSpace) === '') {
+        if (!is_string($defaultSpace) || trim($defaultSpace) === '') {
             throw new RuntimeException(
                 'Missing or invalid webdav-server.storage.default_space configuration.'
             );
@@ -146,7 +148,7 @@ final readonly class WebDavServerFactory
 
     private function resolveBaseUri(string $spaceKey): string
     {
-        $baseUri = trim((string) config('webdav-server.base_uri', '/webdav/'), '/');
+        $baseUri = trim((string)config('webdav-server.base_uri', '/webdav/'), '/');
 
         return '/'.$baseUri.'/'.trim($spaceKey, '/').'/';
     }
