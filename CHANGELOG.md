@@ -14,12 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       context
       resolution, space key resolution, storage root building, and Sabre server configuration under
       `src/Contracts/Server/`.
+    - Added `ServerRunnerInterface` to decouple controller runtime execution from direct `Server::start()` calls.
 - **server-registers**
     - Added modular container registration classes under `src/Providers/Registers/`:
       `RepositoryRegister`, `AuthRegister`, `StorageRegister`, `ServerRegister`, and `WebDavRegisterFactory`.
 - **tests**
     - Added focused unit tests for the extracted server components:
       `RequestBasicCredentialsExtractor`, `RequestSpaceKeyResolver`, and `ValidatorPrincipalAuthenticator`.
+    - Added and extended HTTP feature tests for `WebDavController`, including auth-attempt branches and the valid
+      Basic Auth happy-path delegation to the runner.
 
 ### Changed
 
@@ -38,6 +41,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `WebDavRegisterFactory::registerAll()`.
 - **http**
     - Updated controller and provider imports to the new server sub-namespaces introduced by the refactor.
+    - Refactored `WebDavController` to delegate runtime execution to `ServerRunnerInterface` (default:
+      `SabreServerRunner`) for improved testability of the successful request path.
 - **documentation**
     - Updated `docs/architecture.md` to reflect the current runtime flow, extracted server components,
       `webdav-server.*` configuration keys, and the current route shape.

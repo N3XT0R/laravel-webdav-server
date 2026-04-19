@@ -36,6 +36,8 @@ flowchart TD
     E --> X["new Sabre\\DAV\\Server(root)"]
     X --> Y["SabreServerConfigurator::configure(server, spaceKey)"]
     Y --> Z["baseUri = /{webdav-server.base_uri}/{spaceKey}/ + logger"]
+    Z --> AA["ServerRunnerInterface::run(server)"]
+    AA --> AB["SabreServerRunner::run() => server->start(); exit;"]
 ```
 
 All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, so app-level bindings can override defaults.
@@ -47,6 +49,8 @@ All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, 
 - Auth-related extractor/authenticator failures throw domain exceptions:
   - `MissingCredentialsException`
   - `InvalidCredentialsException`
+- Controller runtime execution is delegated via `ServerRunnerInterface`.
+- Default runner is `SabreServerRunner`, which starts SabreDAV and terminates the request lifecycle.
 - CSRF bypass is registered in `WebdavServerServiceProvider::registerCsrfException()`.
 - CSRF middleware resolution is version-tolerant:
   - `Illuminate\Foundation\Http\Middleware\PreventRequestForgery` (Laravel 13+)
