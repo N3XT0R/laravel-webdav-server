@@ -15,7 +15,8 @@ final class RequestSpaceKeyResolverTest extends TestCase
         $resolver = new RequestSpaceKeyResolver;
         $request = Request::create('/webdav', 'PROPFIND');
 
-        $request->setRouteResolver(static fn() => new class {
+        $request->setRouteResolver(static fn () => new class
+        {
             public function parameter(string $key, mixed $default = null): mixed
             {
                 return $key === 'space' ? 'team-a' : $default;

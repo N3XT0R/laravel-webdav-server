@@ -10,8 +10,7 @@ final readonly class WebDavRegisterFactory
 {
     public function __construct(
         private Container $app,
-    ) {
-    }
+    ) {}
 
     public function registerAll(): void
     {
@@ -21,4 +20,3 @@ final readonly class WebDavRegisterFactory
         new ServerRegister($this->app)->register();
     }
 }
-

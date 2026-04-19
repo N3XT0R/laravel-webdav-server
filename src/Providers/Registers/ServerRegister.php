@@ -60,4 +60,3 @@ final readonly class ServerRegister
         });
     }
 }
-
