@@ -9,6 +9,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use RuntimeException;
 
+/**
+ * @property Model $user
+ */
 final class WebDavAccount extends Model
 {
     use HasFactory;
