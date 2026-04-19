@@ -11,10 +11,22 @@ use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Server\PrincipalAuthenticatorInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestCredentialsExtractorInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerConfiguratorInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Server\SpaceKeyResolverInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
 use N3XT0R\LaravelWebdavServer\Policies\WebDavPathPolicy;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
+use N3XT0R\LaravelWebdavServer\Server\DefaultRequestContextResolver;
+use N3XT0R\LaravelWebdavServer\Server\RequestBasicCredentialsExtractor;
+use N3XT0R\LaravelWebdavServer\Server\RequestSpaceKeyResolver;
+use N3XT0R\LaravelWebdavServer\Server\SabreServerConfigurator;
+use N3XT0R\LaravelWebdavServer\Server\StorageRootBuilder;
+use N3XT0R\LaravelWebdavServer\Server\ValidatorPrincipalAuthenticator;
 use N3XT0R\LaravelWebdavServer\Server\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
 use Spatie\LaravelPackageTools\Package;
@@ -64,12 +76,41 @@ class WebdavServerServiceProvider extends PackageServiceProvider
             GatePathAuthorization::class,
         );
 
+        $this->app->bindIf(
+            RequestCredentialsExtractorInterface::class,
+            RequestBasicCredentialsExtractor::class,
+        );
+
+        $this->app->bindIf(
+            PrincipalAuthenticatorInterface::class,
+            ValidatorPrincipalAuthenticator::class,
+        );
+
+        $this->app->bindIf(
+            SpaceKeyResolverInterface::class,
+            RequestSpaceKeyResolver::class,
+        );
+
+        $this->app->bindIf(
+            RequestContextResolverInterface::class,
+            DefaultRequestContextResolver::class,
+        );
+
+        $this->app->bindIf(
+            StorageRootBuilderInterface::class,
+            StorageRootBuilder::class,
+        );
+
+        $this->app->bindIf(
+            ServerConfiguratorInterface::class,
+            SabreServerConfigurator::class,
+        );
+
         $this->app->scopedIf(WebDavServerFactory::class, function (Application $app): WebDavServerFactory {
             return new WebDavServerFactory(
-                validator: $app->make(CredentialValidatorInterface::class),
-                spaceResolver: $app->make(SpaceResolverInterface::class),
-                authorization: $app->make(PathAuthorizationInterface::class),
-                filesystem: $app->make(Factory::class),
+                requestContextResolver: $app->make(RequestContextResolverInterface::class),
+                storageRootBuilder: $app->make(StorageRootBuilderInterface::class),
+                serverConfigurator: $app->make(ServerConfiguratorInterface::class),
             );
         });
     }
