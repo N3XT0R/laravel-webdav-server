@@ -4,42 +4,52 @@ Every WebDAV request passes through this runtime flow:
 
 ```mermaid
 flowchart TD
-    A["HTTP Request<br/>/webdav/{space}/{path?}<br/>Basic Auth"] --> B["WebDavController"]
-    B --> C["WebDavServerFactory::make(request)"]
+    A["HTTP Request<br/>/webdav/{path?}<br/>Basic Auth"] --> B["WebDavController::__invoke()"]
 
-    C --> D{"Basic credentials present?"}
-    D -- no --> E["RuntimeException: Missing Basic Auth credentials"]
-    D -- yes --> F["CredentialValidatorInterface::validate(username, password)"]
+    B --> C{"Basic auth attempt present?"}
+    C -- no --> D["401 Unauthorized + WWW-Authenticate"]
+    C -- yes --> E["WebDavServerFactory::make(request)"]
 
-    F -- invalid --> G["RuntimeException: Invalid WebDAV credentials"]
-    F -- valid --> H["WebDavPrincipal (id, displayName, user)"]
+    E --> F["DefaultRequestContextResolver::resolve(request)"]
+    F --> G["RequestBasicCredentialsExtractor::extract(request)"]
+    G -- missing/malformed --> H["MissingCredentialsException / InvalidCredentialsException"]
 
-    H --> I["SpaceResolverInterface::resolve(principal, spaceKey)"]
-    I --> J["WebDavStorageSpace (disk, rootPath)"]
+    F --> I["ValidatorPrincipalAuthenticator::authenticate(username, password)"]
+    I --> J["CredentialValidatorInterface::validate(...)"]
+    J -- invalid --> K["InvalidCredentialsException"]
+    J -- valid --> L["WebDavPrincipal"]
 
-    J --> K["StorageRootCollection (SabreDAV tree root)"]
-    K --> L["StorageDirectory"]
-    K --> M["StorageFile"]
+    F --> M["RequestSpaceKeyResolver::resolve(request)"]
+    M --> N["route('space') or config('webdav-server.storage.default_space')"]
+    N -- invalid config --> O["RuntimeException"]
 
-    L --> N{"PathAuthorizationInterface"}
-    M --> N
-    N -- denied --> O["SabreDAV Forbidden exception"]
-    N -- allowed --> P["Laravel Filesystem (Storage::disk)"]
+    F --> P["SpaceResolverInterface::resolve(principal, spaceKey)"]
+    P --> Q["WebDavStorageSpace (disk, rootPath)"]
 
-    C --> Q["SabreDAV Server"]
-    Q --> R["setBaseUri(config('webdav.base_uri', '/webdav/'))"]
+    E --> R["StorageRootBuilder::build(principal, space)"]
+    R --> S["StorageRootCollection"]
+    S --> T["StorageDirectory / StorageFile"]
+    T --> U{"PathAuthorizationInterface"}
+    U -- denied --> V["Sabre\\DAV\\Exception\\Forbidden"]
+    U -- allowed --> W["Laravel Filesystem disk"]
+
+    E --> X["new Sabre\\DAV\\Server(root)"]
+    X --> Y["SabreServerConfigurator::configure(server, spaceKey)"]
+    Y --> Z["baseUri = /{webdav-server.base_uri}/{spaceKey}/ + logger"]
 ```
 
-All extension points use `bindIf()` – bind your own implementation in `AppServiceProvider::register()` and it takes
-precedence automatically.
+All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, so app-level bindings can override defaults.
 
 ## Runtime Notes (Current State)
 
+- Route shape is currently `'/webdav/{path?}'` in `routes/web.php`.
+- `spaceKey` is resolved from `route('space')`; because the default route has no `{space}` parameter, it usually falls back to `config('webdav-server.storage.default_space', 'default')`.
+- Auth-related extractor/authenticator failures throw domain exceptions:
+  - `MissingCredentialsException`
+  - `InvalidCredentialsException`
 - CSRF bypass is registered in `WebdavServerServiceProvider::registerCsrfException()`.
-- Middleware resolution is version-tolerant: `PreventRequestForgery` (Laravel 13+) with fallback to
-  `VerifyCsrfToken` (Laravel 12).
-- CSRF route prefix comes from `webdav.route_prefix` and falls back to `webdav.base_uri`.
-- Route shape includes `{space}` (`routes/web.php`) and the factory resolves storage with
-  `SpaceResolverInterface::resolve($principal, $spaceKey)`.
-- `spaceKey` comes from route parameter `{space}` and falls back to `webdav.storage.default_space`.
-
+- CSRF middleware resolution is version-tolerant:
+  - `Illuminate\Foundation\Http\Middleware\PreventRequestForgery` (Laravel 13+)
+  - fallback: `Illuminate\Foundation\Http\Middleware\VerifyCsrfToken` (Laravel 12)
+- CSRF route prefix comes from `config('webdav-server.route_prefix')` and falls back to `config('webdav-server.base_uri')`.
+- Base URI for SabreDAV is configured in `SabreServerConfigurator` via `config('webdav-server.base_uri', '/webdav/')`.
