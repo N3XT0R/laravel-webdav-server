@@ -67,6 +67,7 @@ This package provides a **WebDAV server endpoint** for your Laravel app.
 - Pluggable authentication layer (no coupling to Laravel auth)
 - High interchangeability through dedicated contracts (`CredentialValidatorInterface`, `SpaceResolverInterface`,
   `PathAuthorizationInterface`) and override-friendly bindings
+- Runtime execution decoupled behind `ServerRunnerInterface` (default: `SabreServerRunner`)
 - Clean separation between transport (WebDAV) and domain logic
 - Fully extensible architecture (custom storage, auth, authorization)
 
@@ -84,6 +85,8 @@ explicitly separated:
   wiring one filesystem path.
 - **Policy-native authorization**: access checks stay in Laravel Gate/Policies (`WebDavPathResourceDto`) where your app
   logic already lives.
+- **Runtime boundary for execution**: `WebDavController` delegates successful server execution to
+  `ServerRunnerInterface`, while `SabreServerRunner` remains the default runtime implementation.
 
 If you want details, see [docs/architecture.md](docs/architecture.md).
 
@@ -112,6 +115,9 @@ For package config publishing, use the tag above (not a provider-based publish c
 ---
 
 ## Architecture
+
+The successful request path is executed through `ServerRunnerInterface` (default: `SabreServerRunner`), which keeps
+controller orchestration testable while preserving SabreDAV runtime behaviour.
 
 → [docs/architecture.md](docs/architecture.md)
 
