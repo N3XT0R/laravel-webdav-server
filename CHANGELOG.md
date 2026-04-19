@@ -7,6 +7,47 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **server-contracts**
+    - Added dedicated server-layer contracts for request credential extraction, principal authentication, request
+      context
+      resolution, space key resolution, storage root building, and Sabre server configuration under
+      `src/Contracts/Server/`.
+- **server-registers**
+    - Added modular container registration classes under `src/Providers/Registers/`:
+      `RepositoryRegister`, `AuthRegister`, `StorageRegister`, `ServerRegister`, and `WebDavRegisterFactory`.
+- **tests**
+    - Added focused unit tests for the extracted server components:
+      `RequestBasicCredentialsExtractor`, `RequestSpaceKeyResolver`, and `ValidatorPrincipalAuthenticator`.
+
+### Changed
+
+- **webdav-server**
+    - Refactored `WebDavServerFactory` into a pure orchestration component and delegated responsibilities to dedicated
+      collaborators (`DefaultRequestContextResolver`, `StorageRootBuilder`, `SabreServerConfigurator`).
+- **request-pipeline**
+    - Introduced `WebDavRequestContextDto` as a structured transport object carrying `principal`, `spaceKey`, and
+      resolved storage `space` through the factory pipeline.
+- **namespaces**
+    - Reorganized server implementation namespaces by responsibility:
+      `Server\Factory`, `Server\Request\Auth`, `Server\Request\Context`, `Server\Request\Routing`,
+      `Server\Auth`, `Server\Storage`, and `Server\Configuration`.
+- **service-provider**
+    - Simplified `WebdavServerServiceProvider::packageRegistered()` to delegate all bindings to
+      `WebDavRegisterFactory::registerAll()`.
+- **http**
+    - Updated controller and provider imports to the new server sub-namespaces introduced by the refactor.
+- **documentation**
+    - Updated `docs/architecture.md` to reflect the current runtime flow, extracted server components,
+      `webdav-server.*` configuration keys, and the current route shape.
+
+### Fixed
+
+- **documentation**
+    - Corrected architecture documentation mismatches around route shape (`/webdav/{path?}`), space key resolution
+      fallback behavior, and base URI configuration source.
+
 ## [1.0.0-alpha.2] - 2026-04-19
 
 ### Added
