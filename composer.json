@@ -2,9 +2,17 @@
   "name": "n3xt0r/laravel-webdav-server",
   "description": "A WebDAV server implementation for Laravel based on SabreDAV, with support for Laravel filesystem disks.",
   "keywords": [
-    "N3XT0R",
+    "n3xt0r",
     "laravel",
-    "laravel-webdav-server"
+    "laravel-webdav-server",
+    "webdav",
+    "webdav-server",
+    "sabre-dav",
+    "sabredav",
+    "flysystem",
+    "laravel-storage",
+    "storage",
+    "filesystem"
   ],
   "homepage": "https://github.com/n3xt0r/laravel-webdav-server",
   "license": "MIT",
