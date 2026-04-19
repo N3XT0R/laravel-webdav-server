@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Unit\DTO\Auth;
 
-use Illuminate\Foundation\Testing\TestCase;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavAccountRecordDto;
+use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use Workbench\App\Models\User;
 
 class WebDavAccountRecordDtoTest extends TestCase
