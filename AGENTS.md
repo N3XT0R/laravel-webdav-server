@@ -39,7 +39,7 @@ All implementations are bound with `bindIf()` – override any of these in your 
 | `SpaceResolverInterface`           | `DefaultSpaceResolver`            | Per-user disk/path routing       |
 | `PathAuthorizationInterface`       | `GatePathAuthorization`           | Custom authorization logic       |
 
-`DefaultSpaceResolver` maps `principal.id` → `webdav.storage.prefix/{id}` on `webdav.storage.disk`.
+`DefaultSpaceResolver` maps `principal.id` → `webdav.storage.prefix/{id}` on `webdav-server.storage.disk`.
 
 ---
 
