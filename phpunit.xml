@@ -15,6 +15,7 @@
         beStrictAboutOutputDuringTests="true"
         cacheDirectory=".phpunit.cache"
         backupStaticProperties="false"
+        displayDetailsOnAllIssues="true"
 >
     <testsuites>
         <testsuite name="Feature Tests">
