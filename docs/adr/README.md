@@ -17,3 +17,5 @@ The records follow the Nygard ADR structure recommended by `adr.github.io`:
 - [0003. Class Naming Convention By Suffix](0003-class-naming-convention-by-suffix.md)
 - [0004. Changelog Maintenance And Unreleased Entry Policy](0004-changelog-maintenance-and-unreleased-entry-policy.md)
 - [0005. WebDAV Space Key And Storage Space Mapping](0005-webdav-space-key-and-storage-space-mapping.md)
+- [0006. Path Authorization Via Laravel Gates And Policies](0006-path-authorization-via-laravel-gates-and-policies.md)
+- [0007. SabreDAV Runtime Decoupling](0007-sabredav-runtime-decoupling.md)

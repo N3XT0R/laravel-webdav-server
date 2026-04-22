@@ -47,6 +47,8 @@ Related decisions:
 - [ADR 0001: Test Architecture And Layering](adr/0001-test-architecture-and-layering.md)
 - [ADR 0002: WebDAV Request Pipeline And Runtime Boundary](adr/0002-webdav-request-pipeline-and-runtime-boundary.md)
 - [ADR 0005: WebDAV Space Key And Storage Space Mapping](adr/0005-webdav-space-key-and-storage-space-mapping.md)
+- [ADR 0006: Path Authorization Via Laravel Gates And Policies](adr/0006-path-authorization-via-laravel-gates-and-policies.md)
+- [ADR 0007: SabreDAV Runtime Decoupling](adr/0007-sabredav-runtime-decoupling.md)
 
 ## Runtime Notes (Current State)
 
