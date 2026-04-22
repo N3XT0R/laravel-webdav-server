@@ -20,8 +20,18 @@ final class WebDavPathPolicyTest extends TestCase
         parent::setUp();
 
         $this->app->make(Repository::class)->set([
-            'webdav-server.storage.disk' => 'local',
-            'webdav-server.storage.root' => 'webdav',
+            'webdav-server.storage.spaces' => [
+                'default' => [
+                    'disk' => 'local',
+                    'root' => 'webdav',
+                    'prefix' => '/',
+                ],
+                'team' => [
+                    'disk' => 's3',
+                    'root' => 'shared',
+                    'prefix' => 'members',
+                ],
+            ],
         ]);
 
         $this->policy = new WebDavPathPolicy;
@@ -70,6 +80,14 @@ final class WebDavPathPolicyTest extends TestCase
         $resource = new WebDavPathResourceDto('s3', 'webdav/42/file.txt');
 
         $this->assertFalse($this->policy->read($user, $resource));
+    }
+
+    public function test_read_allows_access_to_a_prefixed_space_for_the_same_user(): void
+    {
+        $user = $this->makeUser(42);
+        $resource = new WebDavPathResourceDto('s3', 'shared/members/42/file.txt');
+
+        $this->assertTrue($this->policy->read($user, $resource));
     }
 
     public function test_read_denies_access_to_storage_root_itself(): void

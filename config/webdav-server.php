@@ -17,8 +17,6 @@ return [
                 'prefix' => '/',
             ],
         ],
-        'disk' => 'local',
-        'root' => 'webdav',
     ],
 
     'auth' => [

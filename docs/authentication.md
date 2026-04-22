@@ -108,7 +108,16 @@ Every filesystem operation (read, write, delete, etc.) checks the policy before 
 
 By default, `GatePathAuthorization` uses Laravel's Gate system.
 
-The service provider auto-registers `App\Policies\WebDavPathPolicy`. Create it in your app:
+The package registers its own reference policy for `WebDavPathResourceDto`.
+If your application needs custom rules, register your own policy in the app:
+
+```php
+// AppServiceProvider::boot()
+Gate::policy(
+    \N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto::class,
+    \App\Policies\WebDavPathPolicy::class,
+);
+```
 
 ```php
 // app/Policies/WebDavPathPolicy.php
@@ -121,12 +130,12 @@ class WebDavPathPolicy
 {
     public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        // $user is WebDavPrincipalValueObject with optional user relation
         // $resource->disk = 'local'
         // $resource->path = 'webdav/42/documents/report.pdf'
 
         // Example: Allow if path starts with user's root
-        return str_starts_with($resource->path, 'webdav/'.$user->id.'/');
+        return str_starts_with($resource->path, 'webdav/'.$user->getAuthIdentifier().'/')
+            || $resource->path === 'webdav/'.$user->getAuthIdentifier();
     }
 
     public function write(Authenticatable $user, WebDavPathResourceDto $resource): bool
@@ -151,7 +160,8 @@ class WebDavPathPolicy
 
     private function isUserPath(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return str_starts_with($resource->path, 'webdav/'.$user->id.'/');
+        return str_starts_with($resource->path, 'webdav/'.$user->getAuthIdentifier().'/')
+            || $resource->path === 'webdav/'.$user->getAuthIdentifier();
     }
 }
 ```

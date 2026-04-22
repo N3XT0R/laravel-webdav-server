@@ -25,11 +25,11 @@ return [
 | Key                          | Default    | Used by                                              |
 |------------------------------|------------|------------------------------------------------------|
 | `webdav-server.route_prefix` | `webdav`   | CSRF exclusion path in `WebdavServerServiceProvider` |
-| `webdav-server.base_uri`     | `/webdav/` | `WebDavServerFactory::setBaseUri()`                  | 
+| `webdav-server.base_uri`     | `/webdav/` | `SabreServerConfigurator`                            |
 
 ## Storage Spaces
 
-`DefaultSpaceResolver` reads `webdav.storage.spaces` and resolves a space by key:
+`DefaultSpaceResolver` reads `webdav-server.storage.spaces` and resolves a space by key:
 
 - `webdav-server.storage.default_space` (default: `default`)
 - `webdav-server.storage.spaces.{space}.disk` (required)
@@ -38,7 +38,7 @@ return [
 `WebDavServerFactory` determines the `spaceKey` in this order:
 
 1. route parameter `{space}`
-2. fallback `webdav.storage.default_space`
+2. fallback `webdav-server.storage.default_space`
 
 Resolved runtime root is always:
 `{root}/{principal.id}`
@@ -49,6 +49,9 @@ Example:
 - `root = webdav`
 - `principal.id = 42`
 - effective WebDAV root path: `webdav/42`
+
+If a space defines a non-empty `prefix`, the effective root becomes:
+`{root}/{prefix}/{principal.id}`
 
 ## Auth Mapping
 
@@ -66,6 +69,6 @@ Example:
 
 - Package route is currently registered as `/webdav/{space}/{path?}` in `routes/web.php`.
 - `route_prefix` is currently used for CSRF exclusion and falls back to `base_uri` when empty.
-- Legacy keys `webdav-server.storage.disk` and `webdav-server.storage.root` are still present in the config stub and are
-  used by the packaged example policy (`src/Policies/WebDavPathPolicy.php`).
-- New integrations should prefer `storage.spaces.*` for resolver-based storage mapping.
+- `storage.spaces.*` is the active storage configuration model for resolver-based storage mapping.
+- The packaged reference policy `src/Policies/WebDavPathPolicy.php` evaluates access against the configured spaces,
+  including optional `prefix` segments.

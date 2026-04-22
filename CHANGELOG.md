@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **configuration**
+    - Removed legacy `webdav-server.storage.disk` and `webdav-server.storage.root` defaults from the package config
+      stub so the default storage model is consistently defined through `webdav-server.storage.spaces.*`.
+- **authorization**
+    - Updated the packaged `WebDavPathPolicy` to evaluate access against the configured storage spaces, including
+      optional `prefix` segments, instead of relying on the removed legacy storage keys.
+- **documentation**
+    - Aligned configuration and authorization docs with the current `spaces` model and clarified that applications
+      override the packaged reference policy by registering their own policy for `WebDavPathResourceDto`.
+
 ## [1.0.0-alpha.3] - 2026-04-22
 
 ### Added

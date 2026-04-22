@@ -36,16 +36,65 @@ final class WebDavPathPolicy
 
     private function isAllowed(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        $expectedDisk = (string) config('webdav-server.storage.disk', 'local');
-        $storageRoot = trim((string) config('webdav-server.storage.root', 'webdav'), '/');
         $path = trim($resource->path, '/');
 
-        if ($resource->disk !== $expectedDisk) {
-            return false;
+        foreach ($this->configuredUserRootsFor($user) as $configuredRoot) {
+            if ($resource->disk !== $configuredRoot['disk']) {
+                continue;
+            }
+
+            if ($path === $configuredRoot['path'] || str_starts_with($path, $configuredRoot['path'].'/')) {
+                return true;
+            }
         }
 
-        $userRoot = $storageRoot.'/'.$user->getAuthIdentifier();
+        return false;
+    }
 
-        return $path === $userRoot || str_starts_with($path, $userRoot.'/');
+    /**
+     * @return list<array{disk:string,path:string}>
+     */
+    private function configuredUserRootsFor(Authenticatable $user): array
+    {
+        $spaces = config('webdav-server.storage.spaces', []);
+
+        if (! is_array($spaces)) {
+            return [];
+        }
+
+        $roots = [];
+
+        foreach ($spaces as $space) {
+            if (! is_array($space)) {
+                continue;
+            }
+
+            $disk = $space['disk'] ?? null;
+            $root = $space['root'] ?? null;
+            $prefix = $space['prefix'] ?? null;
+
+            if (! is_string($disk) || trim($disk) === '') {
+                continue;
+            }
+
+            if (! is_string($root) || trim($root) === '') {
+                continue;
+            }
+
+            $parts = [trim($root, '/')];
+
+            if (is_string($prefix) && trim($prefix) !== '' && trim($prefix) !== '/') {
+                $parts[] = trim($prefix, '/');
+            }
+
+            $parts[] = (string) $user->getAuthIdentifier();
+
+            $roots[] = [
+                'disk' => trim($disk),
+                'path' => implode('/', $parts),
+            ];
+        }
+
+        return $roots;
     }
 }

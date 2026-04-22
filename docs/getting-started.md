@@ -32,7 +32,16 @@ return [
 
 ## Create Your Policy
 
-The service provider auto-registers `App\Policies\WebDavPathPolicy`. Create it:
+The package registers its own reference policy by default.
+If you want app-specific rules, register your own policy for `WebDavPathResourceDto`:
+
+```php
+// AppServiceProvider::boot()
+Gate::policy(
+    \N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto::class,
+    \App\Policies\WebDavPathPolicy::class,
+);
+```
 
 ```php
 // app/Policies/WebDavPathPolicy.php
@@ -45,27 +54,33 @@ class WebDavPathPolicy
 {
     public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return true; // Your authorization logic here
+        return $this->isUserPath($user, $resource);
     }
 
     public function write(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return true;
+        return $this->isUserPath($user, $resource);
     }
 
     public function delete(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return true;
+        return $this->isUserPath($user, $resource);
     }
 
     public function createDirectory(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return true;
+        return $this->isUserPath($user, $resource);
     }
 
     public function createFile(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        return true;
+        return $this->isUserPath($user, $resource);
+    }
+
+    private function isUserPath(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    {
+        return str_starts_with($resource->path, 'webdav/'.$user->getAuthIdentifier().'/')
+            || $resource->path === 'webdav/'.$user->getAuthIdentifier();
     }
 }
 ```

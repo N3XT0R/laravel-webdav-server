@@ -20,7 +20,7 @@ return new WebDavStorageSpaceValueObject(
 );
 ```
 
-So if `principal->id` is `42` and `config('webdav.storage.spaces.default.root')` is `webdav`, the resolved root is
+So if `principal->id` is `42` and `config('webdav-server.storage.spaces.default.root')` is `webdav`, the resolved root is
 `webdav/42`.
 
 ---
