@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Auth;
 
+use Illuminate\Auth\Access\Gate as IlluminateGate;
 use Illuminate\Support\Facades\Gate;
 use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
@@ -17,12 +18,16 @@ final class GatePathAuthorizationTest extends TestCase
     /** @var list<array{ability:string,disk:string,path:string,userId:int|string|null}> */
     private array $inspections = [];
 
+    private IlluminateGate $gate;
+
     protected function setUp(): void
     {
         parent::setUp();
 
+        $this->gate = new IlluminateGate($this->app, static fn (): null => null);
+
         foreach (['read', 'write', 'delete', 'createDirectory', 'createFile'] as $ability) {
-            Gate::define($ability, function (User $user, WebDavPathResourceDto $resource) use ($ability): bool {
+            $this->gate->define($ability, function (User $user, WebDavPathResourceDto $resource) use ($ability): bool {
                 $this->inspections[] = [
                     'ability' => $ability,
                     'disk' => $resource->disk,
@@ -39,7 +44,7 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $principal = $this->makePrincipal(42);
 
-        (new GatePathAuthorization(app('gate')))->authorizeRead($principal, 'local', 'webdav/42/allowed.txt');
+        (new GatePathAuthorization($this->gate))->authorizeRead($principal, 'local', 'webdav/42/allowed.txt');
 
         $this->assertSame([[
             'ability' => 'read',
@@ -53,7 +58,7 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization(app('gate')))->authorizeRead(
+        (new GatePathAuthorization($this->gate))->authorizeRead(
             $this->makePrincipal(42),
             'local',
             'webdav/42/denied.txt',
@@ -64,7 +69,7 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization(app('gate')))->authorizeWrite(
+        (new GatePathAuthorization($this->gate))->authorizeWrite(
             $this->makePrincipal(42),
             'local',
             'webdav/42/denied.txt',
@@ -75,7 +80,7 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization(app('gate')))->authorizeDelete(
+        (new GatePathAuthorization($this->gate))->authorizeDelete(
             $this->makePrincipal(42),
             'local',
             'webdav/42/denied.txt',
@@ -86,7 +91,7 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization(app('gate')))->authorizeCreateDirectory(
+        (new GatePathAuthorization($this->gate))->authorizeCreateDirectory(
             $this->makePrincipal(42),
             'local',
             'webdav/42/denied-dir',
@@ -97,7 +102,7 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization(app('gate')))->authorizeCreateFile(
+        (new GatePathAuthorization($this->gate))->authorizeCreateFile(
             $this->makePrincipal(42),
             'local',
             'webdav/42/denied-file.txt',
@@ -107,12 +112,12 @@ final class GatePathAuthorizationTest extends TestCase
     private function makePrincipal(int $id): WebDavPrincipal
     {
         $user = new User;
-        $user->forceFill([
+        $user->setRawAttributes([
             'name' => 'Alice',
             'email' => 'alice@example.test',
             'password' => 'secret',
-        ]);
-        $user->setAttribute($user->getKeyName(), $id);
+            $user->getKeyName() => $id,
+        ], true);
 
         return new WebDavPrincipal((string) $id, 'Alice', $user);
     }

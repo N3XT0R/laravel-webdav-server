@@ -28,12 +28,12 @@ final class WebDavPrincipalTest extends TestCase
     public function test_it_stores_user_when_provided(): void
     {
         $user = new User;
-        $user->forceFill([
+        $user->setRawAttributes([
             'name' => 'Alice',
             'email' => 'alice@example.test',
             'password' => 'secret',
-        ]);
-        $user->setAttribute($user->getKeyName(), 42);
+            $user->getKeyName() => 42,
+        ], true);
 
         $principal = new WebDavPrincipal('42', 'Alice', $user);
 

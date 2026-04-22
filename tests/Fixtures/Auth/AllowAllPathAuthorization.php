@@ -7,7 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 
-final class AllowAllPathAuthorization implements PathAuthorizationInterface
+class AllowAllPathAuthorization implements PathAuthorizationInterface
 {
     /** @var list<array{ability:string,disk:string,path:string,principalId:string}> */
     public array $calls = [];
