@@ -31,6 +31,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       corresponds directly to a distinct Flysystem disk and root path.
     - `StorageNodeContextDto` carries the already-resolved `FilesystemAdapter` instance for the selected space,
       eliminating any need to re-select the disk inside node operations.
+- **architecture-decision-records**
+    - Added an ADR index under `docs/adr/README.md`.
+    - Added `ADR 0001` for test architecture and layer boundaries.
+    - Added `ADR 0002` for the explicit WebDAV request pipeline and the `ServerRunnerInterface` runtime boundary.
+    - Added `ADR 0003` for class naming conventions by suffix.
 
 ### Changed
 
@@ -54,6 +59,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **documentation**
     - Updated `docs/architecture.md` to reflect the current runtime flow, extracted server components,
       `webdav-server.*` configuration keys, and the current route shape.
+- **testing**
+    - Reworked the test suite to enforce real feature, integration, and unit boundaries.
+    - Moved miscategorized tests to the correct layer and removed placeholder coverage.
+    - Replaced PHPUnit mocks/stubs in the package test suite with concrete in-memory, recording, filesystem-backed,
+      and Gate-backed test fixtures.
+    - Standardized test execution on PHPUnit and documented Docker-based execution through the `php` service.
+- **naming**
+    - Renamed `WebDavPrincipal` to `WebDavPrincipalValueObject`.
+    - Renamed `WebDavAccount` to `WebDavAccountModel`.
+    - Renamed `WebDavStorageSpace` to `WebDavStorageSpaceValueObject`.
+    - Renamed related factory and unit test files to match the new class names and keep PSR-4 and factory resolution
+      consistent.
+- **adr**
+    - Broadened `ADR 0003` to cover legitimate project roles such as `*Backend`, `*Register`, `*File`, and
+      `*Directory`, so the naming policy matches the actual Laravel and SabreDAV architecture.
 
 ### Fixed
 
