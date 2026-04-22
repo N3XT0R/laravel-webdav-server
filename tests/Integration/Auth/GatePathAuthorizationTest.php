@@ -4,150 +4,116 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Auth;
 
-use Illuminate\Auth\Access\Response;
-use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Support\Facades\Gate;
 use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 use Sabre\DAV\Exception\Forbidden;
+use Workbench\App\Models\User;
 
 final class GatePathAuthorizationTest extends TestCase
 {
-    private function makeAuthorization(bool $allow): GatePathAuthorization
+    /** @var list<array{ability:string,disk:string,path:string,userId:int|string|null}> */
+    private array $inspections = [];
+
+    protected function setUp(): void
     {
-        $response = $allow ? Response::allow() : Response::deny('Access denied.');
+        parent::setUp();
 
-        $innerGate = $this->createStub(Gate::class);
-        $innerGate->method('inspect')->willReturn($response);
+        foreach (['read', 'write', 'delete', 'createDirectory', 'createFile'] as $ability) {
+            Gate::define($ability, function (User $user, WebDavPathResourceDto $resource) use ($ability): bool {
+                $this->inspections[] = [
+                    'ability' => $ability,
+                    'disk' => $resource->disk,
+                    'path' => $resource->path,
+                    'userId' => $user->getAuthIdentifier(),
+                ];
 
-        $gate = $this->createStub(Gate::class);
-        $gate->method('forUser')->willReturn($innerGate);
-
-        return new GatePathAuthorization($gate);
-    }
-
-    private function makeDenyingAuthorizationWithAbilityCheck(string $expectedAbility): GatePathAuthorization
-    {
-        $innerGate = $this->createMock(Gate::class);
-        $innerGate->expects($this->once())
-            ->method('inspect')
-            ->with($expectedAbility, $this->isInstanceOf(WebDavPathResourceDto::class))
-            ->willReturn(Response::deny('denied'));
-
-        $gate = $this->createStub(Gate::class);
-        $gate->method('forUser')->willReturn($innerGate);
-
-        return new GatePathAuthorization($gate);
+                return str_contains($resource->path, 'allowed');
+            });
+        }
     }
 
     public function test_authorize_read_does_not_throw_when_allowed(): void
     {
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeAuthorization(true);
+        $principal = $this->makePrincipal(42);
 
-        $auth->authorizeRead($principal, 'local', 'webdav/42');
+        (new GatePathAuthorization(app('gate')))->authorizeRead($principal, 'local', 'webdav/42/allowed.txt');
 
-        $this->assertTrue(true);
+        $this->assertSame([[
+            'ability' => 'read',
+            'disk' => 'local',
+            'path' => 'webdav/42/allowed.txt',
+            'userId' => 42,
+        ]], $this->inspections);
     }
 
     public function test_authorize_read_throws_forbidden_when_denied(): void
     {
         $this->expectException(Forbidden::class);
 
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeAuthorization(false);
-
-        $auth->authorizeRead($principal, 'local', 'webdav/42');
-    }
-
-    public function test_authorize_write_throws_forbidden_when_denied(): void
-    {
-        $this->expectException(Forbidden::class);
-
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeAuthorization(false);
-
-        $auth->authorizeWrite($principal, 'local', 'webdav/42/file.txt');
-    }
-
-    public function test_authorize_delete_throws_forbidden_when_denied(): void
-    {
-        $this->expectException(Forbidden::class);
-
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeAuthorization(false);
-
-        $auth->authorizeDelete($principal, 'local', 'webdav/42/file.txt');
-    }
-
-    public function test_authorize_create_directory_throws_forbidden_when_denied(): void
-    {
-        $this->expectException(Forbidden::class);
-
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeAuthorization(false);
-
-        $auth->authorizeCreateDirectory($principal, 'local', 'webdav/42/newdir');
-    }
-
-    public function test_authorize_create_file_throws_forbidden_when_denied(): void
-    {
-        $this->expectException(Forbidden::class);
-
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeAuthorization(false);
-
-        $auth->authorizeCreateFile($principal, 'local', 'webdav/42/newfile.txt');
-    }
-
-    public function test_authorize_read_calls_gate_with_read_ability(): void
-    {
-        $this->expectException(Forbidden::class);
-
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeDenyingAuthorizationWithAbilityCheck('read');
-
-        $auth->authorizeRead($principal, 'local', 'webdav/42');
+        (new GatePathAuthorization(app('gate')))->authorizeRead(
+            $this->makePrincipal(42),
+            'local',
+            'webdav/42/denied.txt',
+        );
     }
 
     public function test_authorize_write_calls_gate_with_write_ability(): void
     {
         $this->expectException(Forbidden::class);
 
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeDenyingAuthorizationWithAbilityCheck('write');
-
-        $auth->authorizeWrite($principal, 'local', 'webdav/42/file.txt');
+        (new GatePathAuthorization(app('gate')))->authorizeWrite(
+            $this->makePrincipal(42),
+            'local',
+            'webdav/42/denied.txt',
+        );
     }
 
     public function test_authorize_delete_calls_gate_with_delete_ability(): void
     {
         $this->expectException(Forbidden::class);
 
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeDenyingAuthorizationWithAbilityCheck('delete');
-
-        $auth->authorizeDelete($principal, 'local', 'webdav/42/file.txt');
+        (new GatePathAuthorization(app('gate')))->authorizeDelete(
+            $this->makePrincipal(42),
+            'local',
+            'webdav/42/denied.txt',
+        );
     }
 
     public function test_authorize_create_directory_calls_gate_with_correct_ability(): void
     {
         $this->expectException(Forbidden::class);
 
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeDenyingAuthorizationWithAbilityCheck('createDirectory');
-
-        $auth->authorizeCreateDirectory($principal, 'local', 'webdav/42/dir');
+        (new GatePathAuthorization(app('gate')))->authorizeCreateDirectory(
+            $this->makePrincipal(42),
+            'local',
+            'webdav/42/denied-dir',
+        );
     }
 
     public function test_authorize_create_file_calls_gate_with_correct_ability(): void
     {
         $this->expectException(Forbidden::class);
 
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $auth = $this->makeDenyingAuthorizationWithAbilityCheck('createFile');
+        (new GatePathAuthorization(app('gate')))->authorizeCreateFile(
+            $this->makePrincipal(42),
+            'local',
+            'webdav/42/denied-file.txt',
+        );
+    }
 
-        $auth->authorizeCreateFile($principal, 'local', 'webdav/42/file.txt');
+    private function makePrincipal(int $id): WebDavPrincipal
+    {
+        $user = new User;
+        $user->forceFill([
+            'name' => 'Alice',
+            'email' => 'alice@example.test',
+            'password' => 'secret',
+        ]);
+        $user->setAttribute($user->getKeyName(), $id);
+
+        return new WebDavPrincipal((string) $id, 'Alice', $user);
     }
 }

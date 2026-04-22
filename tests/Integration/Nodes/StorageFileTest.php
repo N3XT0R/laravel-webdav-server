@@ -4,123 +4,125 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Nodes;
 
-use Illuminate\Contracts\Filesystem\Filesystem;
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 
 final class StorageFileTest extends TestCase
 {
-    private function makeFile(
-        string $name,
-        string $path,
-        Filesystem $filesystem,
-        PathAuthorizationInterface $authorization,
-    ): StorageFile {
-        $principal = new WebDavPrincipal('42', 'Alice');
+    private string $diskRoot;
 
-        $context = new StorageNodeContextDto(
-            disk: 'local',
-            filesystem: $filesystem,
-            principal: $principal,
-            authorization: $authorization,
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->diskRoot = sys_get_temp_dir().'/laravel-webdav-server-tests/'.str_replace('\\', '-', static::class);
+        $this->app['config']->set('filesystems.disks.local.root', $this->diskRoot);
+
+        (new Filesystem())->deleteDirectory($this->diskRoot);
+    }
+
+    protected function tearDown(): void
+    {
+        (new Filesystem())->deleteDirectory($this->diskRoot);
+
+        parent::tearDown();
+    }
+
+    private function makeFile(string $name, string $path, AllowAllPathAuthorization $authorization): StorageFile
+    {
+        return new StorageFile(
+            $name,
+            $path,
+            new StorageNodeContextDto(
+                disk: 'local',
+                filesystem: Storage::disk('local'),
+                principal: new WebDavPrincipal('42', 'Alice'),
+                authorization: $authorization,
+            ),
         );
-
-        return new StorageFile($name, $path, $context);
     }
 
     public function test_get_name_returns_the_filename(): void
     {
-        $file = $this->makeFile(
+        $this->assertSame('document.pdf', $this->makeFile(
             'document.pdf',
             'webdav/42/document.pdf',
-            $this->createStub(Filesystem::class),
-            $this->createStub(PathAuthorizationInterface::class),
-        );
-
-        $this->assertSame('document.pdf', $file->getName());
+            new AllowAllPathAuthorization(),
+        )->getName());
     }
 
     public function test_get_calls_authorize_read_before_returning_content(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
-        $auth->expects($this->once())->method('authorizeRead');
+        Storage::disk('local')->put('webdav/42/file.txt', 'hello');
+        $authorization = new AllowAllPathAuthorization();
 
-        $fs = $this->createStub(Filesystem::class);
-        $fs->method('get')->with('webdav/42/file.txt')->willReturn('hello');
+        $result = $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->get();
 
-        $file = $this->makeFile('file.txt', 'webdav/42/file.txt', $fs, $auth);
-
-        $this->assertSame('hello', $file->get());
+        $this->assertSame('hello', $result);
+        $this->assertSame('read', $authorization->calls[0]['ability']);
     }
 
     public function test_put_with_string_calls_authorize_write(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
-        $auth->expects($this->once())->method('authorizeWrite');
+        $authorization = new AllowAllPathAuthorization();
 
-        $fs = $this->createMock(Filesystem::class);
-        $fs->expects($this->once())->method('put')->with('webdav/42/file.txt', 'content');
+        $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->put('content');
 
-        $file = $this->makeFile('file.txt', 'webdav/42/file.txt', $fs, $auth);
-        $file->put('content');
+        $this->assertSame('content', Storage::disk('local')->get('webdav/42/file.txt'));
+        $this->assertSame('write', $authorization->calls[0]['ability']);
     }
 
     public function test_put_with_resource_reads_stream_and_calls_authorize_write(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
-        $auth->expects($this->once())->method('authorizeWrite');
-
-        $fs = $this->createMock(Filesystem::class);
-        $fs->expects($this->once())->method('put')->with('webdav/42/file.txt', 'streamed content');
-
+        $authorization = new AllowAllPathAuthorization();
         $resource = fopen('php://memory', 'r+');
         fwrite($resource, 'streamed content');
         rewind($resource);
 
-        $file = $this->makeFile('file.txt', 'webdav/42/file.txt', $fs, $auth);
-        $file->put($resource);
+        $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->put($resource);
 
         fclose($resource);
+
+        $this->assertSame('streamed content', Storage::disk('local')->get('webdav/42/file.txt'));
+        $this->assertSame('write', $authorization->calls[0]['ability']);
     }
 
     public function test_delete_calls_authorize_delete(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
-        $auth->expects($this->once())->method('authorizeDelete');
+        Storage::disk('local')->put('webdav/42/file.txt', 'delete-me');
+        $authorization = new AllowAllPathAuthorization();
 
-        $fs = $this->createMock(Filesystem::class);
-        $fs->expects($this->once())->method('delete')->with('webdav/42/file.txt');
+        $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->delete();
 
-        $file = $this->makeFile('file.txt', 'webdav/42/file.txt', $fs, $auth);
-        $file->delete();
+        $this->assertFalse(Storage::disk('local')->exists('webdav/42/file.txt'));
+        $this->assertSame('delete', $authorization->calls[0]['ability']);
     }
 
     public function test_get_size_calls_authorize_read_and_returns_size(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
-        $auth->expects($this->once())->method('authorizeRead');
+        Storage::disk('local')->put('webdav/42/file.txt', '12345');
+        $authorization = new AllowAllPathAuthorization();
 
-        $fs = $this->createStub(Filesystem::class);
-        $fs->method('size')->with('webdav/42/file.txt')->willReturn(1024);
+        $size = $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->getSize();
 
-        $file = $this->makeFile('file.txt', 'webdav/42/file.txt', $fs, $auth);
-
-        $this->assertSame(1024, $file->getSize());
+        $this->assertSame(5, $size);
+        $this->assertSame('read', $authorization->calls[0]['ability']);
     }
 
     public function test_get_last_modified_calls_authorize_read_and_returns_timestamp(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
-        $auth->expects($this->once())->method('authorizeRead');
+        Storage::disk('local')->put('webdav/42/file.txt', 'timestamp');
+        $authorization = new AllowAllPathAuthorization();
 
-        $fs = $this->createMock(Filesystem::class);
-        $fs->method('lastModified')->with('webdav/42/file.txt')->willReturn(1700000000);
+        $timestamp = $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->getLastModified();
 
-        $file = $this->makeFile('file.txt', 'webdav/42/file.txt', $fs, $auth);
-
-        $this->assertSame(1700000000, $file->getLastModified());
+        $this->assertIsInt($timestamp);
+        $this->assertGreaterThan(0, $timestamp);
+        $this->assertSame('read', $authorization->calls[0]['ability']);
     }
 }
