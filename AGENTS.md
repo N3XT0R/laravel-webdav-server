@@ -109,3 +109,41 @@ src/DTO/Auth/         – WebDavPathResourceDto, WebDavAccountRecordDto
 workbench/            – Full Laravel app used for local development
 config/webdav-server.php – Package configuration stub
 ```
+
+## Agent Execution Rules
+
+For routine implementation tasks, use a lightweight workflow by default.
+
+### Default behavior
+
+- Do not use full TDD workflows unless explicitly requested.
+- Do not run the full test suite unless explicitly requested.
+- Do not repeatedly execute local tests after each small change.
+- Prefer minimal, targeted changes over broad refactoring.
+- Prefer reading only the files directly relevant to the requested change.
+- Keep reasoning and output concise unless deeper analysis is explicitly requested.
+
+### Validation
+
+- CI is the primary validation mechanism for this project.
+- Local validation should be limited to the smallest relevant scope.
+- If tests are needed, run only the most relevant targeted test file or test case.
+
+### Escalation rules
+
+Use a heavier workflow only when one of the following is true:
+
+- the user explicitly asks for TDD
+- the change is security-critical
+- the change affects authentication or authorization
+- the change impacts public package APIs
+- the change requires broad refactoring across multiple components
+
+### For small tasks
+
+For small or well-scoped implementation tasks:
+
+- implement directly
+- avoid full-project analysis
+- avoid broad architectural rewrites
+- avoid unnecessary verification loops
