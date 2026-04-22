@@ -20,9 +20,9 @@ final class SabreServerConfiguratorTest extends TestCase
     {
         $context = new StorageNodeContextDto(
             disk: 'local',
-            filesystem: $this->createMock(Filesystem::class),
+            filesystem: $this->createStub(Filesystem::class),
             principal: new WebDavPrincipal('42', 'Alice'),
-            authorization: $this->createMock(PathAuthorizationInterface::class),
+            authorization: $this->createStub(PathAuthorizationInterface::class),
         );
 
         $root = new StorageRootCollection('42', 'webdav/42', $context);
@@ -35,7 +35,7 @@ final class SabreServerConfiguratorTest extends TestCase
         $this->app->make(Repository::class)->set('webdav-server.base_uri', '/webdav/');
 
         $server = $this->makeSabreServer();
-        $configurator = new SabreServerConfigurator;
+        $configurator = new SabreServerConfigurator();
 
         $configurator->configure($server, 'default');
 
@@ -47,7 +47,7 @@ final class SabreServerConfiguratorTest extends TestCase
         $this->app->make(Repository::class)->set('webdav-server.base_uri', '/dav/');
 
         $server = $this->makeSabreServer();
-        $configurator = new SabreServerConfigurator;
+        $configurator = new SabreServerConfigurator();
 
         $configurator->configure($server, '/team-a/');
 
@@ -59,7 +59,7 @@ final class SabreServerConfiguratorTest extends TestCase
         $this->app->make(Repository::class)->set('webdav-server.base_uri', '/files/');
 
         $server = $this->makeSabreServer();
-        $configurator = new SabreServerConfigurator;
+        $configurator = new SabreServerConfigurator();
 
         $configurator->configure($server, 'archive');
 
