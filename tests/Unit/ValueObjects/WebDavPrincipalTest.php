@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Unit\ValueObjects;
 
-use Illuminate\Contracts\Auth\Authenticatable;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
 use PHPUnit\Framework\TestCase;
+use Workbench\App\Models\User;
 
 final class WebDavPrincipalTest extends TestCase
 {
@@ -27,7 +27,14 @@ final class WebDavPrincipalTest extends TestCase
 
     public function test_it_stores_user_when_provided(): void
     {
-        $user = $this->createMock(Authenticatable::class);
+        $user = new User;
+        $user->forceFill([
+            'name' => 'Alice',
+            'email' => 'alice@example.test',
+            'password' => 'secret',
+        ]);
+        $user->setAttribute($user->getKeyName(), 42);
+
         $principal = new WebDavPrincipal('42', 'Alice', $user);
 
         $this->assertSame($user, $principal->user);
