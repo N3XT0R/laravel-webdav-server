@@ -57,6 +57,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
+- **authorization**
+    - Fixed `TypeError` in `GatePathAuthorization::authorize()` caused by passing `null` to `method_exists()` when a
+      `WebDavPrincipal` has no linked Laravel user (`$principal->user === null`). The null guard is now evaluated before
+      calling `method_exists`.
+- **auth**
+    - Fixed missing empty-credential validation in `RequestBasicCredentialsExtractor` for the `PHP_AUTH_USER` /
+      `PHP_AUTH_PW` code path. An empty username or password now consistently throws `InvalidCredentialsException`,
+      matching the behaviour already enforced for the `Authorization` header path.
 - **documentation**
     - Corrected architecture documentation mismatches around route shape (`/webdav/{path?}`), space key resolution
       fallback behavior, and base URI configuration source.
