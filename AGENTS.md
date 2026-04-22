@@ -68,8 +68,11 @@ Accessed in code under the `webdav.*` key (e.g. `webdav.storage.disk`, `webdav.b
 ## Developer Workflows
 
 ```bash
-# Run tests (PHPUnit, random execution order)
-composer run test
+# Run tests with PHPUnit in the PHP Docker container
+docker compose exec -T php vendor/bin/phpunit --no-coverage
+
+# Run a targeted test file with PHPUnit in the PHP Docker container
+docker compose exec -T php vendor/bin/phpunit --no-coverage tests/Feature/Http/WebDavControllerTest.php
 
 # Lint / format code (Laravel Pint)
 composer run lint       # auto-fix
@@ -84,6 +87,10 @@ composer run build
 
 Tests live in `tests/`. Extend `N3XT0R\LaravelWebdavServer\Tests\TestCase` (Orchestra Testbench + `WithWorkbench`). The
 workbench Laravel app is in `workbench/`.
+
+Use PHPUnit only for test execution in this project. Do not introduce Pest tests or Pest-style test files.
+Prefer running tests inside the `php` Docker service via `docker compose exec -T php ...` so the execution environment
+matches the project setup.
 
 ---
 
@@ -128,6 +135,9 @@ For routine implementation tasks, use a lightweight workflow by default.
 - CI is the primary validation mechanism for this project.
 - Local validation should be limited to the smallest relevant scope.
 - If tests are needed, run only the most relevant targeted test file or test case.
+- Prefer `docker compose exec -T php vendor/bin/phpunit --no-coverage <target>` for local validation.
+- Run the full suite with `docker compose exec -T php vendor/bin/phpunit --no-coverage` only when explicitly requested
+  or when a broader refactor justifies it.
 
 ### Escalation rules
 
