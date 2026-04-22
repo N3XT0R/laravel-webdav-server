@@ -1,0 +1,133 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="980" height="1280" viewBox="0 0 980 1280" role="img" aria-labelledby="title desc">
+  <title id="title">Laravel WebDAV Server request flow</title>
+  <desc id="desc">Architecture diagram showing the WebDAV request flow from HTTP request to SabreDAV runtime.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <path d="M 0 0 L 10 5 L 0 10 z" fill="#335c67"/>
+    </marker>
+    <style>
+      .bg { fill: #f8fafc; }
+      .title { font: 700 28px Arial, sans-serif; fill: #102a43; }
+      .subtitle { font: 400 15px Arial, sans-serif; fill: #486581; }
+      .lane-title { font: 700 16px Arial, sans-serif; fill: #102a43; }
+      .box-title { font: 700 16px Arial, sans-serif; fill: #102a43; }
+      .box-text { font: 400 14px Arial, sans-serif; fill: #243b53; }
+      .small { font: 400 13px Arial, sans-serif; fill: #334e68; }
+      .arrow { stroke: #335c67; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+      .border { stroke: #bcccdc; stroke-width: 1.5; fill: #ffffff; }
+      .entry { fill: #e0fbfc; stroke: #98c1d9; stroke-width: 1.5; }
+      .factory { fill: #fff3c4; stroke: #f0b429; stroke-width: 1.5; }
+      .resolver { fill: #fde2e4; stroke: #d64550; stroke-width: 1.5; }
+      .storage { fill: #d9f99d; stroke: #65a30d; stroke-width: 1.5; }
+      .runtime { fill: #ddd6fe; stroke: #7c3aed; stroke-width: 1.5; }
+      .decision { fill: #fce7f3; stroke: #db2777; stroke-width: 1.5; }
+      .lane { fill: none; stroke: #d9e2ec; stroke-width: 1.5; stroke-dasharray: 8 8; }
+    </style>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="980" height="1280"/>
+
+  <text class="title" x="60" y="60">Laravel WebDAV Server Architecture Flow</text>
+  <text class="subtitle" x="60" y="88">From HTTP request entry through context resolution, storage tree construction, and SabreDAV runtime handoff.</text>
+
+  <rect class="lane" x="40" y="120" width="280" height="1080" rx="20"/>
+  <rect class="lane" x="350" y="120" width="280" height="1080" rx="20"/>
+  <rect class="lane" x="660" y="120" width="280" height="1080" rx="20"/>
+
+  <text class="lane-title" x="60" y="150">HTTP / Controller</text>
+  <text class="lane-title" x="370" y="150">Context / Storage</text>
+  <text class="lane-title" x="680" y="150">SabreDAV Runtime</text>
+
+  <rect class="entry" x="70" y="180" width="220" height="90" rx="14"/>
+  <text class="box-title" x="90" y="210">HTTP Request</text>
+  <text class="box-text" x="90" y="235">`/webdav/{space}/{path?}`</text>
+  <text class="box-text" x="90" y="256">Basic Auth credentials</text>
+
+  <rect class="entry" x="70" y="320" width="220" height="110" rx="14"/>
+  <text class="box-title" x="90" y="350">WebDavController</text>
+  <text class="box-text" x="90" y="375">Checks whether a Basic Auth</text>
+  <text class="box-text" x="90" y="396">attempt is present before the</text>
+  <text class="box-text" x="90" y="417">server is constructed.</text>
+
+  <polygon class="decision" points="180,485 275,560 180,635 85,560"/>
+  <text class="box-title" x="133" y="548">Basic Auth</text>
+  <text class="box-title" x="145" y="570">attempt?</text>
+
+  <rect class="entry" x="55" y="690" width="250" height="85" rx="14"/>
+  <text class="box-title" x="75" y="722">401 Unauthorized</text>
+  <text class="box-text" x="75" y="747">With `WWW-Authenticate` header</text>
+
+  <rect class="factory" x="380" y="180" width="220" height="100" rx="14"/>
+  <text class="box-title" x="400" y="212">WebDavServerFactory</text>
+  <text class="box-text" x="400" y="237">Builds the SabreDAV `Server`</text>
+  <text class="box-text" x="400" y="258">from resolved runtime state.</text>
+
+  <rect class="resolver" x="380" y="330" width="220" height="140" rx="14"/>
+  <text class="box-title" x="400" y="360">DefaultRequestContextResolver</text>
+  <text class="box-text" x="400" y="385">Coordinates credentials,</text>
+  <text class="box-text" x="400" y="406">principal, space key, and</text>
+  <text class="box-text" x="400" y="427">effective storage target.</text>
+  <text class="small" x="400" y="452">Extractor + Authenticator + Resolvers</text>
+
+  <rect class="resolver" x="380" y="520" width="220" height="120" rx="14"/>
+  <text class="box-title" x="400" y="550">WebDavRequestContextDto</text>
+  <text class="box-text" x="400" y="575">Carries principal, `spaceKey`,</text>
+  <text class="box-text" x="400" y="596">and resolved storage space.</text>
+  <text class="box-text" x="400" y="617">Used by factory collaborators.</text>
+
+  <rect class="storage" x="380" y="690" width="220" height="120" rx="14"/>
+  <text class="box-title" x="400" y="720">StorageRootBuilder</text>
+  <text class="box-text" x="400" y="745">Creates `StorageRootCollection`</text>
+  <text class="box-text" x="400" y="766">and the SabreDAV node tree for</text>
+  <text class="box-text" x="400" y="787">the resolved user storage root.</text>
+
+  <rect class="storage" x="380" y="860" width="220" height="130" rx="14"/>
+  <text class="box-title" x="400" y="890">StorageDirectory / StorageFile</text>
+  <text class="box-text" x="400" y="915">Perform filesystem operations</text>
+  <text class="box-text" x="400" y="936">through Laravel disks after</text>
+  <text class="box-text" x="400" y="957">`PathAuthorizationInterface`</text>
+  <text class="box-text" x="400" y="978">allows the operation.</text>
+
+  <rect class="runtime" x="690" y="330" width="220" height="120" rx="14"/>
+  <text class="box-title" x="710" y="360">SabreServerConfigurator</text>
+  <text class="box-text" x="710" y="385">Applies runtime settings such</text>
+  <text class="box-text" x="710" y="406">as base URI and logger wiring.</text>
+  <text class="box-text" x="710" y="427">Configured per resolved space.</text>
+
+  <rect class="runtime" x="690" y="500" width="220" height="110" rx="14"/>
+  <text class="box-title" x="710" y="530">ServerRunnerInterface</text>
+  <text class="box-text" x="710" y="555">Explicit runtime boundary</text>
+  <text class="box-text" x="710" y="576">between package orchestration</text>
+  <text class="box-text" x="710" y="597">and SabreDAV execution.</text>
+
+  <rect class="runtime" x="690" y="660" width="220" height="125" rx="14"/>
+  <text class="box-title" x="710" y="690">SabreServerRunner</text>
+  <text class="box-text" x="710" y="715">Default adapter that calls</text>
+  <text class="box-text" x="710" y="736">`server-&gt;start(); exit;` and</text>
+  <text class="box-text" x="710" y="757">hands off the HTTP lifecycle</text>
+  <text class="box-text" x="710" y="778">to SabreDAV.</text>
+
+  <rect class="runtime" x="690" y="840" width="220" height="120" rx="14"/>
+  <text class="box-title" x="710" y="870">SabreDAV Runtime</text>
+  <text class="box-text" x="710" y="895">Protocol handling, response</text>
+  <text class="box-text" x="710" y="916">generation, and WebDAV method</text>
+  <text class="box-text" x="710" y="937">semantics happen here.</text>
+
+  <line class="arrow" x1="180" y1="270" x2="180" y2="320"/>
+  <line class="arrow" x1="180" y1="430" x2="180" y2="485"/>
+  <path class="arrow" d="M 85 560 L 45 560 L 45 732 L 55 732"/>
+  <path class="arrow" d="M 275 560 L 330 560 L 330 230 L 380 230"/>
+  <line class="arrow" x1="490" y1="280" x2="490" y2="330"/>
+  <line class="arrow" x1="490" y1="470" x2="490" y2="520"/>
+  <line class="arrow" x1="490" y1="640" x2="490" y2="690"/>
+  <line class="arrow" x1="490" y1="810" x2="490" y2="860"/>
+  <path class="arrow" d="M 600 230 L 645 230 L 645 390 L 690 390"/>
+  <line class="arrow" x1="800" y1="450" x2="800" y2="500"/>
+  <line class="arrow" x1="800" y1="610" x2="800" y2="660"/>
+  <line class="arrow" x1="800" y1="785" x2="800" y2="840"/>
+  <path class="arrow" d="M 600 925 L 645 925 L 645 900 L 690 900"/>
+
+  <text class="small" x="70" y="1090">Authorization failures surface as `Sabre\DAV\Exception\Forbidden` before filesystem access.</text>
+  <text class="small" x="70" y="1115">The `{space}` route parameter resolves to `spaceKey`, then to `webdav-server.storage.spaces.{spaceKey}`.</text>
+  <text class="small" x="70" y="1140">All major collaborators are bound via `bindIf()` and remain replaceable from the consuming Laravel app.</text>
+</svg>

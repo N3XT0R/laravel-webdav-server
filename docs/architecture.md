@@ -2,6 +2,8 @@
 
 Every WebDAV request passes through this runtime flow:
 
+![Laravel WebDAV Server request flow](assets/architecture-request-flow.svg)
+
 1. `WebDavController::__invoke()` accepts the incoming request for `/webdav/{space}/{path?}`.
 2. If no Basic Auth attempt is present, the controller returns `401 Unauthorized` with `WWW-Authenticate`.
 3. If credentials are present, `WebDavServerFactory::make(request)` builds the SabreDAV server instance.
