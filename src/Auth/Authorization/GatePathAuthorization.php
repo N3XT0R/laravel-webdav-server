@@ -48,7 +48,7 @@ final readonly class GatePathAuthorization implements PathAuthorizationInterface
             'disk' => $disk,
             'path' => $path,
             'user_class' => get_debug_type($principal->user),
-            'user_id' => method_exists($principal->user, 'getAuthIdentifier')
+            'user_id' => $principal->user !== null && method_exists($principal->user, 'getAuthIdentifier')
                 ? $principal->user->getAuthIdentifier()
                 : null,
         ]);

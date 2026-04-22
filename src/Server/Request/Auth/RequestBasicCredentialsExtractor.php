@@ -20,6 +20,18 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
         $password = $request->getPassword();
 
         if (is_string($username) && is_string($password)) {
+            if ($username === '' || $password === '') {
+                throw new InvalidCredentialsException(
+                    message: 'Incomplete Basic Auth credentials.',
+                    context: [
+                        'request' => [
+                            'method' => $request->getMethod(),
+                            'uri' => $request->getRequestUri(),
+                        ],
+                    ],
+                );
+            }
+
             return [$username, $password];
         }
 
