@@ -212,6 +212,12 @@ Throw `Sabre\DAV\Exception\Forbidden` on denial – never a Laravel HTTP excepti
 
 `PROPFIND` · `GET` · `PUT` · `DELETE` · `MKCOL`
 
+## Tested Clients
+
+The current implementation has been tested with:
+
+- `WinSCP`
+
 ---
 
 ## Common Misunderstandings
