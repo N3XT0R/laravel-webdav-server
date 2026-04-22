@@ -12,8 +12,8 @@ use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\FixedRequestCredentialsExtr
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\FixedSpaceKeyResolver;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\RecordingPrincipalAuthenticator;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Storage\RecordingSpaceResolver;
-use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use PHPUnit\Framework\TestCase;
 
 final class DefaultRequestContextResolverTest extends TestCase
 {

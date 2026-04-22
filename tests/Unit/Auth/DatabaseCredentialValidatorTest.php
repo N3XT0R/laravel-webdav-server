@@ -8,8 +8,8 @@ use Illuminate\Hashing\BcryptHasher;
 use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavAccountRecordDto;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Repositories\InMemoryWebDavAccountRepository;
-use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use PHPUnit\Framework\TestCase;
 use Workbench\App\Models\User;
 
 final class DatabaseCredentialValidatorTest extends TestCase
@@ -59,12 +59,12 @@ final class DatabaseCredentialValidatorTest extends TestCase
     public function test_it_passes_the_account_user_to_the_principal(): void
     {
         $user = new User;
-        $user->forceFill([
+        $user->setRawAttributes([
             'name' => 'Alice',
             'email' => 'alice@example.test',
             'password' => 'secret',
-        ]);
-        $user->setAttribute($user->getKeyName(), 42);
+            $user->getKeyName() => 42,
+        ], true);
 
         $repository = new InMemoryWebDavAccountRepository([
             'alice' => new WebDavAccountRecordDto(

@@ -6,8 +6,8 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Auth;
 
 use N3XT0R\LaravelWebdavServer\Auth\Backends\BasicAuthBackend;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\ArrayCredentialValidator;
-use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
 final class BasicAuthBackendTest extends TestCase
