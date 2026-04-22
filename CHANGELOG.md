@@ -36,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Added `ADR 0001` for test architecture and layer boundaries.
     - Added `ADR 0002` for the explicit WebDAV request pipeline and the `ServerRunnerInterface` runtime boundary.
     - Added `ADR 0003` for class naming conventions by suffix.
+    - Added `ADR 0004` to require continuous `CHANGELOG.md` maintenance in `Unreleased`, following Keep a Changelog
+      and the project's current section/grouping style.
 
 ### Changed
 
