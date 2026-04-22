@@ -29,16 +29,17 @@ final class WebDavServerFactoryTest extends TestCase
         $context = new WebDavRequestContextDto($principal, 'team-a', $space);
 
         $requestContextResolver = $this->createMock(RequestContextResolverInterface::class);
-        $requestContextResolver->expects($this->once())
+        $requestContextResolver
+            ->expects($this->once())
             ->method('resolve')
             ->with($request)
             ->willReturn($context);
 
         $nodeContext = new StorageNodeContextDto(
             disk: $space->disk,
-            filesystem: $this->createMock(Filesystem::class),
+            filesystem: $this->createStub(Filesystem::class),
             principal: $principal,
-            authorization: $this->createMock(PathAuthorizationInterface::class),
+            authorization: $this->createStub(PathAuthorizationInterface::class),
         );
 
         $root = new StorageRootCollection(
@@ -48,13 +49,15 @@ final class WebDavServerFactoryTest extends TestCase
         );
 
         $storageRootBuilder = $this->createMock(StorageRootBuilderInterface::class);
-        $storageRootBuilder->expects($this->once())
+        $storageRootBuilder
+            ->expects($this->once())
             ->method('build')
             ->with($principal, $space)
             ->willReturn($root);
 
         $serverConfigurator = $this->createMock(ServerConfiguratorInterface::class);
-        $serverConfigurator->expects($this->once())
+        $serverConfigurator
+            ->expects($this->once())
             ->method('configure')
             ->with($this->isInstanceOf(Server::class), 'team-a');
 
