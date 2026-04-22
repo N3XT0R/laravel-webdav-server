@@ -4,16 +4,43 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Feature\Http;
 
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
+use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerRunnerInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;
-use N3XT0R\LaravelWebdavServer\Tests\TestCase;
+use N3XT0R\LaravelWebdavServer\Models\WebDavAccount;
+use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
+use N3XT0R\LaravelWebdavServer\Tests\DatabaseTestCase;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\CapturingServerRunner;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
-use RuntimeException;
-use Sabre\DAV\Server;
+use ReflectionProperty;
+use Workbench\App\Models\User;
 
-final class WebDavControllerTest extends TestCase
+final class WebDavControllerTest extends DatabaseTestCase
 {
+    private string $diskRoot;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+
+        $this->diskRoot = sys_get_temp_dir().'/laravel-webdav-server-tests/'.str_replace('\\', '-', static::class);
+
+        $this->app['config']->set('filesystems.disks.local.root', $this->diskRoot);
+        $this->app->bind(ServerRunnerInterface::class, CapturingServerRunner::class);
+
+        CapturingServerRunner::reset();
+        (new Filesystem())->deleteDirectory($this->diskRoot);
+    }
+
+    protected function tearDown(): void
+    {
+        (new Filesystem())->deleteDirectory($this->diskRoot);
+        CapturingServerRunner::reset();
+
+        parent::tearDown();
+    }
+
     public function test_request_without_basic_auth_returns_401_and_www_authenticate_header(): void
     {
         $response = $this->get('/webdav/default');
@@ -26,54 +53,87 @@ final class WebDavControllerTest extends TestCase
     {
         $this->withoutExceptionHandling();
         $this->expectException(InvalidCredentialsException::class);
+
         $this->call('PROPFIND', '/webdav/default', server: [
-            // base64("foo") => no ":" delimiter after decoding
             'HTTP_AUTHORIZATION' => 'Basic Zm9v',
         ]);
     }
 
-    public function test_request_with_php_auth_attempt_reaches_authentication_pipeline(): void
+    public function test_request_with_invalid_credentials_throws_invalid_credentials_exception(): void
     {
-        $validator = $this->createMock(CredentialValidatorInterface::class);
-        $validator->expects($this->once())
-            ->method('validate')
-            ->with('alice', 'secret')
-            ->willReturn(null);
+        $user = User::factory()->create();
+        WebDavAccount::factory()
+            ->withUserName('alice')
+            ->withPassword('secret')
+            ->withUserId((int) $user->getKey())
+            ->create([
+                'display_name' => 'Alice',
+            ]);
 
-        $this->app->instance(CredentialValidatorInterface::class, $validator);
         $this->withoutExceptionHandling();
         $this->expectException(InvalidCredentialsException::class);
 
         $this->call('PROPFIND', '/webdav/default', server: [
             'PHP_AUTH_USER' => 'alice',
-            'PHP_AUTH_PW' => 'secret',
+            'PHP_AUTH_PW' => 'wrong-password',
         ]);
     }
 
-    public function test_request_with_valid_basic_auth_calls_server_runner(): void
+    public function test_request_with_valid_basic_auth_runs_the_real_pipeline(): void
     {
-        $validator = $this->createMock(CredentialValidatorInterface::class);
-        $validator->expects($this->once())
-            ->method('validate')
-            ->with('alice', 'secret')
-            ->willReturn(new WebDavPrincipal('42', 'Alice'));
+        $user = User::factory()->create([
+            'name' => 'Alice',
+        ]);
+        WebDavAccount::factory()
+            ->withUserName('alice')
+            ->withPassword('secret')
+            ->withUserId((int) $user->getKey())
+            ->create([
+                'display_name' => 'Alice',
+            ]);
 
-        $runner = $this->createMock(ServerRunnerInterface::class);
-        $runner->expects($this->once())
-            ->method('run')
-            ->with($this->isInstanceOf(Server::class))
-            ->willThrowException(new RuntimeException('Runner called.'));
+        Storage::disk('local')->makeDirectory('webdav/'.$user->getKey().'/documents');
+        Storage::disk('local')->put('webdav/'.$user->getKey().'/readme.txt', 'hello');
 
-        $this->app->instance(CredentialValidatorInterface::class, $validator);
-        $this->app->instance(ServerRunnerInterface::class, $runner);
-
-        $this->withoutExceptionHandling();
-        $this->expectException(RuntimeException::class);
-        $this->expectExceptionMessage('Runner called.');
-
-        $this->call('PROPFIND', '/webdav/default', server: [
+        $response = $this->call('PROPFIND', '/webdav/default', server: [
             'PHP_AUTH_USER' => 'alice',
             'PHP_AUTH_PW' => 'secret',
         ]);
+
+        $response->assertOk();
+        $response->assertJsonPath('baseUri', '/webdav/default/');
+        $response->assertJsonPath('rootClass', StorageRootCollection::class);
+        $response->assertJsonPath('rootName', (string) $user->getKey());
+        $response->assertJsonCount(2, 'children');
+
+        $children = collect($response->json('children'))->sortBy('name')->values()->all();
+
+        $this->assertSame([
+            ['name' => 'documents', 'type' => 'directory'],
+            ['name' => 'readme.txt', 'type' => 'file'],
+        ], $children);
+
+        $server = CapturingServerRunner::$lastServer;
+
+        $this->assertNotNull($server);
+
+        $root = $server->tree->getNodeForPath('');
+        $context = $this->readProperty($root, 'context');
+        $principal = $context->principal;
+
+        $this->assertSame('local', $context->disk);
+        $this->assertSame('webdav/'.$user->getKey(), $this->readProperty($root, 'path'));
+        $this->assertInstanceOf(WebDavPrincipal::class, $principal);
+        $this->assertSame((string) $user->getKey(), $principal->id);
+        $this->assertSame('Alice', $principal->displayName);
+        $this->assertSame($user->getKey(), $principal->user?->getAuthIdentifier());
+    }
+
+    private function readProperty(object $object, string $property): mixed
+    {
+        $reflection = new ReflectionProperty($object, $property);
+        $reflection->setAccessible(true);
+
+        return $reflection->getValue($object);
     }
 }
