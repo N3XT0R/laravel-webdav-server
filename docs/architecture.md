@@ -45,6 +45,7 @@ All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, 
 Related decisions:
 
 - [ADR 0001: Test Architecture And Layering](adr/0001-test-architecture-and-layering.md)
+- [ADR 0002: WebDAV Request Pipeline And Runtime Boundary](adr/0002-webdav-request-pipeline-and-runtime-boundary.md)
 
 ## Runtime Notes (Current State)
 
