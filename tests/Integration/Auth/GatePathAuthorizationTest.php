@@ -18,10 +18,10 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $response = $allow ? Response::allow() : Response::deny('Access denied.');
 
-        $innerGate = $this->createMock(Gate::class);
+        $innerGate = $this->createStub(Gate::class);
         $innerGate->method('inspect')->willReturn($response);
 
-        $gate = $this->createMock(Gate::class);
+        $gate = $this->createStub(Gate::class);
         $gate->method('forUser')->willReturn($innerGate);
 
         return new GatePathAuthorization($gate);
@@ -35,7 +35,7 @@ final class GatePathAuthorizationTest extends TestCase
             ->with($expectedAbility, $this->isInstanceOf(WebDavPathResourceDto::class))
             ->willReturn(Response::deny('denied'));
 
-        $gate = $this->createMock(Gate::class);
+        $gate = $this->createStub(Gate::class);
         $gate->method('forUser')->willReturn($innerGate);
 
         return new GatePathAuthorization($gate);

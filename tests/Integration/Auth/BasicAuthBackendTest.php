@@ -13,7 +13,7 @@ final class BasicAuthBackendTest extends TestCase
 {
     public function test_get_principal_returns_null_before_any_authentication(): void
     {
-        $validator = $this->createMock(CredentialValidatorInterface::class);
+        $validator = $this->createStub(CredentialValidatorInterface::class);
         $backend = new BasicAuthBackend($validator);
 
         $this->assertNull($backend->getPrincipal());
@@ -21,7 +21,7 @@ final class BasicAuthBackendTest extends TestCase
 
     public function test_get_realm_returns_default_realm(): void
     {
-        $validator = $this->createMock(CredentialValidatorInterface::class);
+        $validator = $this->createStub(CredentialValidatorInterface::class);
         $backend = new BasicAuthBackend($validator);
 
         $this->assertSame('Laravel WebDAV', $backend->getRealm());
@@ -29,7 +29,7 @@ final class BasicAuthBackendTest extends TestCase
 
     public function test_get_realm_returns_custom_realm(): void
     {
-        $validator = $this->createMock(CredentialValidatorInterface::class);
+        $validator = $this->createStub(CredentialValidatorInterface::class);
         $backend = new BasicAuthBackend($validator, 'My Custom Realm');
 
         $this->assertSame('My Custom Realm', $backend->getRealm());
@@ -57,7 +57,7 @@ final class BasicAuthBackendTest extends TestCase
     {
         $principal = new WebDavPrincipal('42', 'Alice');
 
-        $validator = $this->createMock(CredentialValidatorInterface::class);
+        $validator = $this->createStub(CredentialValidatorInterface::class);
         $validator->method('validate')->willReturn($principal);
 
         $backend = new BasicAuthBackend($validator);
@@ -86,7 +86,7 @@ final class BasicAuthBackendTest extends TestCase
 
     public function test_principal_remains_null_after_failed_authentication(): void
     {
-        $validator = $this->createMock(CredentialValidatorInterface::class);
+        $validator = $this->createStub(CredentialValidatorInterface::class);
         $validator->method('validate')->willReturn(null);
 
         $backend = new BasicAuthBackend($validator);

@@ -37,8 +37,8 @@ final class StorageDirectoryTest extends TestCase
         $directory = $this->makeDirectory(
             'docs',
             'webdav/42/docs',
-            $this->createMock(Filesystem::class),
-            $this->createMock(PathAuthorizationInterface::class),
+            $this->createStub(Filesystem::class),
+            $this->createStub(PathAuthorizationInterface::class),
         );
 
         $this->assertSame('docs', $directory->getName());
@@ -49,7 +49,7 @@ final class StorageDirectoryTest extends TestCase
         $auth = $this->createMock(PathAuthorizationInterface::class);
         $auth->expects($this->once())->method('authorizeRead');
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->with('webdav/42')->willReturn(true);
         $fs->method('directories')->with('webdav/42')->willReturn(['webdav/42/sub']);
         $fs->method('files')->with('webdav/42')->willReturn(['webdav/42/file.txt']);
@@ -67,9 +67,9 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_get_children_returns_empty_array_when_directory_does_not_exist(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
+        $auth = $this->createStub(PathAuthorizationInterface::class);
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->with('webdav/42/empty')->willReturn(false);
 
         $directory = $this->makeDirectory('empty', 'webdav/42/empty', $fs, $auth);
@@ -79,9 +79,9 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_get_child_returns_storage_file_for_a_file(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
+        $auth = $this->createStub(PathAuthorizationInterface::class);
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(true);
         $fs->method('directories')->willReturn([]);
 
@@ -94,9 +94,9 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_get_child_returns_storage_directory_for_a_subdirectory(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
+        $auth = $this->createStub(PathAuthorizationInterface::class);
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(true);
         $fs->method('directories')->willReturn(['webdav/42/archive']);
 
@@ -111,9 +111,9 @@ final class StorageDirectoryTest extends TestCase
     {
         $this->expectException(NotFound::class);
 
-        $auth = $this->createMock(PathAuthorizationInterface::class);
+        $auth = $this->createStub(PathAuthorizationInterface::class);
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(false);
 
         $directory = $this->makeDirectory('42', 'webdav/42', $fs, $auth);
@@ -122,9 +122,9 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_child_exists_returns_true_when_path_exists_and_auth_passes(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
+        $auth = $this->createStub(PathAuthorizationInterface::class);
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(true);
 
         $directory = $this->makeDirectory('42', 'webdav/42', $fs, $auth);
@@ -134,9 +134,9 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_child_exists_returns_false_when_path_does_not_exist(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
+        $auth = $this->createStub(PathAuthorizationInterface::class);
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(false);
 
         $directory = $this->makeDirectory('42', 'webdav/42', $fs, $auth);
@@ -146,12 +146,12 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_child_exists_returns_false_when_authorization_throws(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
+        $auth = $this->createStub(PathAuthorizationInterface::class);
         $auth->method('authorizeRead')->willThrowException(new Forbidden);
 
         $directory = $this->makeDirectory(
             '42', 'webdav/42',
-            $this->createMock(Filesystem::class),
+            $this->createStub(Filesystem::class),
             $auth,
         );
 

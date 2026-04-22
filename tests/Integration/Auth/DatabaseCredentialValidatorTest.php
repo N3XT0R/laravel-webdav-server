@@ -16,10 +16,10 @@ final class DatabaseCredentialValidatorTest extends TestCase
 {
     public function test_it_returns_null_when_account_is_not_found(): void
     {
-        $repository = $this->createMock(WebDavAccountRepositoryInterface::class);
+        $repository = $this->createStub(WebDavAccountRepositoryInterface::class);
         $repository->method('findEnabledByUsername')->with('unknown')->willReturn(null);
 
-        $hasher = $this->createMock(Hasher::class);
+        $hasher = $this->createStub(Hasher::class);
 
         $validator = new DatabaseCredentialValidator($repository, $hasher);
 
@@ -30,10 +30,10 @@ final class DatabaseCredentialValidatorTest extends TestCase
     {
         $account = new WebDavAccountRecordDto('42', 'Alice', '$2y$hashed');
 
-        $repository = $this->createMock(WebDavAccountRepositoryInterface::class);
+        $repository = $this->createStub(WebDavAccountRepositoryInterface::class);
         $repository->method('findEnabledByUsername')->with('alice')->willReturn($account);
 
-        $hasher = $this->createMock(Hasher::class);
+        $hasher = $this->createStub(Hasher::class);
         $hasher->method('check')->with('wrong', '$2y$hashed')->willReturn(false);
 
         $validator = new DatabaseCredentialValidator($repository, $hasher);
@@ -45,10 +45,10 @@ final class DatabaseCredentialValidatorTest extends TestCase
     {
         $account = new WebDavAccountRecordDto('42', 'Alice', '$2y$hashed');
 
-        $repository = $this->createMock(WebDavAccountRepositoryInterface::class);
+        $repository = $this->createStub(WebDavAccountRepositoryInterface::class);
         $repository->method('findEnabledByUsername')->with('alice')->willReturn($account);
 
-        $hasher = $this->createMock(Hasher::class);
+        $hasher = $this->createStub(Hasher::class);
         $hasher->method('check')->with('secret', '$2y$hashed')->willReturn(true);
 
         $validator = new DatabaseCredentialValidator($repository, $hasher);
@@ -61,13 +61,13 @@ final class DatabaseCredentialValidatorTest extends TestCase
 
     public function test_it_passes_the_account_user_to_the_principal(): void
     {
-        $user = $this->createMock(Authenticatable::class);
+        $user = $this->createStub(Authenticatable::class);
         $account = new WebDavAccountRecordDto('42', 'Alice', '$2y$hashed', $user);
 
-        $repository = $this->createMock(WebDavAccountRepositoryInterface::class);
+        $repository = $this->createStub(WebDavAccountRepositoryInterface::class);
         $repository->method('findEnabledByUsername')->willReturn($account);
 
-        $hasher = $this->createMock(Hasher::class);
+        $hasher = $this->createStub(Hasher::class);
         $hasher->method('check')->willReturn(true);
 
         $validator = new DatabaseCredentialValidator($repository, $hasher);
@@ -80,10 +80,10 @@ final class DatabaseCredentialValidatorTest extends TestCase
     {
         $account = new WebDavAccountRecordDto('42', 'Alice', '$2y$hashed');
 
-        $repository = $this->createMock(WebDavAccountRepositoryInterface::class);
+        $repository = $this->createStub(WebDavAccountRepositoryInterface::class);
         $repository->method('findEnabledByUsername')->willReturn($account);
 
-        $hasher = $this->createMock(Hasher::class);
+        $hasher = $this->createStub(Hasher::class);
         $hasher->method('check')->willReturn(true);
 
         $validator = new DatabaseCredentialValidator($repository, $hasher);

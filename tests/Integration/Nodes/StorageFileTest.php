@@ -36,8 +36,8 @@ final class StorageFileTest extends TestCase
         $file = $this->makeFile(
             'document.pdf',
             'webdav/42/document.pdf',
-            $this->createMock(Filesystem::class),
-            $this->createMock(PathAuthorizationInterface::class),
+            $this->createStub(Filesystem::class),
+            $this->createStub(PathAuthorizationInterface::class),
         );
 
         $this->assertSame('document.pdf', $file->getName());
@@ -48,7 +48,7 @@ final class StorageFileTest extends TestCase
         $auth = $this->createMock(PathAuthorizationInterface::class);
         $auth->expects($this->once())->method('authorizeRead');
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('get')->with('webdav/42/file.txt')->willReturn('hello');
 
         $file = $this->makeFile('file.txt', 'webdav/42/file.txt', $fs, $auth);
@@ -103,7 +103,7 @@ final class StorageFileTest extends TestCase
         $auth = $this->createMock(PathAuthorizationInterface::class);
         $auth->expects($this->once())->method('authorizeRead');
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('size')->with('webdav/42/file.txt')->willReturn(1024);
 
         $file = $this->makeFile('file.txt', 'webdav/42/file.txt', $fs, $auth);

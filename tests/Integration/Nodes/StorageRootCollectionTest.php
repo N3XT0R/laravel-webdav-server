@@ -37,8 +37,8 @@ final class StorageRootCollectionTest extends TestCase
     {
         $root = $this->makeRoot(
             'webdav/42',
-            $this->createMock(Filesystem::class),
-            $this->createMock(PathAuthorizationInterface::class),
+            $this->createStub(Filesystem::class),
+            $this->createStub(PathAuthorizationInterface::class),
             '42',
         );
 
@@ -50,7 +50,7 @@ final class StorageRootCollectionTest extends TestCase
         $auth = $this->createMock(PathAuthorizationInterface::class);
         $auth->expects($this->once())->method('authorizeRead');
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->with('webdav/42')->willReturn(true);
         $fs->method('directories')->with('webdav/42')->willReturn(['webdav/42/docs']);
         $fs->method('files')->with('webdav/42')->willReturn(['webdav/42/readme.txt']);
@@ -65,21 +65,21 @@ final class StorageRootCollectionTest extends TestCase
 
     public function test_get_children_returns_empty_array_when_root_does_not_exist(): void
     {
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(false);
 
-        $root = $this->makeRoot('webdav/42', $fs, $this->createMock(PathAuthorizationInterface::class));
+        $root = $this->makeRoot('webdav/42', $fs, $this->createStub(PathAuthorizationInterface::class));
 
         $this->assertSame([], $root->getChildren());
     }
 
     public function test_get_child_returns_file_node(): void
     {
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(true);
         $fs->method('directories')->willReturn([]);
 
-        $root = $this->makeRoot('webdav/42', $fs, $this->createMock(PathAuthorizationInterface::class));
+        $root = $this->makeRoot('webdav/42', $fs, $this->createStub(PathAuthorizationInterface::class));
         $child = $root->getChild('notes.md');
 
         $this->assertInstanceOf(StorageFile::class, $child);
@@ -88,11 +88,11 @@ final class StorageRootCollectionTest extends TestCase
 
     public function test_get_child_returns_directory_node(): void
     {
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(true);
         $fs->method('directories')->willReturn(['webdav/42/photos']);
 
-        $root = $this->makeRoot('webdav/42', $fs, $this->createMock(PathAuthorizationInterface::class));
+        $root = $this->makeRoot('webdav/42', $fs, $this->createStub(PathAuthorizationInterface::class));
         $child = $root->getChild('photos');
 
         $this->assertInstanceOf(StorageDirectory::class, $child);
@@ -103,39 +103,39 @@ final class StorageRootCollectionTest extends TestCase
     {
         $this->expectException(NotFound::class);
 
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(false);
 
-        $root = $this->makeRoot('webdav/42', $fs, $this->createMock(PathAuthorizationInterface::class));
+        $root = $this->makeRoot('webdav/42', $fs, $this->createStub(PathAuthorizationInterface::class));
         $root->getChild('missing.txt');
     }
 
     public function test_child_exists_returns_true_for_existing_path(): void
     {
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(true);
 
-        $root = $this->makeRoot('webdav/42', $fs, $this->createMock(PathAuthorizationInterface::class));
+        $root = $this->makeRoot('webdav/42', $fs, $this->createStub(PathAuthorizationInterface::class));
 
         $this->assertTrue($root->childExists('file.txt'));
     }
 
     public function test_child_exists_returns_false_for_missing_path(): void
     {
-        $fs = $this->createMock(Filesystem::class);
+        $fs = $this->createStub(Filesystem::class);
         $fs->method('exists')->willReturn(false);
 
-        $root = $this->makeRoot('webdav/42', $fs, $this->createMock(PathAuthorizationInterface::class));
+        $root = $this->makeRoot('webdav/42', $fs, $this->createStub(PathAuthorizationInterface::class));
 
         $this->assertFalse($root->childExists('ghost.txt'));
     }
 
     public function test_child_exists_returns_false_when_authorization_throws(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
+        $auth = $this->createStub(PathAuthorizationInterface::class);
         $auth->method('authorizeRead')->willThrowException(new Forbidden);
 
-        $root = $this->makeRoot('webdav/42', $this->createMock(Filesystem::class), $auth);
+        $root = $this->makeRoot('webdav/42', $this->createStub(Filesystem::class), $auth);
 
         $this->assertFalse($root->childExists('secret.txt'));
     }
@@ -166,7 +166,7 @@ final class StorageRootCollectionTest extends TestCase
 
     public function test_create_file_with_null_data_puts_empty_string(): void
     {
-        $auth = $this->createMock(PathAuthorizationInterface::class);
+        $auth = $this->createStub(PathAuthorizationInterface::class);
 
         $fs = $this->createMock(Filesystem::class);
         $fs->expects($this->once())->method('put')->with('webdav/42/empty.txt', '');
