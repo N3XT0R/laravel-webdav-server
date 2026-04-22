@@ -20,43 +20,23 @@ use N3XT0R\LaravelWebdavServer\Server\Request\Context\DefaultRequestContextResol
 use N3XT0R\LaravelWebdavServer\Server\Request\Routing\RequestSpaceKeyResolver;
 use N3XT0R\LaravelWebdavServer\Server\Runtime\SabreServerRunner;
 
-final readonly class ServerRegister
+final class ServerRegister extends AbstractRegister
 {
-    public function __construct(
-        private Container $app,
-    ) {}
+    protected function bindings(): array
+    {
+        return [
+            RequestCredentialsExtractorInterface::class => RequestBasicCredentialsExtractor::class,
+            PrincipalAuthenticatorInterface::class => ValidatorPrincipalAuthenticator::class,
+            SpaceKeyResolverInterface::class => RequestSpaceKeyResolver::class,
+            RequestContextResolverInterface::class => DefaultRequestContextResolver::class,
+            ServerConfiguratorInterface::class => SabreServerConfigurator::class,
+            ServerRunnerInterface::class => SabreServerRunner::class,
+        ];
+    }
 
     public function register(): void
     {
-        $this->app->bindIf(
-            RequestCredentialsExtractorInterface::class,
-            RequestBasicCredentialsExtractor::class,
-        );
-
-        $this->app->bindIf(
-            PrincipalAuthenticatorInterface::class,
-            ValidatorPrincipalAuthenticator::class,
-        );
-
-        $this->app->bindIf(
-            SpaceKeyResolverInterface::class,
-            RequestSpaceKeyResolver::class,
-        );
-
-        $this->app->bindIf(
-            RequestContextResolverInterface::class,
-            DefaultRequestContextResolver::class,
-        );
-
-        $this->app->bindIf(
-            ServerConfiguratorInterface::class,
-            SabreServerConfigurator::class,
-        );
-
-        $this->app->bindIf(
-            ServerRunnerInterface::class,
-            SabreServerRunner::class,
-        );
+        parent::register();
 
         $this->app->scopedIf(WebDavServerFactory::class, function (Container $app): WebDavServerFactory {
             return new WebDavServerFactory(

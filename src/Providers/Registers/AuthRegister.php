@@ -4,28 +4,18 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Providers\Registers;
 
-use Illuminate\Container\Container;
 use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
 use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 
-final readonly class AuthRegister
+final class AuthRegister extends AbstractRegister
 {
-    public function __construct(
-        private Container $app,
-    ) {}
-
-    public function register(): void
+    protected function bindings(): array
     {
-        $this->app->bindIf(
-            CredentialValidatorInterface::class,
-            DatabaseCredentialValidator::class,
-        );
-
-        $this->app->bindIf(
-            PathAuthorizationInterface::class,
-            GatePathAuthorization::class,
-        );
+        return [
+            CredentialValidatorInterface::class => DatabaseCredentialValidator::class,
+            PathAuthorizationInterface::class => GatePathAuthorization::class,
+        ];
     }
 }
