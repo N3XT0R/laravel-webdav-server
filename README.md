@@ -134,18 +134,11 @@ See the full configuration reference in [docs/configuration.md](docs/configurati
 
 ```php
 Route::match([
-    'OPTIONS',
     'GET',
-    'HEAD',
     'PUT',
     'DELETE',
     'PROPFIND',
-    'PROPPATCH',
     'MKCOL',
-    'COPY',
-    'MOVE',
-    'LOCK',
-    'UNLOCK',
 ], '/webdav/{space}/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDavController::class)->where('path', '.*');
 ```
 
