@@ -13,7 +13,7 @@ final class ArrayCredentialValidator implements CredentialValidatorInterface
     public array $calls = [];
 
     /**
-     * @param array<string, array<string, WebDavPrincipal|null>> $credentials
+     * @param  array<string, array<string, WebDavPrincipal|null>>  $credentials
      */
     public function __construct(
         private array $credentials = [],

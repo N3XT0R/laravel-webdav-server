@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Auth;
 
 use Illuminate\Auth\Access\Gate as IlluminateGate;
-use Illuminate\Support\Facades\Gate;
 use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;

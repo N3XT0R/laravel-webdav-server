@@ -13,7 +13,7 @@ final class InMemoryWebDavAccountRepository implements WebDavAccountRepositoryIn
     public array $lookups = [];
 
     /**
-     * @param array<string, WebDavAccountInterface> $accounts
+     * @param  array<string, WebDavAccountInterface>  $accounts
      */
     public function __construct(
         private array $accounts = [],

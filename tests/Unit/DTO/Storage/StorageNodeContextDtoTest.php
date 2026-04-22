@@ -15,7 +15,7 @@ final class StorageNodeContextDtoTest extends TestCase
     {
         $filesystem = app('filesystem')->disk('local');
         $principal = new WebDavPrincipal('42', 'Alice');
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
 
         $dto = new StorageNodeContextDto(
             disk: 'local',

@@ -34,13 +34,13 @@ final class WebDavServerFactoryTest extends TestCase
                 disk: $space->disk,
                 filesystem: app('filesystem')->disk('local'),
                 principal: $principal,
-                authorization: new AllowAllPathAuthorization(),
+                authorization: new AllowAllPathAuthorization,
             ),
         );
 
         $requestContextResolver = new FixedRequestContextResolver($context);
         $storageRootBuilder = new RecordingStorageRootBuilder($root);
-        $serverConfigurator = new RecordingServerConfigurator();
+        $serverConfigurator = new RecordingServerConfigurator;
 
         $factory = new WebDavServerFactory(
             requestContextResolver: $requestContextResolver,

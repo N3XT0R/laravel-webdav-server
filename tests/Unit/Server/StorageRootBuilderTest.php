@@ -21,7 +21,7 @@ final class StorageRootBuilderTest extends TestCase
         $space = new WebDavStorageSpace('local', 'webdav/42');
         $filesystem = app('filesystem')->disk('local');
         $manager = new RecordingFilesystemManager($filesystem);
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
 
         $builder = new StorageRootBuilder($authorization, $manager);
         $result = $builder->build($principal, $space);
@@ -35,7 +35,7 @@ final class StorageRootBuilderTest extends TestCase
         $principal = new WebDavPrincipal('99', 'Bob');
         $space = new WebDavStorageSpace('local', 'webdav/99');
         $builder = new StorageRootBuilder(
-            new AllowAllPathAuthorization(),
+            new AllowAllPathAuthorization,
             new RecordingFilesystemManager(app('filesystem')->disk('local')),
         );
 
@@ -50,7 +50,7 @@ final class StorageRootBuilderTest extends TestCase
         $space = new WebDavStorageSpace('archive', 'bucket/42');
         $manager = new RecordingFilesystemManager(app('filesystem')->disk('local'));
 
-        $builder = new StorageRootBuilder(new AllowAllPathAuthorization(), $manager);
+        $builder = new StorageRootBuilder(new AllowAllPathAuthorization, $manager);
         $root = $builder->build($principal, $space);
         $context = $this->readProperty($root, 'context');
 

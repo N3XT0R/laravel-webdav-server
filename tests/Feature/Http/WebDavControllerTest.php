@@ -24,18 +24,18 @@ final class WebDavControllerTest extends DatabaseTestCase
     {
         parent::setUp();
 
-        $this->diskRoot = sys_get_temp_dir().'/laravel-webdav-server-tests/'.str_replace('\\', '-', static::class);
+        $this->diskRoot = sys_get_temp_dir().'/laravel-webdav-server-tests/'.str_replace('\\', '-', self::class);
 
         $this->app['config']->set('filesystems.disks.local.root', $this->diskRoot);
         $this->app->bind(ServerRunnerInterface::class, CapturingServerRunner::class);
 
         CapturingServerRunner::reset();
-        (new Filesystem())->deleteDirectory($this->diskRoot);
+        (new Filesystem)->deleteDirectory($this->diskRoot);
     }
 
     protected function tearDown(): void
     {
-        (new Filesystem())->deleteDirectory($this->diskRoot);
+        (new Filesystem)->deleteDirectory($this->diskRoot);
         CapturingServerRunner::reset();
 
         parent::tearDown();

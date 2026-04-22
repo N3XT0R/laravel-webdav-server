@@ -13,7 +13,7 @@ final class FixedRequestCredentialsExtractor implements RequestCredentialsExtrac
     public array $requests = [];
 
     /**
-     * @param array{0:string,1:string} $credentials
+     * @param  array{0:string,1:string}  $credentials
      */
     public function __construct(
         private readonly array $credentials,

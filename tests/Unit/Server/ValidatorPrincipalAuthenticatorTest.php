@@ -29,7 +29,7 @@ final class ValidatorPrincipalAuthenticatorTest extends TestCase
     {
         $this->expectException(InvalidCredentialsException::class);
 
-        $validator = new ArrayCredentialValidator();
+        $validator = new ArrayCredentialValidator;
         $authenticator = new ValidatorPrincipalAuthenticator($validator);
 
         $authenticator->authenticate('alice', 'wrong');

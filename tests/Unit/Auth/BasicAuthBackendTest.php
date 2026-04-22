@@ -14,21 +14,21 @@ final class BasicAuthBackendTest extends TestCase
 {
     public function test_get_principal_returns_null_before_any_authentication(): void
     {
-        $backend = new BasicAuthBackend(new ArrayCredentialValidator());
+        $backend = new BasicAuthBackend(new ArrayCredentialValidator);
 
         $this->assertNull($backend->getPrincipal());
     }
 
     public function test_get_realm_returns_default_realm(): void
     {
-        $backend = new BasicAuthBackend(new ArrayCredentialValidator());
+        $backend = new BasicAuthBackend(new ArrayCredentialValidator);
 
         $this->assertSame('Laravel WebDAV', $backend->getRealm());
     }
 
     public function test_get_realm_returns_custom_realm(): void
     {
-        $backend = new BasicAuthBackend(new ArrayCredentialValidator(), 'My Custom Realm');
+        $backend = new BasicAuthBackend(new ArrayCredentialValidator, 'My Custom Realm');
 
         $this->assertSame('My Custom Realm', $backend->getRealm());
     }
@@ -72,7 +72,7 @@ final class BasicAuthBackendTest extends TestCase
 
     public function test_principal_remains_null_after_failed_authentication(): void
     {
-        $backend = new BasicAuthBackend(new ArrayCredentialValidator());
+        $backend = new BasicAuthBackend(new ArrayCredentialValidator);
 
         $this->invokeValidateUserPass($backend, 'alice', 'wrong');
 

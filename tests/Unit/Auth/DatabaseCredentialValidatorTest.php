@@ -16,7 +16,7 @@ final class DatabaseCredentialValidatorTest extends TestCase
 {
     public function test_it_returns_null_when_account_is_not_found(): void
     {
-        $repository = new InMemoryWebDavAccountRepository();
+        $repository = new InMemoryWebDavAccountRepository;
         $validator = new DatabaseCredentialValidator($repository, new BcryptHasher);
 
         $this->assertNull($validator->validate('unknown', 'password'));

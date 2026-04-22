@@ -23,15 +23,15 @@ final class StorageDirectoryTest extends TestCase
     {
         parent::setUp();
 
-        $this->diskRoot = sys_get_temp_dir().'/laravel-webdav-server-tests/'.str_replace('\\', '-', static::class);
+        $this->diskRoot = sys_get_temp_dir().'/laravel-webdav-server-tests/'.str_replace('\\', '-', self::class);
         $this->app['config']->set('filesystems.disks.local.root', $this->diskRoot);
 
-        (new Filesystem())->deleteDirectory($this->diskRoot);
+        (new Filesystem)->deleteDirectory($this->diskRoot);
     }
 
     protected function tearDown(): void
     {
-        (new Filesystem())->deleteDirectory($this->diskRoot);
+        (new Filesystem)->deleteDirectory($this->diskRoot);
 
         parent::tearDown();
     }
@@ -52,14 +52,14 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_get_name_returns_directory_name(): void
     {
-        $this->assertSame('docs', $this->makeDirectory('docs', 'webdav/42/docs', new AllowAllPathAuthorization())->getName());
+        $this->assertSame('docs', $this->makeDirectory('docs', 'webdav/42/docs', new AllowAllPathAuthorization)->getName());
     }
 
     public function test_get_children_returns_nodes_from_real_filesystem(): void
     {
         Storage::disk('local')->makeDirectory('webdav/42/sub');
         Storage::disk('local')->put('webdav/42/file.txt', 'hello');
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
 
         $children = $this->makeDirectory('42', 'webdav/42', $authorization)->getChildren();
 
@@ -73,14 +73,14 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_get_children_returns_empty_array_when_directory_does_not_exist(): void
     {
-        $this->assertSame([], $this->makeDirectory('empty', 'webdav/42/empty', new AllowAllPathAuthorization())->getChildren());
+        $this->assertSame([], $this->makeDirectory('empty', 'webdav/42/empty', new AllowAllPathAuthorization)->getChildren());
     }
 
     public function test_get_child_returns_storage_file_for_a_file(): void
     {
         Storage::disk('local')->put('webdav/42/report.pdf', 'pdf');
 
-        $child = $this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization())->getChild('report.pdf');
+        $child = $this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization)->getChild('report.pdf');
 
         $this->assertInstanceOf(StorageFile::class, $child);
         $this->assertSame('report.pdf', $child->getName());
@@ -90,7 +90,7 @@ final class StorageDirectoryTest extends TestCase
     {
         Storage::disk('local')->makeDirectory('webdav/42/archive');
 
-        $child = $this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization())->getChild('archive');
+        $child = $this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization)->getChild('archive');
 
         $this->assertInstanceOf(StorageDirectory::class, $child);
         $this->assertSame('archive', $child->getName());
@@ -100,31 +100,31 @@ final class StorageDirectoryTest extends TestCase
     {
         $this->expectException(NotFound::class);
 
-        $this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization())->getChild('ghost.txt');
+        $this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization)->getChild('ghost.txt');
     }
 
     public function test_child_exists_returns_true_when_path_exists_and_auth_passes(): void
     {
         Storage::disk('local')->put('webdav/42/notes.txt', 'note');
 
-        $this->assertTrue($this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization())->childExists('notes.txt'));
+        $this->assertTrue($this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization)->childExists('notes.txt'));
     }
 
     public function test_child_exists_returns_false_when_path_does_not_exist(): void
     {
-        $this->assertFalse($this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization())->childExists('ghost.txt'));
+        $this->assertFalse($this->makeDirectory('42', 'webdav/42', new AllowAllPathAuthorization)->childExists('ghost.txt'));
     }
 
     public function test_child_exists_returns_false_when_authorization_throws(): void
     {
         Storage::disk('local')->put('webdav/42/secret.txt', 'secret');
 
-        $this->assertFalse($this->makeDirectory('42', 'webdav/42', new DenyReadPathAuthorization())->childExists('secret.txt'));
+        $this->assertFalse($this->makeDirectory('42', 'webdav/42', new DenyReadPathAuthorization)->childExists('secret.txt'));
     }
 
     public function test_create_directory_calls_authorize_and_makes_directory(): void
     {
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
         $directory = $this->makeDirectory('42', 'webdav/42', $authorization);
 
         $directory->createDirectory('newdir');
@@ -135,7 +135,7 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_create_file_with_string_data_calls_authorize_and_puts_content(): void
     {
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
         $directory = $this->makeDirectory('42', 'webdav/42', $authorization);
 
         $directory->createFile('new.txt', 'hello');
@@ -146,7 +146,7 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_create_file_with_resource_data_reads_stream_and_puts_content(): void
     {
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
         $resource = fopen('php://memory', 'r+');
         fwrite($resource, 'from stream');
         rewind($resource);
@@ -162,7 +162,7 @@ final class StorageDirectoryTest extends TestCase
     {
         Storage::disk('local')->makeDirectory('webdav/42/dir/sub');
         Storage::disk('local')->put('webdav/42/dir/file.txt', 'hello');
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
 
         $this->makeDirectory('dir', 'webdav/42/dir', $authorization)->delete();
 

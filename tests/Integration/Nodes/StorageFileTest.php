@@ -20,15 +20,15 @@ final class StorageFileTest extends TestCase
     {
         parent::setUp();
 
-        $this->diskRoot = sys_get_temp_dir().'/laravel-webdav-server-tests/'.str_replace('\\', '-', static::class);
+        $this->diskRoot = sys_get_temp_dir().'/laravel-webdav-server-tests/'.str_replace('\\', '-', self::class);
         $this->app['config']->set('filesystems.disks.local.root', $this->diskRoot);
 
-        (new Filesystem())->deleteDirectory($this->diskRoot);
+        (new Filesystem)->deleteDirectory($this->diskRoot);
     }
 
     protected function tearDown(): void
     {
-        (new Filesystem())->deleteDirectory($this->diskRoot);
+        (new Filesystem)->deleteDirectory($this->diskRoot);
 
         parent::tearDown();
     }
@@ -52,14 +52,14 @@ final class StorageFileTest extends TestCase
         $this->assertSame('document.pdf', $this->makeFile(
             'document.pdf',
             'webdav/42/document.pdf',
-            new AllowAllPathAuthorization(),
+            new AllowAllPathAuthorization,
         )->getName());
     }
 
     public function test_get_calls_authorize_read_before_returning_content(): void
     {
         Storage::disk('local')->put('webdav/42/file.txt', 'hello');
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
 
         $result = $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->get();
 
@@ -69,7 +69,7 @@ final class StorageFileTest extends TestCase
 
     public function test_put_with_string_calls_authorize_write(): void
     {
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
 
         $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->put('content');
 
@@ -79,7 +79,7 @@ final class StorageFileTest extends TestCase
 
     public function test_put_with_resource_reads_stream_and_calls_authorize_write(): void
     {
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
         $resource = fopen('php://memory', 'r+');
         fwrite($resource, 'streamed content');
         rewind($resource);
@@ -95,7 +95,7 @@ final class StorageFileTest extends TestCase
     public function test_delete_calls_authorize_delete(): void
     {
         Storage::disk('local')->put('webdav/42/file.txt', 'delete-me');
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
 
         $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->delete();
 
@@ -106,7 +106,7 @@ final class StorageFileTest extends TestCase
     public function test_get_size_calls_authorize_read_and_returns_size(): void
     {
         Storage::disk('local')->put('webdav/42/file.txt', '12345');
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
 
         $size = $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->getSize();
 
@@ -117,7 +117,7 @@ final class StorageFileTest extends TestCase
     public function test_get_last_modified_calls_authorize_read_and_returns_timestamp(): void
     {
         Storage::disk('local')->put('webdav/42/file.txt', 'timestamp');
-        $authorization = new AllowAllPathAuthorization();
+        $authorization = new AllowAllPathAuthorization;
 
         $timestamp = $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->getLastModified();
 
