@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Auth\Authorization;
 
 use Illuminate\Contracts\Auth\Access\Gate;
+use Illuminate\Contracts\Auth\Authenticatable;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
@@ -48,7 +49,7 @@ final readonly class GatePathAuthorization implements PathAuthorizationInterface
             'disk' => $disk,
             'path' => $path,
             'user_class' => get_debug_type($principal->user),
-            'user_id' => $principal->user !== null && method_exists($principal->user, 'getAuthIdentifier')
+            'user_id' => $principal->user instanceof Authenticatable
                 ? $principal->user->getAuthIdentifier()
                 : null,
         ]);

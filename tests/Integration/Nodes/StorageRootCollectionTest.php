@@ -12,6 +12,7 @@ use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
 
 final class StorageRootCollectionTest extends TestCase
@@ -132,7 +133,7 @@ final class StorageRootCollectionTest extends TestCase
     public function test_child_exists_returns_false_when_authorization_throws(): void
     {
         $auth = $this->createMock(PathAuthorizationInterface::class);
-        $auth->method('authorizeRead')->willThrowException(new \Sabre\DAV\Exception\Forbidden);
+        $auth->method('authorizeRead')->willThrowException(new Forbidden);
 
         $root = $this->makeRoot('webdav/42', $this->createMock(Filesystem::class), $auth);
 
