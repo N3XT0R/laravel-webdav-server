@@ -42,6 +42,10 @@ flowchart TD
 
 All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, so app-level bindings can override defaults.
 
+Related decisions:
+
+- [ADR 0001: Test Architecture And Layering](adr/0001-test-architecture-and-layering.md)
+
 ## Runtime Notes (Current State)
 
 - Route shape is `'/webdav/{space}/{path?}'` in `routes/web.php`.

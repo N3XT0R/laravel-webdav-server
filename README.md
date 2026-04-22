@@ -89,6 +89,7 @@ explicitly separated:
   `ServerRunnerInterface`, while `SabreServerRunner` remains the default runtime implementation.
 
 If you want details, see [docs/architecture.md](docs/architecture.md).
+For decision records, see [docs/adr/README.md](docs/adr/README.md).
 
 ---
 
