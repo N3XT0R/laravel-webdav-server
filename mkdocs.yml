@@ -1,0 +1,28 @@
+site_name: Laravel WebDAV Server
+site_description: A WebDAV server package for Laravel based on SabreDAV.
+site_url: https://laravel-webdav-server.readthedocs.io/
+repo_url: https://github.com/N3XT0R/laravel-webdav-server
+repo_name: N3XT0R/laravel-webdav-server
+docs_dir: docs
+theme:
+  name: readthedocs
+markdown_extensions:
+  - tables
+  - toc:
+      permalink: true
+nav:
+  - Home: index.md
+  - Getting Started: getting-started.md
+  - Configuration: configuration.md
+  - Authentication & Authorization: authentication.md
+  - Architecture: architecture.md
+  - Common Questions: common-questions.md
+  - ADRs:
+      - Overview: adr/README.md
+      - "0001 Test Architecture And Layering": adr/0001-test-architecture-and-layering.md
+      - "0002 WebDAV Request Pipeline And Runtime Boundary": adr/0002-webdav-request-pipeline-and-runtime-boundary.md
+      - "0003 Class Naming Convention By Suffix": adr/0003-class-naming-convention-by-suffix.md
+      - "0004 Changelog Maintenance And Unreleased Entry Policy": adr/0004-changelog-maintenance-and-unreleased-entry-policy.md
+      - "0005 WebDAV Space Key And Storage Space Mapping": adr/0005-webdav-space-key-and-storage-space-mapping.md
+      - "0006 Path Authorization Via Laravel Gates And Policies": adr/0006-path-authorization-via-laravel-gates-and-policies.md
+      - "0007 SabreDAV Runtime Decoupling": adr/0007-sabredav-runtime-decoupling.md

@@ -2,43 +2,26 @@
 
 Every WebDAV request passes through this runtime flow:
 
-```mermaid
-flowchart TD
-    A["HTTP Request<br/>/webdav/{space}/{path?}<br/>Basic Auth"] --> B["WebDavController::__invoke()"]
-
-    B --> C{"Basic auth attempt present?"}
-    C -- no --> D["401 Unauthorized + WWW-Authenticate"]
-    C -- yes --> E["WebDavServerFactory::make(request)"]
-
-    E --> F["DefaultRequestContextResolver::resolve(request)"]
-    F --> G["RequestBasicCredentialsExtractor::extract(request)"]
-    G -- missing/malformed --> H["MissingCredentialsException / InvalidCredentialsException"]
-
-    F --> I["ValidatorPrincipalAuthenticator::authenticate(username, password)"]
-    I --> J["CredentialValidatorInterface::validate(...)"]
-    J -- invalid --> K["InvalidCredentialsException"]
-    J -- valid --> L["WebDavPrincipalValueObject"]
-
-    F --> M["RequestSpaceKeyResolver::resolve(request)"]
-    M --> N["route('space') or config('webdav-server.storage.default_space')"]
-    N -- invalid config --> O["RuntimeException"]
-
-    F --> P["SpaceResolverInterface::resolve(principal, spaceKey)"]
-    P --> Q["WebDavStorageSpaceValueObject (disk, rootPath)"]
-
-    E --> R["StorageRootBuilder::build(principal, space)"]
-    R --> S["StorageRootCollection"]
-    S --> T["StorageDirectory / StorageFile"]
-    T --> U{"PathAuthorizationInterface"}
-    U -- denied --> V["Sabre\\DAV\\Exception\\Forbidden"]
-    U -- allowed --> W["Laravel Filesystem disk"]
-
-    E --> X["new Sabre\\DAV\\Server(root)"]
-    X --> Y["SabreServerConfigurator::configure(server, spaceKey)"]
-    Y --> Z["baseUri = /{webdav-server.base_uri}/{spaceKey}/ + logger"]
-    Z --> AA["ServerRunnerInterface::run(server)"]
-    AA --> AB["SabreServerRunner::run() => server->start(); exit;"]
-```
+1. `WebDavController::__invoke()` accepts the incoming request for `/webdav/{space}/{path?}`.
+2. If no Basic Auth attempt is present, the controller returns `401 Unauthorized` with `WWW-Authenticate`.
+3. If credentials are present, `WebDavServerFactory::make(request)` builds the SabreDAV server instance.
+4. `DefaultRequestContextResolver::resolve(request)` gathers the runtime context:
+   - `RequestBasicCredentialsExtractor::extract(request)` parses credentials
+   - `ValidatorPrincipalAuthenticator::authenticate(username, password)` resolves the principal through
+     `CredentialValidatorInterface`
+   - `RequestSpaceKeyResolver::resolve(request)` resolves `{space}` or falls back to
+     `config('webdav-server.storage.default_space')`
+   - `SpaceResolverInterface::resolve(principal, spaceKey)` resolves the effective storage target as a
+     `WebDavStorageSpaceValueObject`
+5. `StorageRootBuilder::build(principal, space)` creates the SabreDAV root tree:
+   - `StorageRootCollection`
+   - `StorageDirectory` / `StorageFile`
+6. Before filesystem operations execute, node classes call `PathAuthorizationInterface`.
+   On denial, the package throws `Sabre\DAV\Exception\Forbidden`.
+7. Allowed operations run against the resolved Laravel filesystem disk.
+8. `SabreServerConfigurator::configure(server, spaceKey)` applies runtime configuration such as the effective base URI.
+9. `ServerRunnerInterface::run(server)` hands off execution to the runtime adapter.
+10. The default adapter `SabreServerRunner` starts SabreDAV and terminates the request lifecycle.
 
 All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, so app-level bindings can override defaults.
 
