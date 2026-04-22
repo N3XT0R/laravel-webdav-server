@@ -16,3 +16,4 @@ The records follow the Nygard ADR structure recommended by `adr.github.io`:
 - [0002. WebDAV Request Pipeline And Runtime Boundary](0002-webdav-request-pipeline-and-runtime-boundary.md)
 - [0003. Class Naming Convention By Suffix](0003-class-naming-convention-by-suffix.md)
 - [0004. Changelog Maintenance And Unreleased Entry Policy](0004-changelog-maintenance-and-unreleased-entry-policy.md)
+- [0005. WebDAV Space Key And Storage Space Mapping](0005-webdav-space-key-and-storage-space-mapping.md)
