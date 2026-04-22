@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Auth;
 
 use N3XT0R\LaravelWebdavServer\Auth\Backends\BasicAuthBackend;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\ArrayCredentialValidator;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use PHPUnit\Framework\TestCase;
 use ReflectionMethod;
 
@@ -35,7 +35,7 @@ final class BasicAuthBackendTest extends TestCase
 
     public function test_validate_user_pass_returns_true_for_valid_credentials(): void
     {
-        $principal = new WebDavPrincipal('42', 'Alice');
+        $principal = new WebDavPrincipalValueObject('42', 'Alice');
         $backend = new BasicAuthBackend(new ArrayCredentialValidator([
             'alice' => ['secret' => $principal],
         ]));
@@ -47,7 +47,7 @@ final class BasicAuthBackendTest extends TestCase
 
     public function test_validate_user_pass_stores_principal_on_success(): void
     {
-        $principal = new WebDavPrincipal('42', 'Alice');
+        $principal = new WebDavPrincipalValueObject('42', 'Alice');
         $backend = new BasicAuthBackend(new ArrayCredentialValidator([
             'alice' => ['secret' => $principal],
         ]));
@@ -60,7 +60,7 @@ final class BasicAuthBackendTest extends TestCase
     public function test_validate_user_pass_returns_false_for_invalid_credentials(): void
     {
         $validator = new ArrayCredentialValidator([
-            'alice' => ['secret' => new WebDavPrincipal('42', 'Alice')],
+            'alice' => ['secret' => new WebDavPrincipalValueObject('42', 'Alice')],
         ]);
         $backend = new BasicAuthBackend($validator);
 

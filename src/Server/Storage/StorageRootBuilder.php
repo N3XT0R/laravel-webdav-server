@@ -9,8 +9,8 @@ use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
-use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpace;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final readonly class StorageRootBuilder implements StorageRootBuilderInterface
 {
@@ -19,7 +19,7 @@ final readonly class StorageRootBuilder implements StorageRootBuilderInterface
         private FilesystemManager $filesystem,
     ) {}
 
-    public function build(WebDavPrincipal $principal, WebDavStorageSpace $space): StorageRootCollection
+    public function build(WebDavPrincipalValueObject $principal, WebDavStorageSpaceValueObject $space): StorageRootCollection
     {
         return new StorageRootCollection(
             name: $principal->id,

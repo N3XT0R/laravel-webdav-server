@@ -9,7 +9,7 @@ The package uses **independent Basic Auth**, validated by `CredentialValidatorIn
 
 - Credentials are **not** validated against Laravel's `auth()` guard.
 - Username/password come from the `webdav-server.auth.account_model` table.
-- On successful validation, a `WebDavPrincipal` is returned (containing id, displayName, and optional user relation).
+- On successful validation, a `WebDavPrincipalValueObject` is returned (containing id, displayName, and optional user relation).
 
 ---
 
@@ -43,11 +43,11 @@ To implement custom authentication (LDAP, API tokens, etc.), implement `Credenti
 namespace App\Services;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 class LdapCredentialValidator implements CredentialValidatorInterface
 {
-    public function validate(string $username, string $password): ?WebDavPrincipal
+    public function validate(string $username, string $password): ?WebDavPrincipalValueObject
     {
         // Example: Validate against LDAP
         if (!$this->validateLdap($username, $password)) {
@@ -66,7 +66,7 @@ class LdapCredentialValidator implements CredentialValidatorInterface
         }
 
         // Return WebDAV principal
-        return new WebDavPrincipal(
+        return new WebDavPrincipalValueObject(
             id: (string) $user->id,
             displayName: $user->name,
             user: $user,
@@ -121,7 +121,7 @@ class WebDavPathPolicy
 {
     public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
     {
-        // $user is WebDavPrincipal with optional user relation
+        // $user is WebDavPrincipalValueObject with optional user relation
         // $resource->disk = 'local'
         // $resource->path = 'webdav/42/documents/report.pdf'
 
@@ -167,40 +167,40 @@ To replace Gate-based authorization entirely, implement `PathAuthorizationInterf
 namespace App\Services;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Exception\Forbidden;
 
 class CustomPathAuthorization implements PathAuthorizationInterface
 {
-    public function authorizeRead(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeRead(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         if (!$this->canRead($principal, $path)) {
             throw new Forbidden('Read access denied');
         }
     }
 
-    public function authorizeWrite(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeWrite(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         if (!$this->canWrite($principal, $path)) {
             throw new Forbidden('Write access denied');
         }
     }
 
-    public function authorizeDelete(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeDelete(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         if (!$this->canDelete($principal, $path)) {
             throw new Forbidden('Delete access denied');
         }
     }
 
-    public function authorizeCreateDirectory(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeCreateDirectory(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         if (!$this->canCreateDirectory($principal, $path)) {
             throw new Forbidden('Directory creation denied');
         }
     }
 
-    public function authorizeCreateFile(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeCreateFile(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         if (!$this->canCreateFile($principal, $path)) {
             throw new Forbidden('File creation denied');
@@ -208,27 +208,27 @@ class CustomPathAuthorization implements PathAuthorizationInterface
     }
 
     // Your authorization logic
-    private function canRead(WebDavPrincipal $principal, string $path): bool
+    private function canRead(WebDavPrincipalValueObject $principal, string $path): bool
     {
         return true; // Implement your logic
     }
 
-    private function canWrite(WebDavPrincipal $principal, string $path): bool
+    private function canWrite(WebDavPrincipalValueObject $principal, string $path): bool
     {
         return true;
     }
 
-    private function canDelete(WebDavPrincipal $principal, string $path): bool
+    private function canDelete(WebDavPrincipalValueObject $principal, string $path): bool
     {
         return true;
     }
 
-    private function canCreateDirectory(WebDavPrincipal $principal, string $path): bool
+    private function canCreateDirectory(WebDavPrincipalValueObject $principal, string $path): bool
     {
         return true;
     }
 
-    private function canCreateFile(WebDavPrincipal $principal, string $path): bool
+    private function canCreateFile(WebDavPrincipalValueObject $principal, string $path): bool
     {
         return true;
     }
@@ -263,13 +263,13 @@ To associate a WebDAV account with your app's user model:
 ],
 ```
 
-The `WebDavAccount` model includes a `user()` relationship:
+The `WebDavAccountModel` model includes a `user()` relationship:
 
 ```php
 // In your policy
 public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
 {
-    // $user is a WebDavAccount
+    // $user is a WebDavAccountModel
     $appUser = $user->user; // Get associated Laravel user
 
     if (!$appUser) {
@@ -301,6 +301,5 @@ The authenticated principal is determined by `CredentialValidatorInterface::vali
 
 - **Always use HTTPS** for production (Basic Auth transmits credentials in Base64).
 - WebDAV clients typically cache credentials — consider password rotation policies.
-- The `WebDavPrincipal` object is available throughout the request lifecycle via policy/authorization checks.
+- The `WebDavPrincipalValueObject` object is available throughout the request lifecycle via policy/authorization checks.
 - Never store plaintext passwords; the default `DatabaseCredentialValidator` expects hashed passwords.
-

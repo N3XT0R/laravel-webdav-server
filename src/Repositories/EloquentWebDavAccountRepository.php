@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\WebDavAccountInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavAccountRecordDto;
-use N3XT0R\LaravelWebdavServer\Models\WebDavAccount;
+use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
 use RuntimeException;
 
 final readonly class EloquentWebDavAccountRepository implements WebDavAccountRepositoryInterface
@@ -32,7 +32,7 @@ final readonly class EloquentWebDavAccountRepository implements WebDavAccountRep
         $principalIdColumn = (string) $this->config->get('webdav-server.auth.user_id_column', 'id');
         $displayNameColumn = (string) $this->config->get('webdav-server.auth.display_name_column', $usernameColumn);
 
-        /** @var Model|WebDavAccount|null $account */
+        /** @var Model|WebDavAccountModel|null $account */
         $account = $modelClass::query()
             ->where($usernameColumn, $username)
             ->when(

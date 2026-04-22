@@ -12,7 +12,7 @@ use RuntimeException;
 /**
  * @property Model $user
  */
-final class WebDavAccount extends Model
+final class WebDavAccountModel extends Model
 {
     use HasFactory;
 

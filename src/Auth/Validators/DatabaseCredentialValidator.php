@@ -7,7 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\Auth\Validators;
 use Illuminate\Contracts\Hashing\Hasher;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final readonly class DatabaseCredentialValidator implements CredentialValidatorInterface
 {
@@ -16,7 +16,7 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
         protected Hasher $hasher,
     ) {}
 
-    public function validate(string $username, string $password): ?WebDavPrincipal
+    public function validate(string $username, string $password): ?WebDavPrincipalValueObject
     {
         $account = $this->repository->findEnabledByUsername($username);
 
@@ -28,7 +28,7 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
             return null;
         }
 
-        return new WebDavPrincipal(
+        return new WebDavPrincipalValueObject(
             $account->getPrincipalId(),
             $account->getDisplayName(),
             $account->getUser()

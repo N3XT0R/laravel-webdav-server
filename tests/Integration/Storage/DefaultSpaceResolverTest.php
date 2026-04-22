@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Storage;
 
 use Illuminate\Contracts\Config\Repository;
-use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpace;
+use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use RuntimeException;
 
 final class DefaultSpaceResolverTest extends TestCase
@@ -18,9 +18,9 @@ final class DefaultSpaceResolverTest extends TestCase
         return new DefaultSpaceResolver($this->app->make(Repository::class));
     }
 
-    private function setPrincipal(string $id = '42'): WebDavPrincipal
+    private function setPrincipal(string $id = '42'): WebDavPrincipalValueObject
     {
-        return new WebDavPrincipal($id, 'Alice');
+        return new WebDavPrincipalValueObject($id, 'Alice');
     }
 
     public function test_it_resolves_a_configured_space(): void
@@ -33,7 +33,7 @@ final class DefaultSpaceResolverTest extends TestCase
 
         $result = $this->makeResolver()->resolve($this->setPrincipal('42'), 'default');
 
-        $this->assertInstanceOf(WebDavStorageSpace::class, $result);
+        $this->assertInstanceOf(WebDavStorageSpaceValueObject::class, $result);
         $this->assertSame('local', $result->disk);
         $this->assertSame('webdav/42', $result->rootPath);
     }
@@ -104,7 +104,7 @@ final class DefaultSpaceResolverTest extends TestCase
             'prefix' => '/',
         ]);
 
-        $result = $this->makeResolver()->resolve(new WebDavPrincipal('user-xyz', 'X'), 'default');
+        $result = $this->makeResolver()->resolve(new WebDavPrincipalValueObject('user-xyz', 'X'), 'default');
 
         $this->assertStringEndsWith('/user-xyz', $result->rootPath);
     }

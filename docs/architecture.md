@@ -17,14 +17,14 @@ flowchart TD
     F --> I["ValidatorPrincipalAuthenticator::authenticate(username, password)"]
     I --> J["CredentialValidatorInterface::validate(...)"]
     J -- invalid --> K["InvalidCredentialsException"]
-    J -- valid --> L["WebDavPrincipal"]
+    J -- valid --> L["WebDavPrincipalValueObject"]
 
     F --> M["RequestSpaceKeyResolver::resolve(request)"]
     M --> N["route('space') or config('webdav-server.storage.default_space')"]
     N -- invalid config --> O["RuntimeException"]
 
     F --> P["SpaceResolverInterface::resolve(principal, spaceKey)"]
-    P --> Q["WebDavStorageSpace (disk, rootPath)"]
+    P --> Q["WebDavStorageSpaceValueObject (disk, rootPath)"]
 
     E --> R["StorageRootBuilder::build(principal, space)"]
     R --> S["StorageRootCollection"]

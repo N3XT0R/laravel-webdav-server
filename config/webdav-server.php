@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-use N3XT0R\LaravelWebdavServer\Models\WebDavAccount;
+use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
 
 return [
     'route_prefix' => 'webdav',
@@ -22,7 +22,7 @@ return [
     ],
 
     'auth' => [
-        'account_model' => WebDavAccount::class,
+        'account_model' => WebDavAccountModel::class,
         'user_model' => null,
 
         'username_column' => 'username',

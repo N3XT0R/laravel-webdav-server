@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Repositories;
 
 use Illuminate\Contracts\Config\Repository;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\WebDavAccountInterface;
-use N3XT0R\LaravelWebdavServer\Models\WebDavAccount;
+use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
 use N3XT0R\LaravelWebdavServer\Tests\DatabaseTestCase;
 use RuntimeException;
@@ -36,7 +36,7 @@ final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
 
     public function test_it_returns_null_for_a_disabled_account(): void
     {
-        WebDavAccount::factory()->create([
+        WebDavAccountModel::factory()->create([
             'username' => 'disabled-user',
             'enabled' => false,
         ]);
@@ -48,7 +48,7 @@ final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
 
     public function test_it_returns_account_interface_for_an_enabled_account(): void
     {
-        $account = WebDavAccount::factory()->create([
+        $account = WebDavAccountModel::factory()->create([
             'username' => 'alice',
             'display_name' => 'Alice',
             'enabled' => true,
@@ -63,7 +63,7 @@ final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
 
     public function test_it_returns_correct_password_hash(): void
     {
-        WebDavAccount::factory()->create([
+        WebDavAccountModel::factory()->create([
             'username' => 'bob',
             'password_encrypted' => '$2y$10$fixedhashfortest',
             'enabled' => true,
@@ -76,7 +76,7 @@ final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
 
     public function test_it_returns_null_user_when_no_user_is_linked(): void
     {
-        WebDavAccount::factory()->create([
+        WebDavAccountModel::factory()->create([
             'username' => 'nouser',
             'user_id' => null,
             'enabled' => true,
@@ -91,7 +91,7 @@ final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
     {
         $user = User::factory()->create();
 
-        WebDavAccount::factory()->create([
+        WebDavAccountModel::factory()->create([
             'username' => 'linked',
             'user_id' => $user->id,
             'enabled' => true,

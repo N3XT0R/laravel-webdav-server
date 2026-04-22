@@ -8,7 +8,7 @@ use Illuminate\Auth\Access\Gate as IlluminateGate;
 use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Exception\Forbidden;
 use Workbench\App\Models\User;
 
@@ -108,7 +108,7 @@ final class GatePathAuthorizationTest extends TestCase
         );
     }
 
-    private function makePrincipal(int $id): WebDavPrincipal
+    private function makePrincipal(int $id): WebDavPrincipalValueObject
     {
         $user = new User;
         $user->setRawAttributes([
@@ -118,6 +118,6 @@ final class GatePathAuthorizationTest extends TestCase
             $user->getKeyName() => $id,
         ], true);
 
-        return new WebDavPrincipal((string) $id, 'Alice', $user);
+        return new WebDavPrincipalValueObject((string) $id, 'Alice', $user);
     }
 }

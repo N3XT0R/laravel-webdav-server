@@ -9,12 +9,12 @@ This document corrects common misconceptions about the package based on its actu
 Instead, user isolation happens via:
 
 - **`SpaceResolverInterface::resolve($principal, $spaceKey)`**: Resolves storage space dynamically at runtime.
-- **Default implementation** (`DefaultSpaceResolver`): Returns a `WebDavStorageSpace` with a path that includes
+- **Default implementation** (`DefaultSpaceResolver`): Returns a `WebDavStorageSpaceValueObject` with a path that includes
   `$principal->id`:
 
 ```php
 // In DefaultSpaceResolver
-return new WebDavStorageSpace(
+return new WebDavStorageSpaceValueObject(
     disk: $disk,
     rootPath: trim($root, '/') . '/' . $principal->id,  // User ID is appended here
 );
@@ -76,13 +76,13 @@ The default resolver allows any space key from config. To restrict by user:
 ```php
 // app/Services/RestrictedSpaceResolver.php
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 class RestrictedSpaceResolver implements SpaceResolverInterface
 {
     public function __construct(private Config $config) {}
 
-    public function resolve(WebDavPrincipal $principal, string $spaceKey): WebDavStorageSpace
+    public function resolve(WebDavPrincipalValueObject $principal, string $spaceKey): WebDavStorageSpaceValueObject
     {
         // Example: Only allow 'default' space for non-admin users
         if ($spaceKey !== 'default' && !$principal->user?->isAdmin()) {
@@ -183,4 +183,3 @@ The package is under active development. APIs and configuration keys may change 
 - Running thorough security audits before exposing to the public.
 - Testing HTTPS enforcement (WebDAV transmits Basic Auth credentials).
 - Monitoring performance with your expected file sizes and user counts.
-

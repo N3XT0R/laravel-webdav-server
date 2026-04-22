@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\ValueObjects;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 
-final readonly class WebDavPrincipal
+final readonly class WebDavPrincipalValueObject
 {
     public function __construct(
         public string $id,

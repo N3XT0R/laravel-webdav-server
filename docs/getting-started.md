@@ -77,7 +77,7 @@ The package uses **independent Basic Auth**, not Laravel's `auth()` middleware:
 - Credentials are validated against `webdav-server.auth.account_model` table.
 - Username/password columns are configurable.
 - This is **not** dependent on Laravel session/guard auth.
-- The authenticated user is represented as `WebDavPrincipal` (id, displayName, user relation).
+- The authenticated user is represented as `WebDavPrincipalValueObject` (id, displayName, user relation).
 
 ## Access from Clients
 
@@ -89,4 +89,3 @@ Linux:   dav://your-domain.test/webdav/default
 Username: (from webdav_accounts table)
 Password: (from webdav_accounts table, encrypted)
 ```
-

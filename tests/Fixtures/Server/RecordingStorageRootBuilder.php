@@ -6,19 +6,19 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
-use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpace;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final class RecordingStorageRootBuilder implements StorageRootBuilderInterface
 {
-    /** @var list<array{principal:WebDavPrincipal,space:WebDavStorageSpace}> */
+    /** @var list<array{principal:WebDavPrincipalValueObject,space:WebDavStorageSpaceValueObject}> */
     public array $calls = [];
 
     public function __construct(
         private readonly StorageRootCollection $root,
     ) {}
 
-    public function build(WebDavPrincipal $principal, WebDavStorageSpace $space): StorageRootCollection
+    public function build(WebDavPrincipalValueObject $principal, WebDavStorageSpaceValueObject $space): StorageRootCollection
     {
         $this->calls[] = [
             'principal' => $principal,

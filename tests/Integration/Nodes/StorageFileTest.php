@@ -10,7 +10,7 @@ use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final class StorageFileTest extends TestCase
 {
@@ -41,7 +41,7 @@ final class StorageFileTest extends TestCase
             new StorageNodeContextDto(
                 disk: 'local',
                 filesystem: Storage::disk('local'),
-                principal: new WebDavPrincipal('42', 'Alice'),
+                principal: new WebDavPrincipalValueObject('42', 'Alice'),
                 authorization: $authorization,
             ),
         );

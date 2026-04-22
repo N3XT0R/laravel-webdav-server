@@ -8,11 +8,11 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerRunnerInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;
-use N3XT0R\LaravelWebdavServer\Models\WebDavAccount;
+use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use N3XT0R\LaravelWebdavServer\Tests\DatabaseTestCase;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\CapturingServerRunner;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use ReflectionProperty;
 use Workbench\App\Models\User;
 
@@ -62,7 +62,7 @@ final class WebDavControllerTest extends DatabaseTestCase
     public function test_request_with_invalid_credentials_throws_invalid_credentials_exception(): void
     {
         $user = User::factory()->create();
-        WebDavAccount::factory()
+        WebDavAccountModel::factory()
             ->withUserName('alice')
             ->withPassword('secret')
             ->withUserId((int) $user->getKey())
@@ -84,7 +84,7 @@ final class WebDavControllerTest extends DatabaseTestCase
         $user = User::factory()->create([
             'name' => 'Alice',
         ]);
-        WebDavAccount::factory()
+        WebDavAccountModel::factory()
             ->withUserName('alice')
             ->withPassword('secret')
             ->withUserId((int) $user->getKey())
@@ -123,7 +123,7 @@ final class WebDavControllerTest extends DatabaseTestCase
 
         $this->assertSame('local', $context->disk);
         $this->assertSame('webdav/'.$user->getKey(), $this->readProperty($root, 'path'));
-        $this->assertInstanceOf(WebDavPrincipal::class, $principal);
+        $this->assertInstanceOf(WebDavPrincipalValueObject::class, $principal);
         $this->assertSame((string) $user->getKey(), $principal->id);
         $this->assertSame('Alice', $principal->displayName);
         $this->assertSame($user->getKey(), $principal->user?->getAuthIdentifier());

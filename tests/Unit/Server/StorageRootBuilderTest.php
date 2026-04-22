@@ -6,19 +6,19 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
 
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use N3XT0R\LaravelWebdavServer\Server\Storage\StorageRootBuilder;
-use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpace;
+use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Filesystem\RecordingFilesystemManager;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use ReflectionProperty;
 
 final class StorageRootBuilderTest extends TestCase
 {
     public function test_it_returns_a_storage_root_collection(): void
     {
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $space = new WebDavStorageSpace('local', 'webdav/42');
+        $principal = new WebDavPrincipalValueObject('42', 'Alice');
+        $space = new WebDavStorageSpaceValueObject('local', 'webdav/42');
         $filesystem = app('filesystem')->disk('local');
         $manager = new RecordingFilesystemManager($filesystem);
         $authorization = new AllowAllPathAuthorization;
@@ -32,8 +32,8 @@ final class StorageRootBuilderTest extends TestCase
 
     public function test_it_uses_principal_id_as_the_collection_name(): void
     {
-        $principal = new WebDavPrincipal('99', 'Bob');
-        $space = new WebDavStorageSpace('local', 'webdav/99');
+        $principal = new WebDavPrincipalValueObject('99', 'Bob');
+        $space = new WebDavStorageSpaceValueObject('local', 'webdav/99');
         $builder = new StorageRootBuilder(
             new AllowAllPathAuthorization,
             new RecordingFilesystemManager(app('filesystem')->disk('local')),
@@ -46,8 +46,8 @@ final class StorageRootBuilderTest extends TestCase
 
     public function test_it_resolves_the_disk_from_the_storage_space(): void
     {
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $space = new WebDavStorageSpace('archive', 'bucket/42');
+        $principal = new WebDavPrincipalValueObject('42', 'Alice');
+        $space = new WebDavStorageSpaceValueObject('archive', 'bucket/42');
         $manager = new RecordingFilesystemManager(app('filesystem')->disk('local'));
 
         $builder = new StorageRootBuilder(new AllowAllPathAuthorization, $manager);

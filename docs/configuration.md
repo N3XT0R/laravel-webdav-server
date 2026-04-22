@@ -14,7 +14,7 @@ return [
         ],
     ],
     'auth' => [
-        'account_model' => \N3XT0R\LaravelWebdavServer\Models\WebDavAccount::class,
+        'account_model' => \N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel::class,
         'user_model' => \App\Models\User::class,
     ],
 ];
@@ -52,7 +52,7 @@ Example:
 
 ## Auth Mapping
 
-`EloquentWebDavAccountRepository` and `WebDavAccount` use:
+`EloquentWebDavAccountRepository` and `WebDavAccountModel` use:
 
 - `webdav-server.auth.account_model` (must be an Eloquent model class)
 - `webdav-server.auth.user_model` (required if policies need `$principal->user`)
@@ -69,4 +69,3 @@ Example:
 - Legacy keys `webdav-server.storage.disk` and `webdav-server.storage.root` are still present in the config stub and are
   used by the packaged example policy (`src/Policies/WebDavPathPolicy.php`).
 - New integrations should prefer `storage.spaces.*` for resolver-based storage mapping.
-

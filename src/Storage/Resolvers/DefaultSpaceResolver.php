@@ -6,8 +6,8 @@ namespace N3XT0R\LaravelWebdavServer\Storage\Resolvers;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
-use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpace;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use RuntimeException;
 
 final readonly class DefaultSpaceResolver implements SpaceResolverInterface
@@ -16,7 +16,7 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
         private Config $config,
     ) {}
 
-    public function resolve(WebDavPrincipal $principal, string $spaceKey): WebDavStorageSpace
+    public function resolve(WebDavPrincipalValueObject $principal, string $spaceKey): WebDavStorageSpaceValueObject
     {
         $spaces = $this->config->get('webdav-server.storage.spaces', []);
 
@@ -62,7 +62,7 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
 
         $parts[] = (string) $principal->id;
 
-        return new WebDavStorageSpace(
+        return new WebDavStorageSpaceValueObject(
             disk: trim($disk),
             rootPath: implode('/', $parts),
         );

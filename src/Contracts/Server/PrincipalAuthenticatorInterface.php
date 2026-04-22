@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Contracts\Server;
 
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 interface PrincipalAuthenticatorInterface
 {
-    public function authenticate(string $username, string $password): WebDavPrincipal;
+    public function authenticate(string $username, string $password): WebDavPrincipalValueObject;
 }

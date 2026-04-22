@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use N3XT0R\LaravelWebdavServer\Models\WebDavAccount;
+use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
 
-class WebDavAccountFactory extends Factory
+class WebDavAccountModelFactory extends Factory
 {
-    protected $model = WebDavAccount::class;
+    protected $model = WebDavAccountModel::class;
 
     public function definition(): array
     {

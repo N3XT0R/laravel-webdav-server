@@ -9,13 +9,13 @@ use N3XT0R\LaravelWebdavServer\DTO\Server\WebDavRequestContextDto;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
-use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpace;
+use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\FixedRequestContextResolver;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\RecordingServerConfigurator;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\RecordingStorageRootBuilder;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Server;
 
 final class WebDavServerFactoryTest extends TestCase
@@ -23,8 +23,8 @@ final class WebDavServerFactoryTest extends TestCase
     public function test_it_builds_and_configures_server_from_resolved_request_context(): void
     {
         $request = Request::create('/webdav', 'PROPFIND');
-        $principal = new WebDavPrincipal('42', 'Alice');
-        $space = new WebDavStorageSpace('local', 'webdav/42');
+        $principal = new WebDavPrincipalValueObject('42', 'Alice');
+        $space = new WebDavStorageSpaceValueObject('local', 'webdav/42');
         $context = new WebDavRequestContextDto($principal, 'team-a', $space);
 
         $root = new StorageRootCollection(

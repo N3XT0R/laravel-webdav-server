@@ -43,13 +43,17 @@ into a small generic list, but to make responsibilities explicit and consistent.
 | Resolvers             | `*Resolver`       | Runtime resolution logic                   |
 | Authorizers           | `*Authorization`  | Authorization adapters / guards            |
 | Authenticators        | `*Authenticator`  | Authentication orchestration               |
+| Backends              | `*Backend`        | Library-facing auth/runtime backend        |
 | Builders              | `*Builder`        | Incremental object/tree construction       |
 | Configurators         | `*Configurator`   | Runtime configuration of collaborators     |
 | Runners               | `*Runner`         | Executes a prepared runtime                |
 | Extractors            | `*Extractor`      | Extracts structured values from input      |
+| Registers             | `*Register`       | Registration of bindings or package parts  |
 | Commands              | `*Command`        | Console command entrypoints                |
 | Models                | `*Model`          | ORM / persistence-backed domain records    |
 | Collections           | `*Collection`     | Collection-style aggregate or root nodes   |
+| Node files            | `*File`           | File-like protocol node                    |
+| Node directories      | `*Directory`      | Directory-like protocol node               |
 | Event listeners       | `*Listener`       | Reacts to events                           |
 | Event dispatchers     | `*Dispatcher`     | Emits events                               |
 

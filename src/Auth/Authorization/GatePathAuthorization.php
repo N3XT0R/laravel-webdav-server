@@ -8,7 +8,7 @@ use Illuminate\Contracts\Auth\Access\Gate;
 use Illuminate\Contracts\Auth\Authenticatable;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Exception\Forbidden;
 
 final readonly class GatePathAuthorization implements PathAuthorizationInterface
@@ -17,32 +17,32 @@ final readonly class GatePathAuthorization implements PathAuthorizationInterface
         private Gate $gate,
     ) {}
 
-    public function authorizeRead(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeRead(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         $this->authorize($principal, 'read', $disk, $path);
     }
 
-    public function authorizeWrite(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeWrite(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         $this->authorize($principal, 'write', $disk, $path);
     }
 
-    public function authorizeDelete(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeDelete(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         $this->authorize($principal, 'delete', $disk, $path);
     }
 
-    public function authorizeCreateDirectory(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeCreateDirectory(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         $this->authorize($principal, 'createDirectory', $disk, $path);
     }
 
-    public function authorizeCreateFile(WebDavPrincipal $principal, string $disk, string $path): void
+    public function authorizeCreateFile(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
         $this->authorize($principal, 'createFile', $disk, $path);
     }
 
-    private function authorize(WebDavPrincipal $principal, string $ability, string $disk, string $path): void
+    private function authorize(WebDavPrincipalValueObject $principal, string $ability, string $disk, string $path): void
     {
         logger()->error('GatePathAuthorization@authorize called', [
             'ability' => $ability,

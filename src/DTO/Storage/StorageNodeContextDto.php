@@ -6,14 +6,14 @@ namespace N3XT0R\LaravelWebdavServer\DTO\Storage;
 
 use Illuminate\Contracts\Filesystem\Filesystem;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final readonly class StorageNodeContextDto
 {
     public function __construct(
         public string $disk,
         public Filesystem $filesystem,
-        public WebDavPrincipal $principal,
+        public WebDavPrincipalValueObject $principal,
         public PathAuthorizationInterface $authorization,
     ) {}
 }

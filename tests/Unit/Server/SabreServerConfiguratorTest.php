@@ -10,7 +10,7 @@ use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use N3XT0R\LaravelWebdavServer\Server\Configuration\SabreServerConfigurator;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Server;
 
 final class SabreServerConfiguratorTest extends TestCase
@@ -20,7 +20,7 @@ final class SabreServerConfiguratorTest extends TestCase
         $context = new StorageNodeContextDto(
             disk: 'local',
             filesystem: app('filesystem')->disk('local'),
-            principal: new WebDavPrincipal('42', 'Alice'),
+            principal: new WebDavPrincipalValueObject('42', 'Alice'),
             authorization: new AllowAllPathAuthorization,
         );
 

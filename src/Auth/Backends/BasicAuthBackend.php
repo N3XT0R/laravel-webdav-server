@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Auth\Backends;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Auth\Backend\AbstractBasic;
 
 class BasicAuthBackend extends AbstractBasic
 {
-    protected ?WebDavPrincipal $principal = null;
+    protected ?WebDavPrincipalValueObject $principal = null;
 
     public function __construct(
         protected readonly CredentialValidatorInterface $validator,
@@ -33,7 +33,7 @@ class BasicAuthBackend extends AbstractBasic
     /**
      * Expose authenticated principal for later use (e.g. space resolver).
      */
-    public function getPrincipal(): ?WebDavPrincipal
+    public function getPrincipal(): ?WebDavPrincipalValueObject
     {
         return $this->principal;
     }

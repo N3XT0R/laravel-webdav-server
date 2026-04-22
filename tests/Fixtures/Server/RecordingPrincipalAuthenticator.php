@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Server\PrincipalAuthenticatorInterface;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final class RecordingPrincipalAuthenticator implements PrincipalAuthenticatorInterface
 {
@@ -13,10 +13,10 @@ final class RecordingPrincipalAuthenticator implements PrincipalAuthenticatorInt
     public array $calls = [];
 
     public function __construct(
-        private readonly WebDavPrincipal $principal,
+        private readonly WebDavPrincipalValueObject $principal,
     ) {}
 
-    public function authenticate(string $username, string $password): WebDavPrincipal
+    public function authenticate(string $username, string $password): WebDavPrincipalValueObject
     {
         $this->calls[] = [
             'username' => $username,

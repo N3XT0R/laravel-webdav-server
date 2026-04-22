@@ -8,7 +8,7 @@ use Illuminate\Hashing\BcryptHasher;
 use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavAccountRecordDto;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Repositories\InMemoryWebDavAccountRepository;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use PHPUnit\Framework\TestCase;
 use Workbench\App\Models\User;
 
@@ -51,7 +51,7 @@ final class DatabaseCredentialValidatorTest extends TestCase
         $validator = new DatabaseCredentialValidator($repository, new BcryptHasher);
         $result = $validator->validate('alice', 'secret');
 
-        $this->assertInstanceOf(WebDavPrincipal::class, $result);
+        $this->assertInstanceOf(WebDavPrincipalValueObject::class, $result);
         $this->assertSame('42', $result->id);
         $this->assertSame('Alice', $result->displayName);
     }

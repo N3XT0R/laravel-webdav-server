@@ -5,19 +5,19 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Fixtures\Storage;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
-use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpace;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipal;
+use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final class RecordingSpaceResolver implements SpaceResolverInterface
 {
-    /** @var list<array{principal:WebDavPrincipal,spaceKey:string}> */
+    /** @var list<array{principal:WebDavPrincipalValueObject,spaceKey:string}> */
     public array $calls = [];
 
     public function __construct(
-        private readonly WebDavStorageSpace $space,
+        private readonly WebDavStorageSpaceValueObject $space,
     ) {}
 
-    public function resolve(WebDavPrincipal $principal, string $spaceKey): WebDavStorageSpace
+    public function resolve(WebDavPrincipalValueObject $principal, string $spaceKey): WebDavStorageSpaceValueObject
     {
         $this->calls[] = [
             'principal' => $principal,
