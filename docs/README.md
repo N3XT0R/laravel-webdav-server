@@ -12,6 +12,7 @@ Read the Docs uses [`index.md`](index.md) via `mkdocs.yml` and does not depend o
 - [Architecture](architecture.md)
 - [Common Questions](common-questions.md)
 - [Architectural Decision Records](adr/README.md)
+- [ADR 0008: SOLID Compliance And Established Design Patterns](adr/0008-solid-compliance-and-established-design-patterns.md)
 
 ## Notes
 

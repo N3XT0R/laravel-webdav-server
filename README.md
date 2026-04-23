@@ -104,6 +104,7 @@ This package:
 - Pluggable authentication
 - Laravel policy-based authorization
 - Contract-driven, extensible architecture
+- SOLID-oriented design with established patterns where they clearly fit recurring problems
 
 ---
 
@@ -154,6 +155,9 @@ Abilities:
 - `PathAuthorizationInterface`
 - `ServerRunnerInterface`
 
+The package architecture is intended to stay SOLID-compliant and to prefer established design patterns such as
+`Factory`, `Strategy`, `Builder`, and `Adapter` when they clarify recurring design problems.
+
 ---
 
 ## 📡 Supported WebDAV Methods
@@ -188,6 +192,7 @@ Abilities:
 - docs/configuration.md
 - docs/architecture.md
 - docs/authentication.md
+- docs/adr/0008-solid-compliance-and-established-design-patterns.md
 
 ---
 

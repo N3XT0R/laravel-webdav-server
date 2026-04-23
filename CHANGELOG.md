@@ -18,6 +18,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **documentation**
     - Aligned configuration and authorization docs with the current `spaces` model and clarified that applications
       override the packaged reference policy by registering their own policy for `WebDavPathResourceDto`.
+    - Added `ADR 0008` to make SOLID compliance normative and to require established design patterns where they clearly
+      fit recurring design problems.
 
 ## [1.0.0-alpha.3] - 2026-04-22
 

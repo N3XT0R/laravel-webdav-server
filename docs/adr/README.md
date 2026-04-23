@@ -19,3 +19,4 @@ The records follow the Nygard ADR structure recommended by `adr.github.io`:
 - [0005. WebDAV Space Key And Storage Space Mapping](0005-webdav-space-key-and-storage-space-mapping.md)
 - [0006. Path Authorization Via Laravel Gates And Policies](0006-path-authorization-via-laravel-gates-and-policies.md)
 - [0007. SabreDAV Runtime Decoupling](0007-sabredav-runtime-decoupling.md)
+- [0008. SOLID Compliance And Established Design Patterns](0008-solid-compliance-and-established-design-patterns.md)

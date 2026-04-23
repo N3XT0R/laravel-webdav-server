@@ -7,6 +7,8 @@ A WebDAV server package for Laravel powered by SabreDAV and Laravel's filesystem
 This package exposes Laravel storage disks through a WebDAV endpoint.
 It is designed around explicit request orchestration, pluggable authentication and authorization, and configurable
 storage spaces.
+Its internal architecture is intended to remain SOLID-compliant and to prefer established design patterns when they
+fit recurring design problems.
 
 Core characteristics:
 
@@ -15,6 +17,7 @@ Core characteristics:
 - Basic Auth validation through package contracts
 - path authorization through `PathAuthorizationInterface`, with Laravel Gate/Policy integration by default
 - SabreDAV runtime execution isolated behind package boundaries
+- SOLID-oriented design with established patterns for recurring architectural problems
 
 ## Documentation
 

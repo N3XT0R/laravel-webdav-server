@@ -26,6 +26,8 @@ Every WebDAV request passes through this runtime flow:
 10. The default adapter `SabreServerRunner` starts SabreDAV and terminates the request lifecycle.
 
 All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, so app-level bindings can override defaults.
+The package architecture is intended to remain SOLID-compliant and to prefer established design patterns such as
+`Factory`, `Strategy`, `Builder`, and `Adapter` where they clearly fit recurring problems.
 
 Related decisions:
 
@@ -34,6 +36,7 @@ Related decisions:
 - [ADR 0005: WebDAV Space Key And Storage Space Mapping](adr/0005-webdav-space-key-and-storage-space-mapping.md)
 - [ADR 0006: Path Authorization Via Laravel Gates And Policies](adr/0006-path-authorization-via-laravel-gates-and-policies.md)
 - [ADR 0007: SabreDAV Runtime Decoupling](adr/0007-sabredav-runtime-decoupling.md)
+- [ADR 0008: SOLID Compliance And Established Design Patterns](adr/0008-solid-compliance-and-established-design-patterns.md)
 
 ## Runtime Notes (Current State)
 
