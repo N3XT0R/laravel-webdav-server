@@ -69,13 +69,21 @@ curl -u testuser:password -X PROPFIND http://localhost:8000/webdav/default/
 
 ## 🧭 What is this?
 
-**Laravel WebDAV Server** is a **self-hosted WebDAV server for Laravel**.
+**Laravel WebDAV Server** is a **WebDAV server implementation for Laravel applications**.
 
-It connects:
+It allows you to expose your application's storage (Flysystem disks) via the WebDAV protocol.
 
-- **SabreDAV** → WebDAV protocol
-- **Flysystem** → Laravel storage abstraction
-- **Laravel** → authentication & authorization
+This is not a standalone application, but a **developer-focused package** designed to:
+
+- integrate WebDAV into existing Laravel systems
+- map incoming WebDAV requests to Laravel storage disks
+- process uploaded files directly within your application logic
+
+Typical use cases include:
+
+- handling file uploads via WebDAV instead of HTTP forms
+- integrating external systems that rely on WebDAV
+- building custom file processing pipelines on top of Laravel storage
 
 ---
 
