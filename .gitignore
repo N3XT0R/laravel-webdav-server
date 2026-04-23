@@ -24,6 +24,7 @@ CLAUDE.md
 /.idea
 /.fleet
 /.vscode
+/.claude
 
 # Misc
 phpstan.neon
