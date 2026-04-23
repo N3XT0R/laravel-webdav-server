@@ -13,6 +13,8 @@ A **WebDAV server for Laravel** built on **SabreDAV**, fully integrated with **L
 
 Expose your Laravel storage (local, S3, etc.) as a **WebDAV endpoint** and access it from any WebDAV client.
 
+> Current version: **1.0.0-alpha.3**
+
 ---
 
 > [!WARNING]
@@ -22,10 +24,18 @@ Expose your Laravel storage (local, S3, etc.) as a **WebDAV endpoint** and acces
 
 ---
 
-## 🚀 Quickstart (Run in 2 Minutes via Docker)
+## 🚀 Quickstart (Docker Development Setup)
+
+Start the development container:
 
 ```bash
-docker run -p 8000:8000 ghcr.io/n3xt0r/laravel-webdav-server:latest
+docker compose up --build -d
+```
+
+Start the WebDAV server inside the container:
+
+```bash
+docker compose exec php composer run serve
 ```
 
 WebDAV endpoint:
@@ -41,7 +51,7 @@ http://localhost:8000/webdav/default/
 Seeded automatically:
 
 ```
-Username: testuser  
+Username: testuser
 Password: password
 ```
 
