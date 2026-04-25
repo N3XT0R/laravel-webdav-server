@@ -10,6 +10,14 @@ use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final readonly class StorageNodeContextDto
 {
+    /**
+     * Create the immutable context shared by SabreDAV storage nodes.
+     *
+     * @param string $disk Laravel filesystem disk currently serving the request.
+     * @param \Illuminate\Contracts\Filesystem\Filesystem $filesystem Resolved filesystem instance for the target disk.
+     * @param \N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject $principal Authenticated principal for the current request.
+     * @param \N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface $authorization Authorization adapter invoked before filesystem operations.
+     */
     public function __construct(
         public string $disk,
         public Filesystem $filesystem,
