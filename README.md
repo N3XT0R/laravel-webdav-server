@@ -63,15 +63,15 @@ Use this README if you want a quick overview and a local development entry point
 
 Use Read the Docs if you want the full package documentation.
 
-| If you want to... | Start here |
-|-------------------|------------|
-| run the package locally | [Quickstart](#quickstart) |
-| install it in an application | [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/) |
-| configure spaces, auth, or logging | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/) |
-| understand runtime flow and boundaries | [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/) |
+| If you want to...                         | Start here                                                                                               |
+|-------------------------------------------|----------------------------------------------------------------------------------------------------------|
+| run the package locally                   | [Quickstart](#quickstart)                                                                                |
+| install it in an application              | [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)               |
+| configure spaces, auth, or logging        | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)                   |
+| understand runtime flow and boundaries    | [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)                     |
 | customize auth, storage, or authorization | [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/) |
-| extend the SabreDAV runtime | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/) |
-| review architectural decisions | [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/) |
+| extend the SabreDAV runtime               | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)                   |
+| review architectural decisions            | [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)                               |
 
 ## Quickstart
 
