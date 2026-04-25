@@ -21,12 +21,14 @@ final class LaravelWebdavServerCommand extends Command
     {
         $this->components->info('Laravel WebDAV Server artisan commands');
         $this->newLine();
-        $this->line('  php artisan laravel-webdav-server:account:create {username} {password}');
-        $this->line('  php artisan laravel-webdav-server:account:list');
-        $this->line('  php artisan laravel-webdav-server:account:show {username}');
-        $this->line('  php artisan laravel-webdav-server:account:update {username} [--new-username=...] [--password=...]');
+        $this->line('  laravel-webdav-server:account:create');
+        $this->line('  laravel-webdav-server:account:list');
+        $this->line('  laravel-webdav-server:account:show');
+        $this->line('  laravel-webdav-server:account:update');
         $this->newLine();
-        $this->line('Documentation: https://laravel-webdav-server.readthedocs.io/en/latest/');
+        $this->line('Run php artisan <command> --help for usage details.');
+        $this->newLine();
+        $this->line('Documentation: https://laravel-webdav-server.readthedocs.io/en/latest/commands/');
 
         return self::SUCCESS;
     }
