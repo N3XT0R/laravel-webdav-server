@@ -124,6 +124,15 @@ The effective SabreDAV base URI is configured separately through `webdav-server.
 
 Server-side WebDAV compatibility is only one part of the setup.
 
+This package provides WebDAV responses compatible with Windows WebClient, including:
+
+- `OPTIONS`
+- `PROPFIND`
+- `207 Multi-Status`
+- `DAV` headers
+- root collection handling
+- `MS-Author-Via: DAV`
+
 On Windows, also verify:
 
 - the `WebClient` service is running
@@ -132,6 +141,7 @@ On Windows, also verify:
 
 The package now answers Windows-relevant `OPTIONS` and root `PROPFIND` requests correctly, but Windows client policy
 can still reject plain HTTP Basic Auth unless the workstation is configured for it.
+For reliable Windows Explorer usage, prefer `https://`.
 
 ## Q: How do I link a WebDAV account to a Laravel user?
 

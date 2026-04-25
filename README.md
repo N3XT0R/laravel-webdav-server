@@ -159,10 +159,20 @@ Package logging is configured through `webdav-server.logging`.
 
 Windows Explorer / WebClient support depends on the client machine in addition to server behavior.
 
+This package provides WebDAV responses compatible with Windows WebClient, including:
+
+- `OPTIONS`
+- `PROPFIND`
+- `207 Multi-Status`
+- `DAV` headers
+- root collection handling
+- `MS-Author-Via: DAV`
+
 - the `WebClient` Windows service must be running
 - Basic Auth over plain `http://` may require `BasicAuthLevel` to be enabled in the Windows registry, or use `https://`
 - the package answers `OPTIONS` and root `PROPFIND` requests for `/webdav/{space}/` in a WebDAV-compatible way, but
   Windows client policy can still block non-HTTPS Basic Auth on the workstation
+- for reliable Windows Explorer usage, prefer `https://`
 
 ## Tested Clients
 
