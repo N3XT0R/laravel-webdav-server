@@ -7,6 +7,8 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Auth;
 use Illuminate\Auth\Access\Gate as IlluminateGate;
 use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Logging\RecordingLogger;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Exception\Forbidden;
@@ -19,11 +21,14 @@ final class GatePathAuthorizationTest extends TestCase
 
     private IlluminateGate $gate;
 
+    private RecordingLogger $logger;
+
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->gate = new IlluminateGate($this->app, static fn (): null => null);
+        $this->logger = new RecordingLogger;
 
         foreach (['read', 'write', 'delete', 'createDirectory', 'createFile'] as $ability) {
             $this->gate->define($ability, function (User $user, PathResourceDto $resource) use ($ability): bool {
@@ -43,7 +48,7 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $principal = $this->makePrincipal(42);
 
-        (new GatePathAuthorization($this->gate))->authorizeRead($principal, 'local', 'webdav/42/allowed.txt');
+        $this->makeAuthorization()->authorizeRead($principal, 'local', 'webdav/42/allowed.txt');
 
         $this->assertSame([[
             'ability' => 'read',
@@ -51,24 +56,29 @@ final class GatePathAuthorizationTest extends TestCase
             'path' => 'webdav/42/allowed.txt',
             'userId' => 42,
         ]], $this->inspections);
+        $this->assertSame('Authorizing WebDAV path through Laravel Gate.', $this->logger->records[0]['message']);
     }
 
     public function test_authorize_read_throws_forbidden_when_denied(): void
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization($this->gate))->authorizeRead(
-            $this->makePrincipal(42),
-            'local',
-            'webdav/42/denied.txt',
-        );
+        try {
+            $this->makeAuthorization()->authorizeRead(
+                $this->makePrincipal(42),
+                'local',
+                'webdav/42/denied.txt',
+            );
+        } finally {
+            $this->assertSame('WebDAV path authorization was denied.', $this->logger->records[1]['message']);
+        }
     }
 
     public function test_authorize_write_calls_gate_with_write_ability(): void
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization($this->gate))->authorizeWrite(
+        $this->makeAuthorization()->authorizeWrite(
             $this->makePrincipal(42),
             'local',
             'webdav/42/denied.txt',
@@ -79,7 +89,7 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization($this->gate))->authorizeDelete(
+        $this->makeAuthorization()->authorizeDelete(
             $this->makePrincipal(42),
             'local',
             'webdav/42/denied.txt',
@@ -90,7 +100,7 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization($this->gate))->authorizeCreateDirectory(
+        $this->makeAuthorization()->authorizeCreateDirectory(
             $this->makePrincipal(42),
             'local',
             'webdav/42/denied-dir',
@@ -101,10 +111,18 @@ final class GatePathAuthorizationTest extends TestCase
     {
         $this->expectException(Forbidden::class);
 
-        (new GatePathAuthorization($this->gate))->authorizeCreateFile(
+        $this->makeAuthorization()->authorizeCreateFile(
             $this->makePrincipal(42),
             'local',
             'webdav/42/denied-file.txt',
+        );
+    }
+
+    private function makeAuthorization(): GatePathAuthorization
+    {
+        return new GatePathAuthorization(
+            $this->gate,
+            new WebDavLoggingService($this->logger, 'stderr', 'debug'),
         );
     }
 

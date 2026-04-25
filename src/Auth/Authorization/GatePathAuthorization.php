@@ -7,6 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\Auth\Authorization;
 use Illuminate\Contracts\Auth\Access\Gate;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Exception\Forbidden;
 
@@ -16,9 +17,11 @@ final readonly class GatePathAuthorization implements PathAuthorizationInterface
      * Create the default Gate-backed authorization adapter.
      *
      * @param  Gate  $gate  Laravel Gate instance used to evaluate path policies for the linked user.
+     * @param  WebDavLoggingService  $logger  Package logger used to trace path-authorization checks.
      */
     public function __construct(
         private Gate $gate,
+        private WebDavLoggingService $logger,
     ) {}
 
     /**
@@ -98,9 +101,33 @@ final readonly class GatePathAuthorization implements PathAuthorizationInterface
             path: $path,
         );
 
+        $this->logger->debug('Authorizing WebDAV path through Laravel Gate.', [
+            'auth' => [
+                'ability' => $ability,
+                'principal_id' => $principal->id,
+                'user_id' => $principal->user?->getAuthIdentifier(),
+            ],
+            'webdav' => [
+                'disk' => $disk,
+                'path' => $path,
+            ],
+        ]);
+
         $response = $this->gate->forUser($principal->user)->inspect($ability, $resource);
 
         if (! $response->allowed()) {
+            $this->logger->info('WebDAV path authorization was denied.', [
+                'auth' => [
+                    'ability' => $ability,
+                    'principal_id' => $principal->id,
+                    'user_id' => $principal->user?->getAuthIdentifier(),
+                ],
+                'webdav' => [
+                    'disk' => $disk,
+                    'path' => $path,
+                ],
+            ]);
+
             throw new Forbidden($response->message() ?: 'Access denied.');
         }
     }
