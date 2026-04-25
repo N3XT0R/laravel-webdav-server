@@ -1,21 +1,20 @@
 # Authentication & Authorization
 
-This document explains how authentication and authorization work in the package, with practical examples for common use
-cases.
+This document explains how authentication and authorization work in the package and which extension points you can
+override.
 
 ## Authentication Overview
 
-The package uses **independent Basic Auth**, validated by `CredentialValidatorInterface`.
+The package uses independent HTTP Basic Auth validated through `CredentialValidatorInterface`.
 
-- Credentials are **not** validated against Laravel's `auth()` guard.
-- Username/password come from the `webdav-server.auth.account_model` table.
-- On successful validation, a `WebDavPrincipalValueObject` is returned (containing id, displayName, and optional user relation).
-
----
+- credentials are not checked through Laravel's `auth()` guard
+- username and password come from the configured `webdav-server.auth.account_model`
+- on success, the validator returns a `WebDavPrincipalValueObject`
+- on failure, the validator throws a package auth exception such as `InvalidCredentialsException`
 
 ## Default: Database-Backed Authentication
 
-By default, `DatabaseCredentialValidator` validates against `webdav_accounts` table:
+By default, `DatabaseCredentialValidator` uses `EloquentAccountRepository` plus the configured account model:
 
 ```php
 // config/webdav-server.php
@@ -30,44 +29,35 @@ By default, `DatabaseCredentialValidator` validates against `webdav_accounts` ta
 ],
 ```
 
-Passwords are stored encrypted (hashed).
-
----
+Passwords must be stored as hashes.
 
 ## Custom Authentication
 
-To implement custom authentication (LDAP, API tokens, etc.), implement `CredentialValidatorInterface`:
+To implement custom authentication such as LDAP or API token lookup, implement `CredentialValidatorInterface`:
 
 ```php
-// app/Services/LdapCredentialValidator.php
 namespace App\Services;
 
+use App\Models\User;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
-class LdapCredentialValidator implements CredentialValidatorInterface
+final class LdapCredentialValidator implements CredentialValidatorInterface
 {
-    public function validate(string $username, string $password): ?WebDavPrincipalValueObject
+    public function validate(string $username, string $password): WebDavPrincipalValueObject
     {
-        // Example: Validate against LDAP
-        if (!$this->validateLdap($username, $password)) {
-            return null;
+        if (! $this->validateLdap($username, $password)) {
+            throw new InvalidCredentialsException('Invalid WebDAV credentials.');
         }
 
-        // Get or create user in Laravel app
-        $user = \App\Models\User::where('email', $username)->first();
+        $user = User::firstOrCreate(
+            ['email' => $username],
+            ['name' => $username, 'password' => bcrypt(bin2hex(random_bytes(16)))],
+        );
 
-        if (!$user) {
-            $user = \App\Models\User::create([
-                'email' => $username,
-                'name' => $username,
-                'password' => bcrypt(str_random(32)), // Temporary
-            ]);
-        }
-
-        // Return WebDAV principal
         return new WebDavPrincipalValueObject(
-            id: (string) $user->id,
+            id: (string) $user->getAuthIdentifier(),
             displayName: $user->name,
             user: $user,
         );
@@ -75,90 +65,80 @@ class LdapCredentialValidator implements CredentialValidatorInterface
 
     private function validateLdap(string $username, string $password): bool
     {
-        // Your LDAP logic here
         return true;
     }
 }
 ```
 
-Register in your `AppServiceProvider`:
+Register it in your application:
 
 ```php
-// app/Providers/AppServiceProvider.php
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 use App\Services\LdapCredentialValidator;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\CredentialValidatorInterface;
 
-public function register()
+public function register(): void
 {
     $this->app->bind(CredentialValidatorInterface::class, LdapCredentialValidator::class);
 }
 ```
 
----
-
 ## Authorization Overview
 
-Authorization is handled by `PathAuthorizationInterface` and Laravel Policies.
+Authorization is handled by `PathAuthorizationInterface`.
 
-Every filesystem operation (read, write, delete, etc.) checks the policy before execution.
-
----
+The default implementation is `GatePathAuthorization`, which delegates to Laravel Gate / policies and throws
+`Sabre\DAV\Exception\Forbidden` when access is denied.
 
 ## Default: Gate-Based Policies
 
-By default, `GatePathAuthorization` uses Laravel's Gate system.
-
-The package registers its own reference policy for `WebDavPathResourceDto`.
+The package registers its own reference policy for `PathResourceDto`.
 If your application needs custom rules, register your own policy in the app:
 
 ```php
-// AppServiceProvider::boot()
-Gate::policy(
-    \N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto::class,
-    \App\Policies\WebDavPathPolicy::class,
-);
+use App\Policies\PathPolicy;
+use Illuminate\Support\Facades\Gate;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
+
+public function boot(): void
+{
+    Gate::policy(PathResourceDto::class, PathPolicy::class);
+}
 ```
 
 ```php
-// app/Policies/WebDavPathPolicy.php
 namespace App\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
 
-class WebDavPathPolicy
+final class PathPolicy
 {
-    public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
-    {
-        // $resource->disk = 'local'
-        // $resource->path = 'webdav/42/documents/report.pdf'
-
-        // Example: Allow if path starts with user's root
-        return str_starts_with($resource->path, 'webdav/'.$user->getAuthIdentifier().'/')
-            || $resource->path === 'webdav/'.$user->getAuthIdentifier();
-    }
-
-    public function write(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function read(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isUserPath($user, $resource);
     }
 
-    public function delete(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function write(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isUserPath($user, $resource);
     }
 
-    public function createDirectory(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function delete(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isUserPath($user, $resource);
     }
 
-    public function createFile(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function createDirectory(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isUserPath($user, $resource);
     }
 
-    private function isUserPath(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function createFile(Authenticatable $user, PathResourceDto $resource): bool
+    {
+        return $this->isUserPath($user, $resource);
+    }
+
+    private function isUserPath(Authenticatable $user, PathResourceDto $resource): bool
     {
         return str_starts_with($resource->path, 'webdav/'.$user->getAuthIdentifier().'/')
             || $resource->path === 'webdav/'.$user->getAuthIdentifier();
@@ -166,150 +146,99 @@ class WebDavPathPolicy
 }
 ```
 
----
-
-## Advanced: Custom Authorization Handler
+## Custom Authorization Adapter
 
 To replace Gate-based authorization entirely, implement `PathAuthorizationInterface`:
 
 ```php
-// app/Services/CustomPathAuthorization.php
 namespace App\Services;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Exception\Forbidden;
 
-class CustomPathAuthorization implements PathAuthorizationInterface
+final class CustomPathAuthorization implements PathAuthorizationInterface
 {
     public function authorizeRead(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
-        if (!$this->canRead($principal, $path)) {
-            throw new Forbidden('Read access denied');
+        if (! $this->canRead($principal, $disk, $path)) {
+            throw new Forbidden('Read access denied.');
         }
     }
 
     public function authorizeWrite(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
-        if (!$this->canWrite($principal, $path)) {
-            throw new Forbidden('Write access denied');
+        if (! $this->canWrite($principal, $disk, $path)) {
+            throw new Forbidden('Write access denied.');
         }
     }
 
     public function authorizeDelete(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
-        if (!$this->canDelete($principal, $path)) {
-            throw new Forbidden('Delete access denied');
+        if (! $this->canDelete($principal, $disk, $path)) {
+            throw new Forbidden('Delete access denied.');
         }
     }
 
     public function authorizeCreateDirectory(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
-        if (!$this->canCreateDirectory($principal, $path)) {
-            throw new Forbidden('Directory creation denied');
+        if (! $this->canCreateDirectory($principal, $disk, $path)) {
+            throw new Forbidden('Directory creation denied.');
         }
     }
 
     public function authorizeCreateFile(WebDavPrincipalValueObject $principal, string $disk, string $path): void
     {
-        if (!$this->canCreateFile($principal, $path)) {
-            throw new Forbidden('File creation denied');
+        if (! $this->canCreateFile($principal, $disk, $path)) {
+            throw new Forbidden('File creation denied.');
         }
     }
 
-    // Your authorization logic
-    private function canRead(WebDavPrincipalValueObject $principal, string $path): bool
-    {
-        return true; // Implement your logic
-    }
-
-    private function canWrite(WebDavPrincipalValueObject $principal, string $path): bool
+    private function canRead(WebDavPrincipalValueObject $principal, string $disk, string $path): bool
     {
         return true;
     }
 
-    private function canDelete(WebDavPrincipalValueObject $principal, string $path): bool
+    private function canWrite(WebDavPrincipalValueObject $principal, string $disk, string $path): bool
     {
         return true;
     }
 
-    private function canCreateDirectory(WebDavPrincipalValueObject $principal, string $path): bool
+    private function canDelete(WebDavPrincipalValueObject $principal, string $disk, string $path): bool
     {
         return true;
     }
 
-    private function canCreateFile(WebDavPrincipalValueObject $principal, string $path): bool
+    private function canCreateDirectory(WebDavPrincipalValueObject $principal, string $disk, string $path): bool
+    {
+        return true;
+    }
+
+    private function canCreateFile(WebDavPrincipalValueObject $principal, string $disk, string $path): bool
     {
         return true;
     }
 }
 ```
 
-Register in `AppServiceProvider`:
+Register it in your application:
 
 ```php
-// app/Providers/AppServiceProvider.php
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 use App\Services\CustomPathAuthorization;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\PathAuthorizationInterface;
 
-public function register()
+public function register(): void
 {
     $this->app->bind(PathAuthorizationInterface::class, CustomPathAuthorization::class);
 }
 ```
 
----
+## Linked Laravel Users
 
-## Linking WebDAV Accounts to Laravel Users
+If your account model links to a Laravel user, the resolved principal carries that user in `$principal->user`.
+That is the user object Gate / policies receive by default.
 
-To associate a WebDAV account with your app's user model:
+If your policy logic depends on linked users, make sure:
 
-```php
-// config/webdav-server.php
-'auth' => [
-    'account_model' => \App\Models\WebDavAccount::class,
-    'user_model' => \App\Models\User::class,
-    'user_id_column' => 'user_id',
-],
-```
-
-The `WebDavAccountModel` model includes a `user()` relationship:
-
-```php
-// In your policy
-public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
-{
-    // $user is a WebDavAccountModel
-    $appUser = $user->user; // Get associated Laravel user
-
-    if (!$appUser) {
-        return false;
-    }
-
-    // Check Laravel user permissions
-    return $appUser->can('access-webdav');
-}
-```
-
----
-
-## WebDAV Client Access
-
-Clients authenticate with Basic Auth (username/password from `webdav_accounts` table):
-
-```
-URL:      webdav://your-domain.test/webdav/default
-Username: (from webdav_accounts.username)
-Password: (from webdav_accounts.password_encrypted, decrypted at runtime)
-```
-
-The authenticated principal is determined by `CredentialValidatorInterface::validate()`.
-
----
-
-## Security Notes
-
-- **Always use HTTPS** for production (Basic Auth transmits credentials in Base64).
-- WebDAV clients typically cache credentials — consider password rotation policies.
-- The `WebDavPrincipalValueObject` object is available throughout the request lifecycle via policy/authorization checks.
-- Never store plaintext passwords; the default `DatabaseCredentialValidator` expects hashed passwords.
+- `webdav-server.auth.user_model` is configured
+- your configured account model exposes a `user()` relationship

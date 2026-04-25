@@ -1,185 +1,104 @@
 # Common Questions & Clarifications
 
-This document corrects common misconceptions about the package based on its actual implementation.
+This document corrects common misconceptions based on the current package implementation.
 
 ## Q: Does the package support `{user_id}` placeholders in config paths?
 
-**A: No.** The package does **not** use string placeholders like `'path' => 'users/{user_id}'`.
+No.
 
-Instead, user isolation happens via:
+User isolation is resolved dynamically through `SpaceResolverInterface::resolve($principal, $spaceKey)`.
+The default resolver returns a `WebDavStorageSpaceValueObject` whose `rootPath` already includes `$principal->id`.
 
-- **`SpaceResolverInterface::resolve($principal, $spaceKey)`**: Resolves storage space dynamically at runtime.
-- **Default implementation** (`DefaultSpaceResolver`): Returns a `WebDavStorageSpaceValueObject` with a path that includes
-  `$principal->id`:
+## Q: Do I need a custom "AuthInterface" for authentication?
 
-```php
-// In DefaultSpaceResolver
-return new WebDavStorageSpaceValueObject(
-    disk: $disk,
-    rootPath: trim($root, '/') . '/' . $principal->id,  // User ID is appended here
-);
-```
+No. Use `CredentialValidatorInterface`.
 
-So if `principal->id` is `42` and `config('webdav-server.storage.spaces.default.root')` is `webdav`, the resolved root is
-`webdav/42`.
+## Q: Are there file-level authorization checks?
 
----
+Not as a separate abstraction. The package authorizes at the path resource level.
 
-## Q: Do I need to implement an "AuthInterface" for custom authentication?
-
-**A: No. Use `CredentialValidatorInterface` instead.**
-
-See [docs/authentication.md](authentication.md) for custom authentication examples and best practices.
-
----
-
-## Q: Are there file-level (per-file) authorization checks?
-
-**A: No, only path-level checks.** Policies operate at the **path resource level**, not per individual file.
-
-The policy receives `WebDavPathResourceDto` with `disk` and `path` properties:
+Policies receive `PathResourceDto` with `disk` and `path`:
 
 ```php
-class WebDavPathPolicy
+use Illuminate\Contracts\Auth\Authenticatable;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
+
+final class PathPolicy
 {
-    public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function read(Authenticatable $user, PathResourceDto $resource): bool
     {
-        // $resource->disk = 'local'
-        // $resource->path = 'webdav/42/documents/report.pdf'
-        
-        // You can check folder prefixes, but not "allow this file but deny that file in the same folder"
-        return str_starts_with($resource->path, 'webdav/42/');
+        return str_starts_with($resource->path, 'webdav/'.$user->getAuthIdentifier().'/');
     }
 }
 ```
 
-**Limitation:** WebDAV clients (Windows Explorer, Finder) typically expect full read/write permissions for the mounted
-directory. Fine-grained per-file authorization is not ideal for WebDAV.
-
----
-
 ## Q: Does the package support CalDAV or CardDAV?
 
-**A: No.** This package provides **WebDAV (file access) only**.
+No. The current package scope is WebDAV file access only.
 
-- It does not support CalDAV (calendar) or CardDAV (contacts).
-- If you need calendar/contact sync, consider `monicahq/laravel-sabre` instead.
-
----
+ADR `0009` keeps CalDAV / CardDAV as an optional future extension path, not as an active feature.
 
 ## Q: How do I restrict access to specific spaces per user?
 
-**A: Override `SpaceResolverInterface`.**
-
-The default resolver allows any space key from config. To restrict by user:
+Override `SpaceResolverInterface`.
 
 ```php
-// app/Services/RestrictedSpaceResolver.php
+use Illuminate\Contracts\Config\Repository as Config;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\SpaceNotConfiguredException;
+use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
-class RestrictedSpaceResolver implements SpaceResolverInterface
+final class RestrictedSpaceResolver implements SpaceResolverInterface
 {
     public function __construct(private Config $config) {}
 
     public function resolve(WebDavPrincipalValueObject $principal, string $spaceKey): WebDavStorageSpaceValueObject
     {
-        // Example: Only allow 'default' space for non-admin users
-        if ($spaceKey !== 'default' && !$principal->user?->isAdmin()) {
-            throw new RuntimeException('Unauthorized space');
+        if ($spaceKey !== 'default' && ! $principal->user?->isAdmin()) {
+            throw new SpaceNotConfiguredException('Unauthorized space.');
         }
 
-        // Delegate to default resolver or implement your logic
-        return $this->defaultResolve($spaceKey);
+        return new WebDavStorageSpaceValueObject(
+            disk: 'local',
+            rootPath: 'webdav/'.$principal->id,
+        );
     }
 }
 ```
-
-Register in `AppServiceProvider`:
-
-```php
-$app->bind(SpaceResolverInterface::class, RestrictedSpaceResolver::class);
-```
-
----
 
 ## Q: Can policies reject operations dynamically?
 
-**A: Yes.** Policies are checked before every filesystem operation.
+Yes. Policies are checked before every filesystem operation.
 
-All five abilities are checked at the right times:
+Mapped abilities:
 
 | Ability           | Operation       |
 |-------------------|-----------------|
-| `read`            | PROPFIND, GET   |
-| `write`           | PUT (overwrite) |
-| `delete`          | DELETE          |
-| `createDirectory` | MKCOL           |
-| `createFile`      | PUT (new file)  |
+| `read`            | `PROPFIND`, `GET`   |
+| `write`           | `PUT` (overwrite)   |
+| `delete`          | `DELETE`            |
+| `createDirectory` | `MKCOL`             |
+| `createFile`      | `PUT` (new file)    |
 
-If a policy denies access, a `Sabre\DAV\Exception\Forbidden` is thrown and the WebDAV client receives a 403 error.
-
-Example:
-
-```php
-public function delete(Authenticatable $user, WebDavPathResourceDto $resource): bool
-{
-    // Deny deletion of files in the 'archive' folder
-    if (str_contains($resource->path, '/archive/')) {
-        return false;
-    }
-    return true;
-}
-```
-
----
+Denied access becomes `Sabre\DAV\Exception\Forbidden`.
 
 ## Q: Why not call `Server::start()` directly in `WebDavController`?
 
-**A: Runtime execution is intentionally delegated via `ServerRunnerInterface`.**
+Because runtime execution is intentionally delegated through `ServerRunnerInterface`.
 
-`WebDavController` stays focused on request orchestration (auth attempt check + server creation), while runtime
-execution is handled by a dedicated runner.
-
-- Default implementation: `SabreServerRunner`
-- Default behavior: call `Server::start()` and terminate the request lifecycle
-
-This keeps the successful request flow testable in Feature tests without changing SabreDAV runtime behavior.
-
----
+That keeps controller orchestration testable while the default `SabreServerRunner` still owns the final SabreDAV
+handoff.
 
 ## Q: How do I link a WebDAV account to a Laravel user?
 
-**A: Set `webdav-server.auth.user_model` in config and use the `user_id` column.**
+Set `webdav-server.auth.user_model` and make sure your configured account model exposes a `user()` relationship.
 
-See [docs/authentication.md](authentication.md#linking-webdav-accounts-to-laravel-users) for full details and code
-examples.
-
----
-
-## Q: What's the difference between this package and `monicahq/laravel-sabre`?
-
-| Feature                | n3xt0r/laravel-webdav-server          | monicahq/laravel-sabre                  |
-|------------------------|---------------------------------------|-----------------------------------------|
-| **Focus**              | WebDAV (files) only                   | Full SabreDAV (WebDAV, CalDAV, CardDAV) |
-| **Setup**              | Config-based (simple)                 | Code-based (complex)                    |
-| **Laravel Filesystem** | Native integration                    | Manual node mapping                     |
-| **User isolation**     | Built-in via `SpaceResolverInterface` | Manual per-request logic                |
-| **Policies**           | Per-path checks                       | Per-node checks                         |
-| **Extensibility**      | Contracts (bindIf)                    | Direct plugin API                       |
-
-**Choose n3xt0r if:** You want a quick WebDAV server for file sharing with minimal setup.
-
-**Choose monicahq/laravel-sabre if:** You need CalDAV/CardDAV or a highly customizable multi-protocol DAV server.
-
----
+The resolved principal then carries the linked user as `$principal->user`, which is what Gate / policies receive.
 
 ## Q: Is this package production-ready?
 
-**A: Use with caution.** See the warning in `README.md`.
+Use it with caution.
 
-The package is under active development. APIs and configuration keys may change between releases. Consider:
-
-- Running thorough security audits before exposing to the public.
-- Testing HTTPS enforcement (WebDAV transmits Basic Auth credentials).
-- Monitoring performance with your expected file sizes and user counts.
+The package is still in alpha. Validate HTTPS, credential handling, authorization rules, and expected filesystem load
+before exposing it publicly.

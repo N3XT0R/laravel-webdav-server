@@ -32,8 +32,8 @@ The current implementation already exposes a dedicated boundary:
 - WebDAV nodes call `PathAuthorizationInterface`
 - the default implementation is `GatePathAuthorization`
 - `GatePathAuthorization` maps WebDAV operations to named abilities
-- the policy resource is `WebDavPathResourceDto` with `disk` and `path`
-- the package service provider registers `WebDavPathPolicy` for that resource by default
+- the policy resource is `PathResourceDto` with `disk` and `path`
+- the package service provider registers `PathPolicy` for that resource by default
 
 ## Decision
 
@@ -45,7 +45,7 @@ The architectural rules are:
 - WebDAV nodes do not embed policy logic directly
 - authorization is requested through `PathAuthorizationInterface`
 - the default adapter delegates to `Gate::forUser(...)->inspect(...)`
-- the policy resource passed through Gate is `WebDavPathResourceDto`
+- the policy resource passed through Gate is `PathResourceDto`
 - WebDAV operations map to the five package abilities: `read`, `write`, `delete`, `createDirectory`, and `createFile`
 - authorization denial is surfaced as `Sabre\DAV\Exception\Forbidden`, not as a Laravel HTTP exception
 

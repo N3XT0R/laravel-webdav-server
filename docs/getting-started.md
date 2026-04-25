@@ -1,11 +1,11 @@
 # Getting Started: User-Specific WebDAV
 
-This package is designed for user-isolated storage through pluggable authentication and authorization.
+This package is built around user-isolated storage through pluggable authentication, storage resolution, and path
+authorization.
 
 ## Configure Storage Spaces
 
 ```php
-// config/webdav-server.php
 return [
     'auth' => [
         'account_model' => \App\Models\WebDavAccount::class,
@@ -23,61 +23,66 @@ return [
 ];
 ```
 
-## How URL Routes to User Storage
+## How the URL Resolves to User Storage
 
 - URL: `GET /webdav/default/myfile.pdf` with Basic Auth
-- `{space}` parameter: `default` (or any space key from config)
-- `SpaceResolverInterface` resolves to: `local://webdav/{authenticated_principal_id}/myfile.pdf`
-- Each authenticated user sees their own isolated directory tree.
+- `{space}` parameter: `default`
+- `RequestSpaceKeyResolver` resolves the route-level `spaceKey`
+- `SpaceResolverInterface` resolves that key to one concrete storage target
+- the default resolver builds `{root}[/prefix]/{principal.id}`
+
+With `root = webdav` and authenticated principal `42`, the effective WebDAV root becomes `webdav/42`.
 
 ## Create Your Policy
 
 The package registers its own reference policy by default.
-If you want app-specific rules, register your own policy for `WebDavPathResourceDto`:
+If you want application-specific rules, register your own policy for `PathResourceDto`:
 
 ```php
-// AppServiceProvider::boot()
-Gate::policy(
-    \N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto::class,
-    \App\Policies\WebDavPathPolicy::class,
-);
+use App\Policies\PathPolicy;
+use Illuminate\Support\Facades\Gate;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
+
+public function boot(): void
+{
+    Gate::policy(PathResourceDto::class, PathPolicy::class);
+}
 ```
 
 ```php
-// app/Policies/WebDavPathPolicy.php
 namespace App\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
 
-class WebDavPathPolicy
+final class PathPolicy
 {
-    public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function read(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isUserPath($user, $resource);
     }
 
-    public function write(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function write(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isUserPath($user, $resource);
     }
 
-    public function delete(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function delete(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isUserPath($user, $resource);
     }
 
-    public function createDirectory(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function createDirectory(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isUserPath($user, $resource);
     }
 
-    public function createFile(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function createFile(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isUserPath($user, $resource);
     }
 
-    private function isUserPath(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    private function isUserPath(Authenticatable $user, PathResourceDto $resource): bool
     {
         return str_starts_with($resource->path, 'webdav/'.$user->getAuthIdentifier().'/')
             || $resource->path === 'webdav/'.$user->getAuthIdentifier();
@@ -85,22 +90,21 @@ class WebDavPathPolicy
 }
 ```
 
-## Authentication (NOT Laravel auth())
+## Authentication
 
-The package uses **independent Basic Auth**, not Laravel's `auth()` middleware:
+The package uses independent Basic Auth, not Laravel's `auth()` middleware.
 
-- Credentials are validated against `webdav-server.auth.account_model` table.
-- Username/password columns are configurable.
-- This is **not** dependent on Laravel session/guard auth.
-- The authenticated user is represented as `WebDavPrincipalValueObject` (id, displayName, user relation).
+- credentials are validated against the configured account model
+- username and password columns are configurable
+- successful authentication resolves a `WebDavPrincipalValueObject`
+- invalid credentials are surfaced as package auth exceptions
 
 ## Access from Clients
 
-```
-Windows: \\your-domain.test\webdav
+```text
 macOS:   webdav://your-domain.test/webdav/default
 Linux:   dav://your-domain.test/webdav/default
-
-Username: (from webdav_accounts table)
-Password: (from webdav_accounts table, encrypted)
+Windows: \\your-domain.test\webdav
 ```
+
+Use the username and password from your configured WebDAV account records.

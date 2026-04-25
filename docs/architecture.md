@@ -15,6 +15,7 @@ Every WebDAV request passes through this runtime flow:
      `config('webdav-server.storage.default_space')`
    - `SpaceResolverInterface::resolve(principal, spaceKey)` resolves the effective storage target as a
      `WebDavStorageSpaceValueObject`
+   - the gathered runtime DTO is `RequestContextDto`
 5. `StorageRootBuilder::build(principal, space)` creates the SabreDAV root tree:
    - `StorageRootCollection`
    - `StorageDirectory` / `StorageFile`
@@ -40,11 +41,18 @@ Related decisions:
 
 ## Runtime Notes (Current State)
 
-- Route shape is `'/webdav/{space}/{path?}'` in `routes/web.php`.
+- The package registers the route shape `'/webdav/{space}/{path?}'`.
 - `spaceKey` is resolved from the `{space}` route parameter via `RequestSpaceKeyResolver`; falls back to `config('webdav-server.storage.default_space', 'default')` if the parameter is absent.
 - Auth-related extractor/authenticator failures throw domain exceptions:
   - `MissingCredentialsException`
   - `InvalidCredentialsException`
+- Account and storage resolution also use package exception hierarchies:
+  - `AccountNotFoundException`
+  - `AccountDisabledException`
+  - `InvalidAccountConfigurationException`
+  - `SpaceNotConfiguredException`
+  - `InvalidSpaceConfigurationException`
+  - `InvalidDefaultSpaceConfigurationException`
 - Controller runtime execution is delegated via `ServerRunnerInterface`.
 - Default runner is `SabreServerRunner`, which starts SabreDAV and terminates the request lifecycle.
 - CSRF bypass is registered in `WebdavServerServiceProvider::registerCsrfException()`.

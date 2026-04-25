@@ -55,7 +55,7 @@ Examples in this package:
 
 - Gate authorization through `GatePathAuthorization`
 - real filesystem interaction through `StorageRootCollection`, `StorageDirectory`, and `StorageFile`
-- real Eloquent persistence through `EloquentWebDavAccountRepository`
+- real Eloquent persistence through `EloquentAccountRepository`
 - real configuration-driven resolution such as `DefaultSpaceResolver`
 
 Rules:

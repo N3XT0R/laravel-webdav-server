@@ -9,106 +9,55 @@
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Total Downloads](https://img.shields.io/packagist/dt/n3xt0r/laravel-webdav-server.svg?style=flat-square)](https://packagist.org/packages/n3xt0r/laravel-webdav-server)
 
-A **WebDAV server for Laravel** built on **SabreDAV**, fully integrated with **Laravel Flysystem**.
+A WebDAV server package for Laravel powered by SabreDAV and Laravel Flysystem.
 
-Expose your Laravel storage (local, S3, etc.) as a **WebDAV endpoint** and access it from any WebDAV client.
+Expose Laravel storage disks through `/webdav/{space}/{path?}` and map each request to a configured storage space plus a
+user-scoped root path.
 
 > Current version: **1.0.0-alpha.3**
 
----
-
 > [!WARNING]
-> This package is currently under active development and not yet production-ready.  
-> APIs, configuration keys, and behaviour may change without notice between releases.  
-> Use in production at your own risk.
+> This package is under active development and not yet production-ready.
+> APIs, configuration keys, and behavior may still change between alpha releases.
 
----
-
-## 🚀 Quickstart (Docker Development Setup)
-
-Start the development container:
+## Quickstart
 
 ```bash
 docker compose up --build -d
-```
-
-Start the WebDAV server inside the container:
-
-```bash
 docker compose exec php composer run serve
 ```
 
-WebDAV endpoint:
+Default endpoint:
 
-```
+```text
 http://localhost:8000/webdav/default/
 ```
 
----
+Seeded workbench credentials:
 
-## 🔑 Test Credentials
-
-Seeded automatically:
-
-```
+```text
 Username: testuser
 Password: password
 ```
 
----
-
-## 🧪 Verify WebDAV (30 seconds)
+Quick verification:
 
 ```bash
 curl -u testuser:password -X PROPFIND http://localhost:8000/webdav/default/
 ```
 
-✔ If you get an XML response → WebDAV server is working
+## What This Package Does
 
----
+- provides a WebDAV server for Laravel
+- exposes Flysystem disks such as `local` or `s3`
+- resolves storage through named `space` keys under `webdav-server.storage.spaces.*`
+- scopes each resolved storage root to `{root}[/prefix]/{principal.id}`
+- authenticates requests through package contracts, not Laravel session auth
+- authorizes path operations through `PathAuthorizationInterface`, backed by Laravel Gate / policies by default
 
-## 🧭 What is this?
+This package is a server integration, not a Flysystem WebDAV client disk.
 
-**Laravel WebDAV Server** is a **WebDAV server implementation for Laravel applications**.
-
-It allows you to expose your application's storage (Flysystem disks) via the WebDAV protocol.
-
-This is not a standalone application, but a **developer-focused package** designed to:
-
-- integrate WebDAV into existing Laravel systems
-- map incoming WebDAV requests to Laravel storage disks
-- process uploaded files directly within your application logic
-
-Typical use cases include:
-
-- handling file uploads via WebDAV instead of HTTP forms
-- integrating external systems that rely on WebDAV
-- building custom file processing pipelines on top of Laravel storage
-
----
-
-## ❗ Server, not Client
-
-This package:
-
-- ✅ provides a WebDAV server for Laravel
-- ❌ does NOT provide a WebDAV client (`Storage::disk('webdav')`)
-
----
-
-## 🔑 Features
-
-- WebDAV server powered by SabreDAV
-- Laravel Flysystem integration (local, S3, etc.)
-- User-based storage mapping
-- Pluggable authentication
-- Laravel policy-based authorization
-- Contract-driven, extensible architecture
-- SOLID-oriented design with established patterns where they clearly fit recurring problems
-
----
-
-## 📦 Installation
+## Installation
 
 ```bash
 composer require n3xt0r/laravel-webdav-server
@@ -116,9 +65,17 @@ php artisan vendor:publish --tag="laravel-webdav-server-config"
 php artisan migrate
 ```
 
----
+The package service provider is `N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider`.
 
-## ⚙️ Basic WebDAV Route
+## Route Shape
+
+The effective WebDAV route shape is:
+
+```text
+/webdav/{space}/{path?}
+```
+
+Example:
 
 ```php
 Route::match([
@@ -131,72 +88,70 @@ Route::match([
     ->where('path', '.*');
 ```
 
----
+## Authentication And Authorization
 
-## 🔐 Authentication & Authorization
+- Authentication uses HTTP Basic Auth.
+- Default auth flow uses `DatabaseCredentialValidator` plus `EloquentAccountRepository`.
+- Authorization uses `PathAuthorizationInterface`.
+- The default adapter is `GatePathAuthorization`, which passes `PathResourceDto` into Laravel Gate / policies.
 
-- Authentication: HTTP Basic Auth
-- Authorization: Laravel Policies (`Gate`)
+Policy abilities:
 
-Abilities:
+- `read`
+- `write`
+- `delete`
+- `createDirectory`
+- `createFile`
 
-- read
-- write
-- delete
-- createDirectory
-- createFile
-
----
-
-## 🔌 Extension Points
+## Extension Points
 
 - `CredentialValidatorInterface`
+- `AccountRepositoryInterface`
 - `SpaceResolverInterface`
 - `PathAuthorizationInterface`
+- `RequestCredentialsExtractorInterface`
+- `PrincipalAuthenticatorInterface`
+- `RequestContextResolverInterface`
+- `SpaceKeyResolverInterface`
+- `StorageRootBuilderInterface`
+- `ServerConfiguratorInterface`
 - `ServerRunnerInterface`
 
-The package architecture is intended to stay SOLID-compliant and to prefer established design patterns such as
-`Factory`, `Strategy`, `Builder`, and `Adapter` when they clarify recurring design problems.
+## Request Pipeline
 
----
+1. `WebDavController` accepts the request.
+2. `WebDavServerFactory` resolves credentials, principal, `spaceKey`, and storage space through dedicated collaborators.
+3. `StorageRootBuilder` creates the SabreDAV node tree.
+4. `SabreServerConfigurator` applies runtime configuration such as the effective base URI.
+5. `ServerRunnerInterface` hands execution off to the runtime adapter.
 
-## 📡 Supported WebDAV Methods
+The default runner is `SabreServerRunner`, which calls `Server::start()` and terminates the request lifecycle.
 
-- PROPFIND
-- GET
-- PUT
-- DELETE
-- MKCOL
+## Supported WebDAV Methods
 
----
+- `PROPFIND`
+- `GET`
+- `PUT`
+- `DELETE`
+- `MKCOL`
 
-## 🧪 Tested Clients
+## Tested Clients
 
 - WinSCP
 - macOS Finder
 - Windows Explorer
 - Cyberduck
 
----
+## Documentation
 
-## ⚠️ Stability
+- [Getting Started](docs/getting-started.md)
+- [Configuration](docs/configuration.md)
+- [Authentication & Authorization](docs/authentication.md)
+- [Architecture](docs/architecture.md)
+- [Common Questions](docs/common-questions.md)
+- [ADR Index](docs/adr/README.md)
 
-> Version `1.0.0-alpha.3`  
-> This package is in **alpha stage**
-
----
-
-## 📚 Documentation
-
-- docs/getting-started.md
-- docs/configuration.md
-- docs/architecture.md
-- docs/authentication.md
-- docs/adr/0008-solid-compliance-and-established-design-patterns.md
-
----
-
-## 🛠 Developer Commands
+## Developer Commands
 
 ```bash
 composer run test
@@ -205,8 +160,6 @@ composer run test:lint
 composer run serve
 ```
 
----
-
-## 📄 License
+## License
 
 MIT License

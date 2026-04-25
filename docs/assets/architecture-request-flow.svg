@@ -70,7 +70,7 @@
   <text class="small" x="400" y="452">Extractor + Authenticator + Resolvers</text>
 
   <rect class="resolver" x="380" y="520" width="220" height="120" rx="14"/>
-  <text class="box-title" x="400" y="550">WebDavRequestContextDto</text>
+  <text class="box-title" x="400" y="550">RequestContextDto</text>
   <text class="box-text" x="400" y="575">Carries principal, `spaceKey`,</text>
   <text class="box-text" x="400" y="596">and resolved storage space.</text>
   <text class="box-text" x="400" y="617">Used by factory collaborators.</text>
