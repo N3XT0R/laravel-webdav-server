@@ -45,6 +45,9 @@
     }
   },
   "autoload-dev": {
+    "files": [
+      "tests/Fixtures/Nodes/StreamGetContentsOverrideBootstrap.php"
+    ],
     "psr-4": {
       "N3XT0R\\LaravelWebdavServer\\Tests\\": "tests/",
       "Workbench\\App\\": "workbench/app/",

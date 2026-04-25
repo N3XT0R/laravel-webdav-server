@@ -4,15 +4,13 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Nodes;
 
-require_once __DIR__.'/../../Fixtures/Nodes/StreamGetContentsOverride.php';
-
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
-use N3XT0R\LaravelWebdavServer\Nodes\StreamGetContentsOverride;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Nodes\StreamGetContentsOverrideBootstrap;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
@@ -32,7 +30,7 @@ final class StorageFileTest extends TestCase
 
     protected function tearDown(): void
     {
-        StreamGetContentsOverride::$shouldFail = false;
+        StreamGetContentsOverrideBootstrap::reset();
         (new Filesystem)->deleteDirectory($this->diskRoot);
 
         parent::tearDown();
@@ -103,7 +101,7 @@ final class StorageFileTest extends TestCase
 
         $authorization = new AllowAllPathAuthorization;
         $resource = fopen('php://memory', 'r+');
-        StreamGetContentsOverride::$shouldFail = true;
+        StreamGetContentsOverrideBootstrap::failReads();
 
         $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->put($resource);
     }
