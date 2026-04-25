@@ -71,6 +71,7 @@ Use Read the Docs if you want the full package documentation.
 | configure spaces, auth, or logging        | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)                   |
 | understand runtime flow and boundaries    | [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)                     |
 | customize auth, storage, or authorization | [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/) |
+| manage WebDAV accounts via artisan        | [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)                             |
 | extend the SabreDAV runtime               | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)                   |
 | review architectural decisions            | [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)                               |
 
@@ -122,37 +123,9 @@ For full installation and configuration guidance, use:
 The package includes artisan commands for managing WebDAV account records in the configured
 `webdav-server.auth.account_model`.
 
-Create an account:
+Full command reference with all options, examples, and expected output:
 
-```bash
-php artisan laravel-webdav-server:account:create testuser password --display-name="Test User" --user-id=1
-```
-
-List existing accounts:
-
-```bash
-php artisan laravel-webdav-server:account:list
-```
-
-Show one account:
-
-```bash
-php artisan laravel-webdav-server:account:show testuser
-```
-
-Update an account:
-
-```bash
-php artisan laravel-webdav-server:account:update testuser --password=new-password --enable
-```
-
-The root package command shows the available package-specific artisan entry points:
-
-```bash
-php artisan laravel-webdav-server
-```
-
-For the full command reference and setup notes, use the documentation on Read the Docs.
+👉 [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)
 
 ## What This Package Does
 
@@ -371,6 +344,7 @@ Read the Docs entry points:
 - [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
 - [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/)
 - [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)
+- [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)
 - [Common Questions](https://laravel-webdav-server.readthedocs.io/en/latest/common-questions/)
 - [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)
 
@@ -380,6 +354,7 @@ Repository-local mirrors:
 - [Configuration](docs/configuration.md)
 - [Authentication & Authorization](docs/authentication.md)
 - [Architecture](docs/architecture.md)
+- [Commands](docs/commands.md)
 - [Common Questions](docs/common-questions.md)
 - [ADR Index](docs/adr/README.md)
 
