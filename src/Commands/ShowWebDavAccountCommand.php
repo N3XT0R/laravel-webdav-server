@@ -6,8 +6,8 @@ namespace N3XT0R\LaravelWebdavServer\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
-use N3XT0R\LaravelWebdavServer\Commands\Support\AccountModelConfiguration;
-use N3XT0R\LaravelWebdavServer\Commands\Support\AccountModelResolver;
+use N3XT0R\LaravelWebdavServer\DTO\Management\AccountColumnMappingDto;
+use N3XT0R\LaravelWebdavServer\Services\AccountManagementService;
 
 final class ShowWebDavAccountCommand extends Command
 {
@@ -19,13 +19,13 @@ final class ShowWebDavAccountCommand extends Command
     /**
      * Show one configured WebDAV account and its relevant package-facing fields.
      *
-     * @param  AccountModelResolver  $accountResolver  Helper that resolves the configured account model and column mapping.
+     * @param  AccountManagementService  $service  Service that provides account lookup.
      * @return int Symfony-compatible command exit code.
      */
-    public function handle(AccountModelResolver $accountResolver): int
+    public function handle(AccountManagementService $service): int
     {
         $username = (string) $this->argument('username');
-        $account = $accountResolver->findByUsername($username);
+        $account = $service->findByUsername($username);
 
         if ($account === null) {
             $this->components->error("No WebDAV account found for username '{$username}'.");
@@ -33,9 +33,11 @@ final class ShowWebDavAccountCommand extends Command
             return self::FAILURE;
         }
 
+        $mapping = $service->columnMapping();
+
         $this->table(
             ['Field', 'Value'],
-            $this->detailsRows($account, $accountResolver->configuration()),
+            $this->detailsRows($account, $mapping),
         );
 
         return self::SUCCESS;
@@ -45,23 +47,21 @@ final class ShowWebDavAccountCommand extends Command
      * Build the detail rows rendered by the show command.
      *
      * @param  Model  $account  Eloquent account model that matched the requested username.
-     * @param  AccountModelConfiguration  $configuration  Resolved account column mapping from package config.
+     * @param  AccountColumnMappingDto  $mapping  Resolved account column mapping from package config.
      * @return list<list<string>> Ordered field/value pairs for the shown account.
      */
-    private function detailsRows(Model $account, AccountModelConfiguration $configuration): array
+    private function detailsRows(Model $account, AccountColumnMappingDto $mapping): array
     {
         return [
             ['model', $account::class],
-            ['username', (string) $account->getAttribute($configuration->usernameColumn)],
-            ['enabled', $this->booleanValue($account, $configuration->enabledColumn)],
-            ['user_id', $this->stringValue($account, $configuration->userIdColumn)],
-            ['display_name', $this->stringValue($account, $configuration->displayNameColumn)],
+            ['username', (string) $account->getAttribute($mapping->usernameColumn)],
+            ['enabled', $this->booleanValue($account, $mapping->enabledColumn)],
+            ['user_id', $this->stringValue($account, $mapping->userIdColumn)],
+            ['display_name', $this->stringValue($account, $mapping->displayNameColumn)],
         ];
     }
 
     /**
-     * Convert a configured optional account column into a printable string value.
-     *
      * @param  Model  $account  Account model whose attribute should be rendered.
      * @param  string|null  $column  Optional configured column name to read from the model.
      * @return string Printable scalar value, or `-` when the column is disabled or currently `null`.
@@ -78,8 +78,6 @@ final class ShowWebDavAccountCommand extends Command
     }
 
     /**
-     * Convert a configured boolean account column into a printable console value.
-     *
      * @param  Model  $account  Account model whose enabled flag should be rendered.
      * @param  string|null  $column  Optional configured enabled column name.
      * @return string `yes` or `no` for configured flags, or `-` when no enabled column is configured.

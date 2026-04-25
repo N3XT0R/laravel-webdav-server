@@ -6,8 +6,8 @@ namespace N3XT0R\LaravelWebdavServer\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Database\Eloquent\Model;
-use N3XT0R\LaravelWebdavServer\Commands\Support\AccountModelConfiguration;
-use N3XT0R\LaravelWebdavServer\Commands\Support\AccountModelResolver;
+use N3XT0R\LaravelWebdavServer\DTO\Management\AccountColumnMappingDto;
+use N3XT0R\LaravelWebdavServer\Services\AccountManagementService;
 
 final class ListWebDavAccountsCommand extends Command
 {
@@ -18,15 +18,12 @@ final class ListWebDavAccountsCommand extends Command
     /**
      * List all configured WebDAV accounts in a compact console table.
      *
-     * @param  AccountModelResolver  $accountResolver  Helper that resolves the configured account model and column mapping.
+     * @param  AccountManagementService  $service  Service that provides account listing.
      * @return int Symfony-compatible command exit code.
      */
-    public function handle(AccountModelResolver $accountResolver): int
+    public function handle(AccountManagementService $service): int
     {
-        $configuration = $accountResolver->configuration();
-        $accounts = $accountResolver->query()
-            ->orderBy($configuration->usernameColumn)
-            ->get();
+        $accounts = $service->all();
 
         if ($accounts->isEmpty()) {
             $this->components->warn('No WebDAV accounts found.');
@@ -34,10 +31,12 @@ final class ListWebDavAccountsCommand extends Command
             return self::SUCCESS;
         }
 
+        $mapping = $service->columnMapping();
+
         $this->table(
             ['Username', 'Enabled', 'User ID', 'Display Name'],
             $accounts
-                ->map(fn (Model $account): array => $this->tableRow($account, $configuration))
+                ->map(fn (Model $account): array => $this->tableRow($account, $mapping))
                 ->all(),
         );
 
@@ -48,22 +47,20 @@ final class ListWebDavAccountsCommand extends Command
      * Convert one account model into the row rendered by the list table.
      *
      * @param  Model  $account  Eloquent account model fetched from the configured account store.
-     * @param  AccountModelConfiguration  $configuration  Resolved account column mapping from package config.
+     * @param  AccountColumnMappingDto  $mapping  Resolved account column mapping from package config.
      * @return list<string> Ordered row values for username, enabled flag, user ID, and display name.
      */
-    private function tableRow(Model $account, AccountModelConfiguration $configuration): array
+    private function tableRow(Model $account, AccountColumnMappingDto $mapping): array
     {
         return [
-            (string) $account->getAttribute($configuration->usernameColumn),
-            $this->booleanValue($account, $configuration->enabledColumn),
-            $this->stringValue($account, $configuration->userIdColumn),
-            $this->stringValue($account, $configuration->displayNameColumn),
+            (string) $account->getAttribute($mapping->usernameColumn),
+            $this->booleanValue($account, $mapping->enabledColumn),
+            $this->stringValue($account, $mapping->userIdColumn),
+            $this->stringValue($account, $mapping->displayNameColumn),
         ];
     }
 
     /**
-     * Convert a configured optional account column into a printable string value.
-     *
      * @param  Model  $account  Account model whose attribute should be rendered.
      * @param  string|null  $column  Optional configured column name to read from the model.
      * @return string Printable scalar value, or `-` when the column is disabled or currently `null`.
@@ -80,8 +77,6 @@ final class ListWebDavAccountsCommand extends Command
     }
 
     /**
-     * Convert a configured boolean account column into a printable console value.
-     *
      * @param  Model  $account  Account model whose enabled flag should be rendered.
      * @param  string|null  $column  Optional configured enabled column name.
      * @return string `yes` or `no` for configured flags, or `-` when no enabled column is configured.

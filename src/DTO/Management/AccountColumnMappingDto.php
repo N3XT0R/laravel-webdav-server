@@ -2,13 +2,11 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Commands\Support;
+namespace N3XT0R\LaravelWebdavServer\DTO\Management;
 
-final readonly class AccountModelConfiguration
+final readonly class AccountColumnMappingDto
 {
     /**
-     * Create the resolved account-model configuration used by the artisan account commands.
-     *
      * @param  class-string  $modelClass  Configured Eloquent model class used to store WebDAV accounts.
      * @param  string  $usernameColumn  Column that stores the Basic Auth username.
      * @param  string  $passwordColumn  Column that stores the hashed Basic Auth password.
