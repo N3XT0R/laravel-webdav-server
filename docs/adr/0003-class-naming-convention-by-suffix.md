@@ -15,6 +15,10 @@ repositories, DTOs, contracts, resolvers, validators, runtime adapters, Laravel 
 SabreDAV node types. In such an architecture, it must be possible to recognize the role of a class directly from its
 name.
 
+At the same time, class names must not repeat context that is already expressed by the namespace or directory
+structure. Otherwise names become longer without adding information, and the code starts encoding the same concept in
+two places.
+
 At the same time, the current codebase already contains legacy names that do not fully follow one unified suffix-based
 scheme. Therefore, the naming decision must serve both as a forward rule and as a migration target for existing code.
 
@@ -24,6 +28,8 @@ All classes must follow a clearly defined naming scheme in which the responsibil
 
 The suffix must match the actual architectural or framework role of the class. The goal is not to force every class
 into a small generic list, but to make responsibilities explicit and consistent.
+
+The prefix, when present, must add domain meaning that is not already provided by the namespace.
 
 ### Allowed and required suffixes
 
@@ -63,8 +69,8 @@ into a small generic list, but to make responsibilities explicit and consistent.
 - `OrderRepository`
 - `PaymentFactory`
 - `LoggerInterface`
-- `WebDavPathPolicy`
-- `WebdavServerServiceProvider`
+- `PathPolicy`
+- `ServerServiceProvider`
 - `DatabaseCredentialValidator`
 - `DefaultSpaceResolver`
 - `SabreServerRunner`
@@ -110,18 +116,44 @@ into a small generic list, but to make responsibilities explicit and consistent.
   - `UserService`
   - `InvoiceRepository`
 
-6. Existing deviations are migrated incrementally
+6. Namespace context must not be duplicated in the class name
+
+- a class name must not repeat domain or subsystem terms that are already clearly expressed by its namespace or
+  directory
+- move classes into the correct sub-namespace instead of encoding that context again in the class name
+- prefer the shortest name that is still unambiguous inside its namespace
+- examples of forbidden redundancy:
+  - `DTO\Auth\WebDavAccountRecordDto`
+  - `DTO\Auth\WebDavPathResourceDto`
+  - `DTO\Server\WebDavRequestContextDto`
+  - `N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider`
+- preferred direction:
+  - `DTO\Auth\AccountRecordDto`
+  - `DTO\Auth\PathResourceDto`
+  - `DTO\Server\RequestContextDto`
+  - `Server\ServiceProvider` or another correctly scoped sub-namespace with `ServiceProvider`
+- the namespace exists to carry context; the class name should express the remaining specific role, not restate the
+  full path
+
+7. Names must not compensate for missing structure
+
+- if a class name needs a long package, protocol, or subsystem prefix to be understandable, that usually indicates that
+  the class belongs in a more specific namespace
+- prefer moving the class to a better namespace over inventing longer names such as `WebDav*`, `LaravelWebdav*`, or
+  `Server*` when that context is already architectural rather than semantic
+
+8. Existing deviations are migrated incrementally
 
 - this ADR is immediately normative for new code
 - existing classes that do not yet follow the convention must be aligned during touching refactors or dedicated cleanup
   work
 
-7. Framework and library semantics take precedence over artificial renaming
+9. Framework and library semantics take precedence over artificial renaming
 
 - a class must not be renamed into a semantically wrong suffix just to satisfy a reduced naming list
 - examples of correct framework-aligned names:
-  - `WebdavServerServiceProvider`, not `WebdavServerService`
-  - `LaravelWebdavServerCommand`, not `LaravelWebdavServerService`
+  - `ServiceProvider`, not `ServerService`
+  - `Command`, not `ServerService`
   - `SabreServerRunner`, not `SabreServerService`
 
 ## Consequences
@@ -133,10 +165,11 @@ Advantages:
 - the project structure becomes more uniform
 - refactoring becomes easier
 - IDEs and tooling can reason more effectively about class roles
+- class names become shorter and less repetitive
 
 Disadvantages:
 
-- class names can become slightly longer
+- some classes may need to move into more specific namespaces before a good short name becomes available
 - special cases have less naming flexibility
 - the team must apply the convention consistently
 - existing non-conforming names introduce migration work
@@ -148,6 +181,8 @@ Rejected alternatives:
   - rejected because it leads to inconsistency and higher maintenance cost
 - annotations instead of naming conventions
   - rejected because the role of a class is less visible in the code itself
+- allow redundant prefixes for package or subsystem context
+  - rejected because namespaces already provide that context and repeating it in class names creates avoidable noise
 
 ## Notes
 
