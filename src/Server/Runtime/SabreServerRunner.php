@@ -5,11 +5,21 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Server\Runtime;
 
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerRunnerInterface;
+use Closure;
 use Sabre\DAV\Server;
 use Symfony\Component\HttpFoundation\Response;
 
 final readonly class SabreServerRunner implements ServerRunnerInterface
 {
+    private Closure $terminator;
+
+    public function __construct(?Closure $terminator = null)
+    {
+        $this->terminator = $terminator ?? static function (): never {
+            exit;
+        };
+    }
+
     /**
      * Start the SabreDAV runtime and terminate the current request lifecycle.
      *
@@ -20,6 +30,6 @@ final readonly class SabreServerRunner implements ServerRunnerInterface
     {
         $server->start();
 
-        exit;
+        ($this->terminator)();
     }
 }

@@ -69,6 +69,16 @@ final class RequestBasicCredentialsExtractorTest extends TestCase
         $this->assertSame(['bob', 'pass123'], $extractor->extract($request));
     }
 
+    public function test_it_extracts_credentials_from_the_authorization_header_when_php_auth_values_are_not_preparsed(): void
+    {
+        $request = Request::create('/webdav', 'PROPFIND');
+        $request->headers->set('Authorization', 'Basic '.base64_encode('carol:pass123'));
+
+        $extractor = new RequestBasicCredentialsExtractor;
+
+        $this->assertSame(['carol', 'pass123'], $extractor->extract($request));
+    }
+
     public function test_it_throws_missing_exception_when_authorization_scheme_is_not_basic(): void
     {
         $this->expectException(MissingCredentialsException::class);
