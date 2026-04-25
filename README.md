@@ -124,6 +124,25 @@ Policy abilities:
 - `ServerConfiguratorInterface`
 - `ServerRunnerInterface`
 
+Additional SabreDAV `ServerPlugin` instances can be registered from your application service provider via the package
+container tag:
+
+```php
+use App\WebDav\Plugins\CustomSabrePlugin;
+use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
+
+public function register(): void
+{
+    $this->app->singleton(CustomSabrePlugin::class);
+    $this->app->tag(
+        [CustomSabrePlugin::class],
+        WebdavServerServiceProvider::sabrePluginTag(),
+    );
+}
+```
+
+Tagged plugins are added after the package defaults during SabreDAV server configuration.
+
 ## Request Pipeline
 
 1. `WebDavController` accepts the request.

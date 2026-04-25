@@ -11,8 +11,10 @@ use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use N3XT0R\LaravelWebdavServer\Server\Configuration\SabreServerConfigurator;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Logging\RecordingLogger;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\CustomSabrePlugin;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
+use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
 use Sabre\DAV\Server;
 
 final class SabreServerConfiguratorTest extends TestCase
@@ -88,5 +90,25 @@ final class SabreServerConfiguratorTest extends TestCase
         $property = new \ReflectionProperty($server, 'logger');
 
         $this->assertNull($property->getValue($server));
+    }
+
+    public function test_it_registers_user_defined_tagged_sabre_plugins_after_package_defaults(): void
+    {
+        $plugin = new CustomSabrePlugin;
+
+        $this->app->instance(CustomSabrePlugin::class, $plugin);
+        $this->app->tag([CustomSabrePlugin::class], WebdavServerServiceProvider::sabrePluginTag());
+
+        $server = $this->makeSabreServer();
+
+        (new SabreServerConfigurator(
+            new WebDavLoggingService(new RecordingLogger, 'stderr', 'debug'),
+        ))->configure($server, 'default');
+
+        $plugins = $server->getPlugins();
+
+        $this->assertArrayHasKey('custom-sabre-plugin', $plugins);
+        $this->assertSame($plugin, $plugins['custom-sabre-plugin']);
+        $this->assertTrue($plugin->initialized);
     }
 }

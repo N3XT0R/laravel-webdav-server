@@ -14,6 +14,8 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class WebdavServerServiceProvider extends PackageServiceProvider
 {
+    public const SABRE_PLUGIN_TAG = 'laravel-webdav-server.sabre-plugin';
+
     /**
      * Declares the package resources that Laravel should register for this package.
      *
@@ -59,6 +61,18 @@ class WebdavServerServiceProvider extends PackageServiceProvider
         $this->registerCsrfException();
         $this->registerRoutes();
         Gate::policy(PathResourceDto::class, PathPolicy::class);
+    }
+
+    /**
+     * Return the container tag applications can use to register additional SabreDAV plugins.
+     *
+     * Tagged plugins are added alongside the package defaults during `SabreServerConfigurator::configure()`.
+     *
+     * @return string Container tag for user-defined SabreDAV `ServerPlugin` instances.
+     */
+    public static function sabrePluginTag(): string
+    {
+        return self::SABRE_PLUGIN_TAG;
     }
 
     private function registerCsrfException(): void

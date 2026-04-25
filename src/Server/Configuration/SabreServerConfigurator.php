@@ -8,16 +8,16 @@ use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerConfiguratorInterface;
 use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Server\Configuration\Plugins\CompatibilityLoggingPlugin;
 use N3XT0R\LaravelWebdavServer\Server\Configuration\Plugins\MissingPathPropFindPlugin;
+use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
 use Sabre\DAV\Server;
+use Sabre\DAV\ServerPlugin;
 
 final readonly class SabreServerConfigurator implements ServerConfiguratorInterface
 {
     /**
      * @param  WebDavLoggingService  $logger  Package logger used for SabreDAV runtime logs and package-level debug tracing.
      */
-    public function __construct(
-        private WebDavLoggingService $logger,
-    ) {}
+    public function __construct(private WebDavLoggingService $logger) {}
 
     /**
      * Configure the SabreDAV runtime for the resolved logical storage space.
@@ -31,8 +31,10 @@ final readonly class SabreServerConfigurator implements ServerConfiguratorInterf
         $space = trim($spaceKey, '/');
 
         $server->setBaseUri('/'.$baseUri.'/'.$space.'/');
-        $server->addPlugin(new MissingPathPropFindPlugin($this->logger));
-        $server->addPlugin(new CompatibilityLoggingPlugin($this->logger));
+
+        foreach ($this->plugins() as $plugin) {
+            $server->addPlugin($plugin);
+        }
 
         $sabreLogger = $this->logger->sabreLogger();
 
@@ -47,7 +49,29 @@ final readonly class SabreServerConfigurator implements ServerConfiguratorInterf
                 'logging_enabled' => $this->logger->isEnabled(),
                 'logging_driver' => $this->logger->driver(),
                 'logging_level' => $this->logger->minimumLevel(),
+                'plugin_count' => count($server->getPlugins()),
             ],
         ]);
+    }
+
+    /**
+     * Resolve the ordered SabreDAV plugins that should be attached for the current runtime.
+     *
+     * @return list<ServerPlugin> Package-default plugins followed by user-defined plugins tagged in the container.
+     */
+    private function plugins(): array
+    {
+        $plugins = [
+            new MissingPathPropFindPlugin($this->logger),
+            new CompatibilityLoggingPlugin($this->logger),
+        ];
+
+        foreach (app()->tagged(WebdavServerServiceProvider::sabrePluginTag()) as $plugin) {
+            if ($plugin instanceof ServerPlugin) {
+                $plugins[] = $plugin;
+            }
+        }
+
+        return $plugins;
     }
 }

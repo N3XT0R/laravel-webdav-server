@@ -128,3 +128,28 @@ Examples:
 - `logging.driver = null` disables all package and SabreDAV logging.
 - `storage.spaces.*` is the active storage configuration model.
 - The packaged reference policy is `src/Policies/PathPolicy.php`.
+
+## Additional SabreDAV Plugins
+
+Applications can register additional SabreDAV `ServerPlugin` instances through the Laravel container without replacing
+the package configurator.
+
+Register the plugin in your application service provider and tag it with
+`WebdavServerServiceProvider::sabrePluginTag()`:
+
+```php
+use App\WebDav\Plugins\CustomSabrePlugin;
+use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
+
+public function register(): void
+{
+    $this->app->singleton(CustomSabrePlugin::class);
+    $this->app->tag(
+        [CustomSabrePlugin::class],
+        WebdavServerServiceProvider::sabrePluginTag(),
+    );
+}
+```
+
+Tagged plugins are attached in addition to the package defaults such as the compatibility and missing-path handling
+plugins.
