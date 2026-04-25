@@ -16,25 +16,48 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
      */
     public function extract(Request $request): array
     {
+        $serverCredentials = $this->extractServerCredentials($request);
+
+        if ($serverCredentials !== null) {
+            return $serverCredentials;
+        }
+
+        return $this->extractAuthorizationHeaderCredentials($request);
+    }
+
+    /**
+     * @return array{0:string,1:string}|null
+     */
+    private function extractServerCredentials(Request $request): ?array
+    {
         $username = $request->getUser();
         $password = $request->getPassword();
 
-        if (is_string($username) && is_string($password)) {
-            if ($username === '' || $password === '') {
-                throw new InvalidCredentialsException(
-                    message: 'Incomplete Basic Auth credentials.',
-                    context: [
-                        'request' => [
-                            'method' => $request->getMethod(),
-                            'uri' => $request->getRequestUri(),
-                        ],
-                    ],
-                );
-            }
-
-            return [$username, $password];
+        if (! is_string($username) || ! is_string($password)) {
+            return null;
         }
 
+        $this->assertCredentialsAreComplete($request, $username, $password);
+
+        return [$username, $password];
+    }
+
+    /**
+     * @return array{0:string,1:string}
+     */
+    private function extractAuthorizationHeaderCredentials(Request $request): array
+    {
+        $authorization = $this->extractAuthorizationHeader($request);
+        $decoded = $this->decodeAuthorizationHeader($request, $authorization);
+        [$username, $password] = $this->splitDecodedCredentials($decoded);
+
+        $this->assertCredentialsAreComplete($request, $username, $password);
+
+        return [$username, $password];
+    }
+
+    private function extractAuthorizationHeader(Request $request): string
+    {
         $authorization = $request->headers->get('Authorization');
 
         if (! is_string($authorization) || ! str_starts_with($authorization, 'Basic ')) {
@@ -50,6 +73,11 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
             );
         }
 
+        return $authorization;
+    }
+
+    private function decodeAuthorizationHeader(Request $request, string $authorization): string
+    {
         $decoded = base64_decode(substr($authorization, 6), true);
 
         if (! is_string($decoded) || ! str_contains($decoded, ':')) {
@@ -64,8 +92,19 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
             );
         }
 
-        [$username, $password] = explode(':', $decoded, 2);
+        return $decoded;
+    }
 
+    /**
+     * @return array{0:string,1:string}
+     */
+    private function splitDecodedCredentials(string $decoded): array
+    {
+        return explode(':', $decoded, 2);
+    }
+
+    private function assertCredentialsAreComplete(Request $request, string $username, string $password): void
+    {
         if ($username === '' || $password === '') {
             throw new InvalidCredentialsException(
                 message: 'Incomplete Basic Auth credentials.',
@@ -77,7 +116,5 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
                 ],
             );
         }
-
-        return [$username, $password];
     }
 }
