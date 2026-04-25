@@ -12,9 +12,9 @@ final readonly class RequestContextDto
     /**
      * Create the immutable runtime context used while building the SabreDAV server.
      *
-     * @param \N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject $principal Authenticated principal for the request.
-     * @param string $spaceKey Logical storage space key resolved from the URL or fallback config.
-     * @param \N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject $space Concrete storage target resolved for the request.
+     * @param  WebDavPrincipalValueObject  $principal  Authenticated principal for the request.
+     * @param  string  $spaceKey  Logical storage space key resolved from the URL or fallback config.
+     * @param  WebDavStorageSpaceValueObject  $space  Concrete storage target resolved for the request.
      */
     public function __construct(
         public WebDavPrincipalValueObject $principal,

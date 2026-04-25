@@ -11,9 +11,9 @@ final readonly class WebDavPrincipalValueObject
     /**
      * Create the authenticated WebDAV principal value object.
      *
-     * @param string $id Stable principal identifier used for routing, storage resolution, and principal URIs.
-     * @param string $displayName Human-readable principal name for WebDAV clients and policies.
-     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user Linked Laravel user for Gate / policy integration, if available.
+     * @param  string  $id  Stable principal identifier used for routing, storage resolution, and principal URIs.
+     * @param  string  $displayName  Human-readable principal name for WebDAV clients and policies.
+     * @param  Authenticatable|null  $user  Linked Laravel user for Gate / policy integration, if available.
      */
     public function __construct(
         public string $id,

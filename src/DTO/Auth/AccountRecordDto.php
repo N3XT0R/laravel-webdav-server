@@ -12,10 +12,10 @@ final readonly class AccountRecordDto implements AccountInterface
     /**
      * Create an immutable account record used by the default repository and validator pipeline.
      *
-     * @param string $principalId Principal identifier that will back the WebDAV principal URI.
-     * @param string $displayName Human-readable display name for the account.
-     * @param string $passwordHash Stored password hash used for credential verification.
-     * @param \Illuminate\Contracts\Auth\Authenticatable|null $user Linked Laravel user or null when the account is standalone.
+     * @param  string  $principalId  Principal identifier that will back the WebDAV principal URI.
+     * @param  string  $displayName  Human-readable display name for the account.
+     * @param  string  $passwordHash  Stored password hash used for credential verification.
+     * @param  Authenticatable|null  $user  Linked Laravel user or null when the account is standalone.
      */
     public function __construct(
         protected string $principalId,
@@ -57,7 +57,7 @@ final readonly class AccountRecordDto implements AccountInterface
     /**
      * Return the linked Laravel user for Gate / policy integration.
      *
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null Linked Laravel user or null when no user is associated.
+     * @return Authenticatable|null Linked Laravel user or null when no user is associated.
      */
     public function getUser(): ?Authenticatable
     {

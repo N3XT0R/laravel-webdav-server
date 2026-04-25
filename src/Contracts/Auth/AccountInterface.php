@@ -32,7 +32,7 @@ interface AccountInterface
     /**
      * Return the linked Laravel user if the WebDAV account is associated with one.
      *
-     * @return \Illuminate\Contracts\Auth\Authenticatable|null Linked Laravel user or null when the account is standalone.
+     * @return Authenticatable|null Linked Laravel user or null when the account is standalone.
      */
     public function getUser(): ?Authenticatable;
 }
