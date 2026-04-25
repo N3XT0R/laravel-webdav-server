@@ -157,3 +157,29 @@ For small or well-scoped implementation tasks:
 - avoid full-project analysis
 - avoid broad architectural rewrites
 - avoid unnecessary verification loops
+
+### Pre-Commit Workflow
+
+Before every commit, the defined pre-commit workflow **must** be executed and fully respected.
+
+This includes in particular:
+
+- All automated checks (linting, tests, formatting, etc.) must pass successfully.
+- The code must comply with the defined quality and style guidelines.
+- Failed hooks must **not** be bypassed or ignored.
+- Commits without a successful pre-commit check are not allowed.
+
+The goal is to ensure consistent code quality, stability, and maintainability across the entire project.
+
+### Architecture Decision Records (ADRs)
+
+All Architecture Decision Records (ADRs) **must always be reviewed and respected** when making changes to the codebase.
+
+This includes in particular:
+
+- All implementation decisions must align with existing ADRs.
+- ADRs must be checked before introducing new patterns, technologies, or architectural changes.
+- Existing decisions must not be overridden or bypassed without proper discussion and documentation.
+- Any deviation requires the creation of a new ADR or an update to an existing one.
+
+The goal is to ensure architectural consistency, traceability of decisions, and long-term maintainability of the system.
