@@ -7,6 +7,7 @@
 [![Read the Docs](https://readthedocs.org/projects/laravel-webdav-server/badge/?version=latest)](https://laravel-webdav-server.readthedocs.io/en/latest/?badge=latest)
 [![Maintainability](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/maintainability.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
+[![Enterprise Ready](https://img.shields.io/badge/enterprise-ready-blue?style=flat-square)](#stability)
 
 A WebDAV server package for Laravel powered by SabreDAV and Laravel Flysystem.
 
@@ -150,7 +151,8 @@ The package keeps its public WebDAV API stable, but the SabreDAV runtime itself 
 
 Typical customization points:
 
-- replace package contracts such as `CredentialValidatorInterface`, `SpaceResolverInterface`, or `PathAuthorizationInterface`
+- replace package contracts such as `CredentialValidatorInterface`, `SpaceResolverInterface`, or
+  `PathAuthorizationInterface`
 - keep the default configurator and attach additional SabreDAV `ServerPlugin` instances
 - combine your own SabreDAV behavior with the package defaults instead of replacing the whole runtime setup
 
