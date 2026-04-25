@@ -14,6 +14,12 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 
 class WebdavServerServiceProvider extends PackageServiceProvider
 {
+    /**
+     * Declares the package resources that Laravel should register for this package.
+     *
+     * @param Package $package Package-tools configuration object that collects commands, config, views, and migrations.
+     * @return void
+     */
     public function configurePackage(Package $package): void
     {
         /*
@@ -29,16 +35,31 @@ class WebdavServerServiceProvider extends PackageServiceProvider
             ->hasCommand(LaravelWebdavServerCommand::class);
     }
 
+    /**
+     * Registers the package WebDAV routes from the bundled route file.
+     *
+     * @return void
+     */
     protected function registerRoutes(): void
     {
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
     }
 
+    /**
+     * Registers all package bindings after the package itself has been registered.
+     *
+     * @return void
+     */
     public function packageRegistered(): void
     {
         $this->app->make(WebDavRegisterFactory::class)->registerAll();
     }
 
+    /**
+     * Finalizes package bootstrapping by wiring CSRF exceptions, routes, and the default path policy.
+     *
+     * @return void
+     */
     public function packageBooted(): void
     {
         parent::packageBooted();

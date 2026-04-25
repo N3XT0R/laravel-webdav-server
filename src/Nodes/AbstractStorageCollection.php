@@ -12,19 +12,32 @@ use Sabre\DAV\INode;
 
 abstract class AbstractStorageCollection extends Collection
 {
+    /**
+     * @param string $name Node name exposed to SabreDAV for this collection.
+     * @param string $path Relative storage path represented by this collection.
+     * @param StorageNodeContextDto $context Shared storage context with filesystem, principal, disk, and authorization service.
+     */
     public function __construct(
         protected readonly string $name,
         protected readonly string $path,
         protected readonly StorageNodeContextDto $context,
     ) {}
 
+    /**
+     * Returns the current collection name as exposed in the WebDAV tree.
+     *
+     * @return string Collection name visible to SabreDAV clients.
+     */
     public function getName(): string
     {
         return $this->name;
     }
 
     /**
+     * Lists the direct child nodes below the current collection after a read authorization check.
+     *
      * @return list<INode>
+     * List of immediate child nodes. Directory entries are returned as `StorageDirectory`, file entries as `StorageFile`.
      */
     public function getChildren(): array
     {
@@ -61,6 +74,14 @@ abstract class AbstractStorageCollection extends Collection
         return $children;
     }
 
+    /**
+     * Resolves one direct child node by name.
+     *
+     * @param mixed $name Child node name received from SabreDAV.
+     * @return INode Resolved child node as either `StorageDirectory` or `StorageFile`.
+     * @throws NotFound When the requested child path does not exist.
+     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not read the requested child path.
+     */
     public function getChild($name): INode
     {
         $path = $this->buildChildPath((string) $name);
@@ -92,6 +113,12 @@ abstract class AbstractStorageCollection extends Collection
         );
     }
 
+    /**
+     * Checks whether a direct child exists and is readable for the current principal.
+     *
+     * @param mixed $name Child node name received from SabreDAV.
+     * @return bool `true` when the child exists and the principal may read it; otherwise `false`.
+     */
     public function childExists($name): bool
     {
         $path = $this->buildChildPath((string) $name);
@@ -109,6 +136,13 @@ abstract class AbstractStorageCollection extends Collection
         return $this->context->filesystem->exists($path);
     }
 
+    /**
+     * Creates a new child directory below the current collection.
+     *
+     * @param mixed $name Directory name received from SabreDAV.
+     * @return void
+     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not create the directory.
+     */
     public function createDirectory($name): void
     {
         $path = $this->buildChildPath((string) $name);
@@ -122,6 +156,15 @@ abstract class AbstractStorageCollection extends Collection
         $this->context->filesystem->makeDirectory($path);
     }
 
+    /**
+     * Creates a new child file below the current collection and stores the provided contents.
+     *
+     * @param mixed $name File name received from SabreDAV.
+     * @param resource|string|null $data File contents as a stream, plain string, or `null` for an empty file.
+     * @return void
+     * @throws StreamReadException When the provided stream cannot be read.
+     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not create the file.
+     */
     public function createFile($name, $data = null): void
     {
         $path = $this->buildChildPath((string) $name);

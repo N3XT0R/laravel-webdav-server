@@ -9,26 +9,61 @@ use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
 
 final class PathPolicy
 {
+    /**
+     * Determines whether the authenticated user may read the requested WebDAV path.
+     *
+     * @param Authenticatable $user Authenticated Laravel user that performs the WebDAV request.
+     * @param PathResourceDto $resource Target storage resource with the resolved disk and relative path.
+     * @return bool `true` when the user may read the resource; otherwise `false`.
+     */
     public function read(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);
     }
 
+    /**
+     * Determines whether the authenticated user may overwrite an existing file or directory path.
+     *
+     * @param Authenticatable $user Authenticated Laravel user that performs the WebDAV request.
+     * @param PathResourceDto $resource Target storage resource with the resolved disk and relative path.
+     * @return bool `true` when the user may write to the resource; otherwise `false`.
+     */
     public function write(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);
     }
 
+    /**
+     * Determines whether the authenticated user may delete the requested file or directory path.
+     *
+     * @param Authenticatable $user Authenticated Laravel user that performs the WebDAV request.
+     * @param PathResourceDto $resource Target storage resource with the resolved disk and relative path.
+     * @return bool `true` when the user may delete the resource; otherwise `false`.
+     */
     public function delete(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);
     }
 
+    /**
+     * Determines whether the authenticated user may create a directory at the requested path.
+     *
+     * @param Authenticatable $user Authenticated Laravel user that performs the WebDAV request.
+     * @param PathResourceDto $resource Target storage resource with the resolved disk and relative path.
+     * @return bool `true` when the user may create the directory; otherwise `false`.
+     */
     public function createDirectory(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);
     }
 
+    /**
+     * Determines whether the authenticated user may create a file at the requested path.
+     *
+     * @param Authenticatable $user Authenticated Laravel user that performs the WebDAV request.
+     * @param PathResourceDto $resource Target storage resource with the resolved disk and relative path.
+     * @return bool `true` when the user may create the file; otherwise `false`.
+     */
     public function createFile(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);

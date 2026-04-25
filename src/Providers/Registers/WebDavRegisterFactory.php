@@ -8,10 +8,18 @@ use Illuminate\Container\Container;
 
 final readonly class WebDavRegisterFactory
 {
+    /**
+     * @param Container $app Laravel service container used to instantiate the individual register classes.
+     */
     public function __construct(
         private Container $app,
     ) {}
 
+    /**
+     * Instantiates every package register class and applies its bindings to the container.
+     *
+     * @return void
+     */
     public function registerAll(): void
     {
         foreach ($this->registerClasses() as $registerClass) {

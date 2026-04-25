@@ -17,6 +17,11 @@ final readonly class ServerFactoryRegister extends AbstractRegister
         return [];
     }
 
+    /**
+     * Registers the scoped WebDAV server factory that builds one configured SabreDAV server per request.
+     *
+     * @return void
+     */
     public function register(): void
     {
         $this->app->scopedIf(WebDavServerFactory::class, function (Container $app): WebDavServerFactory {

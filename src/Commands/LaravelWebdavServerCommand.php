@@ -12,6 +12,11 @@ final class LaravelWebdavServerCommand extends Command
 
     public $description = 'My command';
 
+    /**
+     * Executes the package test command and reports the result in the console.
+     *
+     * @return int Symfony-compatible command exit code.
+     */
     public function handle(): int
     {
         $this->comment('All done');
