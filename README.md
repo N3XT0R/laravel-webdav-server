@@ -117,6 +117,43 @@ For full installation and configuration guidance, use:
 - [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
 - [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
 
+## Account Management Commands
+
+The package includes artisan commands for managing WebDAV account records in the configured
+`webdav-server.auth.account_model`.
+
+Create an account:
+
+```bash
+php artisan laravel-webdav-server:account:create testuser password --display-name="Test User" --user-id=1
+```
+
+List existing accounts:
+
+```bash
+php artisan laravel-webdav-server:account:list
+```
+
+Show one account:
+
+```bash
+php artisan laravel-webdav-server:account:show testuser
+```
+
+Update an account:
+
+```bash
+php artisan laravel-webdav-server:account:update testuser --password=new-password --enable
+```
+
+The root package command shows the available package-specific artisan entry points:
+
+```bash
+php artisan laravel-webdav-server
+```
+
+For the full command reference and setup notes, use the documentation on Read the Docs.
+
 ## What This Package Does
 
 - provides a WebDAV server for Laravel
@@ -163,6 +200,7 @@ Route::match([
 - Default auth flow uses `DatabaseCredentialValidator` plus `EloquentAccountRepository`.
 - Authorization uses `PathAuthorizationInterface`.
 - The default adapter is `GatePathAuthorization`, which passes `PathResourceDto` into Laravel Gate / policies.
+- WebDAV account records can be created and maintained through the built-in artisan account commands.
 
 Policy abilities:
 

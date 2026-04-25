@@ -18,6 +18,7 @@ Core characteristics:
 - WebDAV server for Laravel, not a Flysystem WebDAV client disk
 - storage selection through named `space` keys
 - Basic Auth validation through package contracts
+- built-in artisan commands for creating, listing, showing, and updating WebDAV account records
 - path authorization through `PathAuthorizationInterface`, with Laravel Gate/Policy integration by default
 - optional package and SabreDAV logging through `webdav-server.logging`
 - server customization through stable extension points and additional SabreDAV plugins

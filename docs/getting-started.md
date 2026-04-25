@@ -45,6 +45,36 @@ Typical usage:
 - `info` for relevant operational events such as authentication success or failure
 - `debug` for request parsing, context resolution, space resolution, authorization checks, and SabreDAV runtime setup
 
+## Create Your First WebDAV Account
+
+The package includes artisan commands for managing records in the configured `webdav-server.auth.account_model`.
+
+Create a first account:
+
+```bash
+php artisan laravel-webdav-server:account:create testuser password --display-name="Test User" --user-id=1
+```
+
+Inspect the created account:
+
+```bash
+php artisan laravel-webdav-server:account:show testuser
+```
+
+List all WebDAV accounts:
+
+```bash
+php artisan laravel-webdav-server:account:list
+```
+
+Update an existing account:
+
+```bash
+php artisan laravel-webdav-server:account:update testuser --password=new-password --enable
+```
+
+Use `php artisan laravel-webdav-server` to see the package-specific command overview.
+
 ## How the URL Resolves to User Storage
 
 - URL: `GET /webdav/default/myfile.pdf` with Basic Auth

@@ -8,18 +8,25 @@ use Illuminate\Console\Command;
 
 final class LaravelWebdavServerCommand extends Command
 {
-    public $signature = 'laravel-webdav-server';
+    protected $signature = 'laravel-webdav-server';
 
-    public $description = 'My command';
+    protected $description = 'Show the available Laravel WebDAV Server artisan commands.';
 
     /**
-     * Executes the package test command and reports the result in the console.
+     * Show the package-specific artisan entry points for WebDAV account management.
      *
      * @return int Symfony-compatible command exit code.
      */
     public function handle(): int
     {
-        $this->comment('All done');
+        $this->components->info('Laravel WebDAV Server artisan commands');
+        $this->newLine();
+        $this->line('  php artisan laravel-webdav-server:account:create {username} {password}');
+        $this->line('  php artisan laravel-webdav-server:account:list');
+        $this->line('  php artisan laravel-webdav-server:account:show {username}');
+        $this->line('  php artisan laravel-webdav-server:account:update {username} [--new-username=...] [--password=...]');
+        $this->newLine();
+        $this->line('Documentation: https://laravel-webdav-server.readthedocs.io/en/latest/');
 
         return self::SUCCESS;
     }

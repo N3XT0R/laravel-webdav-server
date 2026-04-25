@@ -5,7 +5,11 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer;
 
 use Illuminate\Support\Facades\Gate;
+use N3XT0R\LaravelWebdavServer\Commands\CreateWebDavAccountCommand;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
+use N3XT0R\LaravelWebdavServer\Commands\ListWebDavAccountsCommand;
+use N3XT0R\LaravelWebdavServer\Commands\ShowWebDavAccountCommand;
+use N3XT0R\LaravelWebdavServer\Commands\UpdateWebDavAccountCommand;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
 use N3XT0R\LaravelWebdavServer\Policies\PathPolicy;
 use N3XT0R\LaravelWebdavServer\Providers\Registers\WebDavRegisterFactory;
@@ -33,7 +37,11 @@ class WebdavServerServiceProvider extends PackageServiceProvider
             ->hasConfigFile()
             ->hasViews()
             ->discoversMigrations()
-            ->hasCommand(LaravelWebdavServerCommand::class);
+            ->hasCommand(LaravelWebdavServerCommand::class)
+            ->hasCommand(CreateWebDavAccountCommand::class)
+            ->hasCommand(ListWebDavAccountsCommand::class)
+            ->hasCommand(ShowWebDavAccountCommand::class)
+            ->hasCommand(UpdateWebDavAccountCommand::class);
     }
 
     /**

@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **extensibility**
     - Added a package-defined container tag for user-defined SabreDAV `ServerPlugin` instances so applications can
       inject additional plugins alongside the package defaults during server configuration.
+- **commands**
+    - Added built-in artisan commands for creating, listing, showing, and updating WebDAV account records through the
+      configured `webdav-server.auth.account_model`.
 
 ### Changed
 
@@ -33,6 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `https://`.
     - Documented how applications can register additional SabreDAV plugins through the package service-provider tag
       without replacing the default configurator.
+    - Documented the built-in artisan account-management commands in the README, Getting Started guide,
+      Authentication guide, and RTD overview.
 
 ## [1.0.0-beta.1] - 2026-04-25
 

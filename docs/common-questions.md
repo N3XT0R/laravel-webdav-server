@@ -149,6 +149,14 @@ Set `webdav-server.auth.user_model` and make sure your configured account model 
 
 The resolved principal then carries the linked user as `$principal->user`, which is what Gate / policies receive.
 
+If you use the default Eloquent-backed account model, you can create or update the link directly through the artisan
+commands:
+
+```bash
+php artisan laravel-webdav-server:account:create testuser password --user-id=1
+php artisan laravel-webdav-server:account:update testuser --user-id=1
+```
+
 ## Q: Is this package production-ready?
 
 It is in `beta`, but production use should still be deliberate.

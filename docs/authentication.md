@@ -36,6 +36,41 @@ By default, `DatabaseCredentialValidator` uses `EloquentAccountRepository` plus 
 
 Passwords must be stored as hashes.
 
+## Managing WebDAV Accounts With Artisan
+
+For the default Eloquent-backed account model, the package ships with dedicated artisan commands.
+
+Create an account:
+
+```bash
+php artisan laravel-webdav-server:account:create testuser password --display-name="Test User" --user-id=1
+```
+
+Show one account:
+
+```bash
+php artisan laravel-webdav-server:account:show testuser
+```
+
+List all accounts:
+
+```bash
+php artisan laravel-webdav-server:account:list
+```
+
+Update an account:
+
+```bash
+php artisan laravel-webdav-server:account:update testuser --password=new-password --disable
+```
+
+Important behavior:
+
+- the commands use the configured `webdav-server.auth.account_model`
+- username, password, enabled, linked-user, and display-name fields follow the configured auth column mapping
+- passwords passed to the create and update commands are always stored as hashes
+- the root command `php artisan laravel-webdav-server` shows the package-specific command entry points
+
 ## Custom Authentication
 
 To implement custom authentication such as LDAP or API token lookup, implement `CredentialValidatorInterface`:
