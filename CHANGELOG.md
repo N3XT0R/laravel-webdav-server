@@ -13,11 +13,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - Removed legacy `webdav-server.storage.disk` and `webdav-server.storage.root` defaults from the package config
       stub so the default storage model is consistently defined through `webdav-server.storage.spaces.*`.
 - **authorization**
-    - Updated the packaged `WebDavPathPolicy` to evaluate access against the configured storage spaces, including
+    - Updated the packaged `PathPolicy` to evaluate access against the configured storage spaces, including
       optional `prefix` segments, instead of relying on the removed legacy storage keys.
+- **package-api**
+    - Renamed packaged extension-point contracts and DTOs to match the ADR naming target, including
+      `AccountInterface`, `AccountRepositoryInterface`, `AccountRecordDto`, `PathResourceDto`, `RequestContextDto`,
+      `PathPolicy`, and `EloquentAccountRepository`.
+    - Kept `WebdavServerServiceProvider` at `src/` level, but aligned its internal registration and policy wiring with
+      the refactored package API and current ADR structure.
+- **exceptions**
+    - Replaced nullable authentication and account lookup flows with domain-specific exceptions so package consumers can
+      handle auth failures, account configuration issues, and storage resolution failures explicitly.
+    - Added dedicated auth and storage exception hierarchies for invalid credentials, account lookup/configuration
+      errors, missing user-model configuration, invalid default space configuration, invalid storage space
+      configuration, missing spaces, and stream read failures.
 - **documentation**
     - Aligned configuration and authorization docs with the current `spaces` model and clarified that applications
-      override the packaged reference policy by registering their own policy for `WebDavPathResourceDto`.
+      override the packaged reference policy by registering their own policy for `PathResourceDto`.
     - Added `ADR 0008` to make SOLID compliance normative and to require established design patterns where they clearly
       fit recurring design problems.
 
