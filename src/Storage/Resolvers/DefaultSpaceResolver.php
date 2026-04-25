@@ -13,10 +13,26 @@ use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final readonly class DefaultSpaceResolver implements SpaceResolverInterface
 {
+    /**
+     * Create the default config-driven space resolver.
+     *
+     * @param \Illuminate\Contracts\Config\Repository $config Package configuration repository used to resolve storage spaces.
+     */
     public function __construct(
         private Config $config,
     ) {}
 
+    /**
+     * Resolve the concrete storage disk and user-scoped root path for the given principal and logical space key.
+     *
+     * @param \N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject $principal Authenticated principal whose ID is appended to the resolved root path.
+     * @param string $spaceKey Logical storage space key resolved from the request URL.
+     *
+     * @throws \N3XT0R\LaravelWebdavServer\Exception\Storage\SpaceNotConfiguredException When the requested space key is missing from configuration.
+     * @throws \N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidSpaceConfigurationException When the configured space is incomplete or invalid.
+     *
+     * @return \N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject Concrete disk plus user-scoped root path for the request.
+     */
     public function resolve(WebDavPrincipalValueObject $principal, string $spaceKey): WebDavStorageSpaceValueObject
     {
         $spaces = $this->config->get('webdav-server.storage.spaces', []);

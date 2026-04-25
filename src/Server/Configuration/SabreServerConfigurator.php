@@ -9,6 +9,14 @@ use Sabre\DAV\Server;
 
 final readonly class SabreServerConfigurator implements ServerConfiguratorInterface
 {
+    /**
+     * Configure the SabreDAV runtime for the resolved logical storage space.
+     *
+     * @param \Sabre\DAV\Server $server Prepared SabreDAV server instance.
+     * @param string $spaceKey Logical storage space key currently being served.
+     *
+     * @return void
+     */
     public function configure(Server $server, string $spaceKey): void
     {
         $baseUri = trim((string) config('webdav-server.base_uri', '/webdav/'), '/');

@@ -17,10 +17,27 @@ use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
 
 final readonly class EloquentAccountRepository implements AccountRepositoryInterface
 {
+    /**
+     * Create the default Eloquent-backed account repository.
+     *
+     * @param \Illuminate\Contracts\Config\Repository $config Package configuration repository used to resolve account-model settings.
+     */
     public function __construct(
         private Config $config,
     ) {}
 
+    /**
+     * Resolve the enabled WebDAV account for the supplied username from the configured Eloquent model.
+     *
+     * @param string $username Username supplied through Basic Auth.
+     *
+     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\AccountNotFoundException When no account exists for the username.
+     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\AccountDisabledException When the resolved account is disabled.
+     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidAccountConfigurationException When the configured account model is invalid.
+     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidAccountRecordException When the resolved record does not contain the required scalar fields.
+     *
+     * @return \N3XT0R\LaravelWebdavServer\Contracts\Auth\AccountInterface Enabled account record containing principal ID, display name, password hash, and optional linked user.
+     */
     public function findEnabledByUsername(string $username): AccountInterface
     {
         $modelClass = $this->config->get('webdav-server.auth.account_model');
