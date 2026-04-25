@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Nodes;
 
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use Sabre\DAV\Collection;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\INode;
@@ -137,7 +138,7 @@ abstract class AbstractStorageCollection extends Collection
             $contents = stream_get_contents($data);
 
             if ($contents === false) {
-                throw new \RuntimeException('Failed to read file stream.');
+                throw new StreamReadException('Failed to read file stream.');
             }
 
             $fs->put($path, $contents);

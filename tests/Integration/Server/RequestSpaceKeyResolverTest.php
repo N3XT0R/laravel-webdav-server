@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Server;
 
 use Illuminate\Http\Request;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidDefaultSpaceConfigurationException;
 use N3XT0R\LaravelWebdavServer\Server\Request\Routing\RequestSpaceKeyResolver;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 
@@ -34,5 +35,17 @@ final class RequestSpaceKeyResolverTest extends TestCase
         $request = Request::create('/webdav', 'PROPFIND');
 
         $this->assertSame('default', $resolver->resolve($request));
+    }
+
+    public function test_it_throws_when_default_space_configuration_is_invalid(): void
+    {
+        $this->expectException(InvalidDefaultSpaceConfigurationException::class);
+
+        config()->set('webdav-server.storage.default_space', '');
+
+        $resolver = new RequestSpaceKeyResolver;
+        $request = Request::create('/webdav', 'PROPFIND');
+
+        $resolver->resolve($request);
     }
 }

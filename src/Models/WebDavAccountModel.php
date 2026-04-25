@@ -7,7 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use RuntimeException;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\MissingUserModelConfigurationException;
 
 /**
  * @property Model $user
@@ -37,8 +37,8 @@ final class WebDavAccountModel extends Model
         $model = config('webdav-server.auth.user_model');
 
         if ($model === null) {
-            throw new RuntimeException(
-                'No user model configured. Please set "webdav-server.auth.user_model" in your config.'
+            throw new MissingUserModelConfigurationException(
+                'No user model configured. Please set "webdav-server.auth.user_model" in your config.',
             );
         }
 

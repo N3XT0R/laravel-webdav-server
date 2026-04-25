@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Server\Request\Routing;
 
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\SpaceKeyResolverInterface;
-use RuntimeException;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidDefaultSpaceConfigurationException;
 
 final readonly class RequestSpaceKeyResolver implements SpaceKeyResolverInterface
 {
@@ -21,8 +21,8 @@ final readonly class RequestSpaceKeyResolver implements SpaceKeyResolverInterfac
         $defaultSpace = config('webdav-server.storage.default_space', 'default');
 
         if (! is_string($defaultSpace) || trim($defaultSpace) === '') {
-            throw new RuntimeException(
-                'Missing or invalid webdav-server.storage.default_space configuration.'
+            throw new InvalidDefaultSpaceConfigurationException(
+                'Missing or invalid webdav-server.storage.default_space configuration.',
             );
         }
 

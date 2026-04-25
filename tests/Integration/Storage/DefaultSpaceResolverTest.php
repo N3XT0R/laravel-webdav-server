@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Storage;
 
 use Illuminate\Contracts\Config\Repository;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidSpaceConfigurationException;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\SpaceNotConfiguredException;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
-use RuntimeException;
 
 final class DefaultSpaceResolverTest extends TestCase
 {
@@ -66,7 +67,7 @@ final class DefaultSpaceResolverTest extends TestCase
 
     public function test_it_throws_when_space_is_not_configured(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(SpaceNotConfiguredException::class);
         $this->expectExceptionMessage('"missing"');
 
         config()->set('webdav-server.storage.spaces', []);
@@ -76,7 +77,7 @@ final class DefaultSpaceResolverTest extends TestCase
 
     public function test_it_throws_when_disk_is_missing_from_space_config(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidSpaceConfigurationException::class);
 
         config()->set('webdav-server.storage.spaces.bad', [
             'root' => 'webdav',
@@ -87,7 +88,7 @@ final class DefaultSpaceResolverTest extends TestCase
 
     public function test_it_throws_when_root_is_missing_from_space_config(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidSpaceConfigurationException::class);
 
         config()->set('webdav-server.storage.spaces.bad', [
             'disk' => 'local',

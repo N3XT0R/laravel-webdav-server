@@ -6,9 +6,10 @@ namespace N3XT0R\LaravelWebdavServer\Storage\Resolvers;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidSpaceConfigurationException;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\SpaceNotConfiguredException;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
-use RuntimeException;
 
 final readonly class DefaultSpaceResolver implements SpaceResolverInterface
 {
@@ -21,7 +22,7 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
         $spaces = $this->config->get('webdav-server.storage.spaces', []);
 
         if (! is_array($spaces) || ! array_key_exists($spaceKey, $spaces)) {
-            throw new RuntimeException(sprintf(
+            throw new SpaceNotConfiguredException(sprintf(
                 'WebDAV storage space "%s" is not configured.',
                 $spaceKey,
             ));
@@ -30,7 +31,7 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
         $space = $spaces[$spaceKey];
 
         if (! is_array($space)) {
-            throw new RuntimeException(sprintf(
+            throw new InvalidSpaceConfigurationException(sprintf(
                 'WebDAV storage space "%s" has an invalid configuration.',
                 $spaceKey,
             ));
@@ -41,14 +42,14 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
         $prefix = $space['prefix'] ?? null;
 
         if (! is_string($disk) || trim($disk) === '') {
-            throw new RuntimeException(sprintf(
+            throw new InvalidSpaceConfigurationException(sprintf(
                 'WebDAV storage space "%s" is missing a valid "disk" configuration.',
                 $spaceKey,
             ));
         }
 
         if (! is_string($root) || trim($root) === '') {
-            throw new RuntimeException(sprintf(
+            throw new InvalidSpaceConfigurationException(sprintf(
                 'WebDAV storage space "%s" is missing a valid "root" configuration.',
                 $spaceKey,
             ));
