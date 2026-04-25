@@ -67,6 +67,24 @@ final class RestrictedSpaceResolver implements SpaceResolverInterface
 }
 ```
 
+## Q: How do I enable or disable package logging?
+
+Use the `webdav-server.logging` config section.
+
+```php
+'logging' => [
+    'driver' => 'stack',
+    'level' => 'info',
+],
+```
+
+- set `driver` to a Laravel log channel to enable logging
+- set `driver` to `null` to disable package and SabreDAV logging entirely
+- use `level` to choose the minimum emitted level, typically `info` or `debug`
+
+At `info`, the package logs events such as successful or failed authentication and denied authorization checks.
+At `debug`, it also logs request parsing, space resolution, Gate checks, server creation, and runtime configuration.
+
 ## Q: Can policies reject operations dynamically?
 
 Yes. Policies are checked before every filesystem operation.
@@ -89,6 +107,18 @@ Because runtime execution is intentionally delegated through `ServerRunnerInterf
 
 That keeps controller orchestration testable while the default `SabreServerRunner` still owns the final SabreDAV
 handoff.
+
+## Q: What exactly is the WebDAV endpoint URL?
+
+The package route shape is `/webdav/{space}/{path?}`.
+
+Examples:
+
+- root of the default space: `/webdav/default`
+- nested file in the default space: `/webdav/default/documents/report.pdf`
+
+The effective SabreDAV base URI is configured separately through `webdav-server.base_uri`, which defaults to
+`/webdav/`.
 
 ## Q: How do I link a WebDAV account to a Laravel user?
 

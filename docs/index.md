@@ -16,6 +16,7 @@ Core characteristics:
 - storage selection through named `space` keys
 - Basic Auth validation through package contracts
 - path authorization through `PathAuthorizationInterface`, with Laravel Gate/Policy integration by default
+- optional package and SabreDAV logging through `webdav-server.logging`
 - SabreDAV runtime execution isolated behind package boundaries
 - SOLID-oriented design with established patterns for recurring architectural problems
 
@@ -38,6 +39,13 @@ Supported WebDAV operations:
 - `DELETE`
 - `MKCOL`
 
-Tested client:
+The package route shape is `/webdav/{space}/{path?}` and the default client entry point is:
+
+- `https://your-domain.test/webdav/default`
+
+Tested clients:
 
 - `WinSCP`
+- `Cyberduck`
+- macOS Finder
+- Windows Explorer

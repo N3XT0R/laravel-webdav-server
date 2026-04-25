@@ -11,6 +11,8 @@ The package uses independent HTTP Basic Auth validated through `CredentialValida
 - username and password come from the configured `webdav-server.auth.account_model`
 - on success, the validator returns a `WebDavPrincipalValueObject`
 - on failure, the validator throws a package auth exception such as `InvalidCredentialsException`
+- if `webdav-server.logging.driver` is configured, authentication outcomes are logged at `info`
+- debug logging traces credential extraction and validator flow without logging raw credentials
 
 ## Default: Database-Backed Authentication
 
@@ -88,6 +90,11 @@ Authorization is handled by `PathAuthorizationInterface`.
 
 The default implementation is `GatePathAuthorization`, which delegates to Laravel Gate / policies and throws
 `Sabre\DAV\Exception\Forbidden` when access is denied.
+
+If logging is enabled, `GatePathAuthorization` emits:
+
+- `debug` before the Gate check with ability, principal, disk, and path context
+- `info` when access is denied
 
 ## Default: Gate-Based Policies
 
@@ -242,3 +249,16 @@ If your policy logic depends on linked users, make sure:
 
 - `webdav-server.auth.user_model` is configured
 - your configured account model exposes a `user()` relationship
+
+## Related Runtime Exceptions
+
+The authentication and authorization pipeline uses package-specific exceptions instead of generic runtime failures.
+
+Common examples:
+
+- `MissingCredentialsException` when no Basic Auth credentials can be extracted
+- `InvalidCredentialsException` when the credential validator rejects the supplied credentials
+- `AccountNotFoundException` or `AccountDisabledException` when the default account repository rejects the record
+- `UnauthenticatedPrincipalException` when a principal is requested before successful authentication
+
+Authorization denials remain mapped to `Sabre\DAV\Exception\Forbidden` because that is the SabreDAV boundary contract.

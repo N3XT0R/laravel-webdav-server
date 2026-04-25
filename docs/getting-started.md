@@ -7,9 +7,15 @@ authorization.
 
 ```php
 return [
+    'route_prefix' => 'webdav',
+    'base_uri' => '/webdav/',
     'auth' => [
         'account_model' => \App\Models\WebDavAccount::class,
         'user_model' => \App\Models\User::class,
+    ],
+    'logging' => [
+        'driver' => 'stack',
+        'level' => 'info',
     ],
     'storage' => [
         'default_space' => 'default',
@@ -22,6 +28,19 @@ return [
     ],
 ];
 ```
+
+## Configure Logging
+
+Package logging is optional and covers both package-level events and the SabreDAV logger integration.
+
+- set `webdav-server.logging.driver` to a Laravel log channel such as `stack`, `single`, or `stderr` to enable logging
+- set `webdav-server.logging.driver` to `null` to disable package and SabreDAV logging entirely
+- use `webdav-server.logging.level` to control the minimum emitted level
+
+Typical usage:
+
+- `info` for relevant operational events such as authentication success or failure
+- `debug` for request parsing, context resolution, space resolution, authorization checks, and SabreDAV runtime setup
 
 ## How the URL Resolves to User Storage
 
@@ -98,6 +117,8 @@ The package uses independent Basic Auth, not Laravel's `auth()` middleware.
 - username and password columns are configurable
 - successful authentication resolves a `WebDavPrincipalValueObject`
 - invalid credentials are surfaced as package auth exceptions
+- if logging is enabled, authentication outcomes are logged at `info`
+- debug logging traces credential extraction and principal resolution without logging secrets
 
 ## Access from Clients
 

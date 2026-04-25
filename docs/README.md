@@ -18,3 +18,5 @@ Read the Docs uses [`index.md`](index.md) via `mkdocs.yml` and does not depend o
 
 - GitHub renders this file automatically when browsing the `docs/` directory.
 - Read the Docs navigation is defined separately in `mkdocs.yml`.
+- Current RTD pages document the active package behavior, including request routing, logging configuration, and
+  authentication/authorization flow.

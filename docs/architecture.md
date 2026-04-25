@@ -22,7 +22,8 @@ Every WebDAV request passes through this runtime flow:
 6. Before filesystem operations execute, node classes call `PathAuthorizationInterface`.
    On denial, the package throws `Sabre\DAV\Exception\Forbidden`.
 7. Allowed operations run against the resolved Laravel filesystem disk.
-8. `SabreServerConfigurator::configure(server, spaceKey)` applies runtime configuration such as the effective base URI.
+8. `SabreServerConfigurator::configure(server, spaceKey)` applies runtime configuration such as the effective base URI
+   and optional SabreDAV logger wiring.
 9. `ServerRunnerInterface::run(server)` hands off execution to the runtime adapter.
 10. The default adapter `SabreServerRunner` starts SabreDAV and terminates the request lifecycle.
 
@@ -53,6 +54,7 @@ Related decisions:
   - `SpaceNotConfiguredException`
   - `InvalidSpaceConfigurationException`
   - `InvalidDefaultSpaceConfigurationException`
+  - `StreamReadException`
 - Controller runtime execution is delegated via `ServerRunnerInterface`.
 - Default runner is `SabreServerRunner`, which starts SabreDAV and terminates the request lifecycle.
 - CSRF bypass is registered in `WebdavServerServiceProvider::registerCsrfException()`.
@@ -61,3 +63,9 @@ Related decisions:
   - fallback: `Illuminate\Foundation\Http\Middleware\VerifyCsrfToken` (Laravel 12)
 - CSRF route prefix comes from `config('webdav-server.route_prefix')` and falls back to `config('webdav-server.base_uri')`.
 - Base URI for SabreDAV is configured in `SabreServerConfigurator` via `config('webdav-server.base_uri', '/webdav/')`.
+- Package logging is controlled through `config('webdav-server.logging.driver')` and
+  `config('webdav-server.logging.level', 'info')`.
+- When `logging.driver` is `null`, package logging and SabreDAV logging are disabled completely.
+- `info` is used for operational events such as authentication and authorization outcomes.
+- `debug` is used for request parsing, context resolution, storage resolution, Gate checks, server construction, and
+  SabreDAV runtime configuration.
