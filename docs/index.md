@@ -20,6 +20,7 @@ Core characteristics:
 - Basic Auth validation through package contracts
 - path authorization through `PathAuthorizationInterface`, with Laravel Gate/Policy integration by default
 - optional package and SabreDAV logging through `webdav-server.logging`
+- server customization through stable extension points and additional SabreDAV plugins
 - SabreDAV runtime execution isolated behind package boundaries
 - SOLID-oriented design with established patterns for recurring architectural problems
 

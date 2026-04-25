@@ -22,8 +22,8 @@ Every WebDAV request passes through this runtime flow:
 6. Before filesystem operations execute, node classes call `PathAuthorizationInterface`.
    On denial, the package throws `Sabre\DAV\Exception\Forbidden`.
 7. Allowed operations run against the resolved Laravel filesystem disk.
-8. `SabreServerConfigurator::configure(server, spaceKey)` applies runtime configuration such as the effective base URI
-   and optional SabreDAV logger wiring.
+8. `SabreServerConfigurator::configure(server, spaceKey)` applies runtime configuration such as the effective base URI,
+   optional SabreDAV logger wiring, and user-defined tagged SabreDAV plugins in addition to the package defaults.
 9. `ServerRunnerInterface::run(server)` hands off execution to the runtime adapter.
 10. The default adapter `SabreServerRunner` starts SabreDAV and terminates the request lifecycle.
 
@@ -42,6 +42,7 @@ Related decisions:
 - [ADR 0006: Path Authorization Via Laravel Gates And Policies](adr/0006-path-authorization-via-laravel-gates-and-policies.md)
 - [ADR 0007: SabreDAV Runtime Decoupling](adr/0007-sabredav-runtime-decoupling.md)
 - [ADR 0008: SOLID Compliance And Established Design Patterns](adr/0008-solid-compliance-and-established-design-patterns.md)
+- [ADR 0014: Additional SabreDAV Plugins Via Tagged Service Provider Registration](adr/0014-additional-sabredav-plugins-via-tagged-service-provider-registration.md)
 
 ## Runtime Notes (Current State)
 
@@ -68,6 +69,8 @@ Related decisions:
   - fallback: `Illuminate\Foundation\Http\Middleware\VerifyCsrfToken` (Laravel 12)
 - CSRF route prefix comes from `config('webdav-server.route_prefix')` and falls back to `config('webdav-server.base_uri')`.
 - Base URI for SabreDAV is configured in `SabreServerConfigurator` via `config('webdav-server.base_uri', '/webdav/')`.
+- Additional SabreDAV `ServerPlugin` instances can be attached from the consuming application by tagging them with
+  `WebdavServerServiceProvider::sabrePluginTag()`.
 - Package logging is controlled through `config('webdav-server.logging.driver')` and
   `config('webdav-server.logging.level', 'info')`.
 - When `logging.driver` is `null`, package logging and SabreDAV logging are disabled completely.

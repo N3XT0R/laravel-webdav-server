@@ -25,3 +25,4 @@ The records follow the Nygard ADR structure recommended by `adr.github.io`:
 - [0011. Domain-Specific Exception Hierarchies](0011-domain-specific-exception-hierarchies.md)
 - [0012. Exception-Based Control Flow Over Null And False Sentinels](0012-exception-based-control-flow-over-null-and-false-sentinels.md)
 - [0013. Method-Level PHPDoc And Import-Based Type References](0013-method-level-phpdoc-and-import-based-type-references.md)
+- [0014. Additional SabreDAV Plugins Via Tagged Service Provider Registration](0014-additional-sabredav-plugins-via-tagged-service-provider-registration.md)

@@ -26,3 +26,10 @@ nav:
       - "0005 WebDAV Space Key And Storage Space Mapping": adr/0005-webdav-space-key-and-storage-space-mapping.md
       - "0006 Path Authorization Via Laravel Gates And Policies": adr/0006-path-authorization-via-laravel-gates-and-policies.md
       - "0007 SabreDAV Runtime Decoupling": adr/0007-sabredav-runtime-decoupling.md
+      - "0008 SOLID Compliance And Established Design Patterns": adr/0008-solid-compliance-and-established-design-patterns.md
+      - "0009 Optional CalDAV And CardDAV Protocol Extension": adr/0009-optional-caldav-and-carddav-protocol-extension.md
+      - "0010 Explicit Type Checks Over Reflective Runtime Predicates": adr/0010-explicit-type-checks-over-reflective-runtime-predicates.md
+      - "0011 Domain-Specific Exception Hierarchies": adr/0011-domain-specific-exception-hierarchies.md
+      - "0012 Exception-Based Control Flow Over Null And False Sentinels": adr/0012-exception-based-control-flow-over-null-and-false-sentinels.md
+      - "0013 Method-Level PHPDoc And Import-Based Type References": adr/0013-method-level-phpdoc-and-import-based-type-references.md
+      - "0014 Additional SabreDAV Plugins Via Tagged Service Provider Registration": adr/0014-additional-sabredav-plugins-via-tagged-service-provider-registration.md

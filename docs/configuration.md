@@ -154,6 +154,9 @@ public function register(): void
 Tagged plugins are attached in addition to the package defaults such as the compatibility and missing-path handling
 plugins.
 
+This extension mechanism is part of the package's stable server-customization model and is documented in
+[ADR 0014](adr/0014-additional-sabredav-plugins-via-tagged-service-provider-registration.md).
+
 ## Extending The Server
 
 The package is designed so applications can customize WebDAV behavior without breaking the default runtime pipeline.
