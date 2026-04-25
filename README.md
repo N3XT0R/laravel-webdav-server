@@ -54,6 +54,7 @@ curl -u testuser:password -X PROPFIND http://localhost:8000/webdav/default/
 - scopes each resolved storage root to `{root}[/prefix]/{principal.id}`
 - authenticates requests through package contracts, not Laravel session auth
 - authorizes path operations through `PathAuthorizationInterface`, backed by Laravel Gate / policies by default
+- allows server customization through stable extension points and additional SabreDAV plugins
 
 This package is a server integration, not a Flysystem WebDAV client disk.
 
@@ -142,6 +143,62 @@ public function register(): void
 ```
 
 Tagged plugins are added after the package defaults during SabreDAV server configuration.
+
+## Server Customization
+
+The package keeps its public WebDAV API stable, but the SabreDAV runtime itself can still be extended.
+
+Typical customization points:
+
+- replace package contracts such as `CredentialValidatorInterface`, `SpaceResolverInterface`, or `PathAuthorizationInterface`
+- keep the default configurator and attach additional SabreDAV `ServerPlugin` instances
+- combine your own SabreDAV behavior with the package defaults instead of replacing the whole runtime setup
+
+Example: register a custom SabreDAV plugin from your application:
+
+```php
+namespace App\WebDav\Plugins;
+
+use Sabre\DAV\Server;
+use Sabre\DAV\ServerPlugin;
+
+final class CustomSabrePlugin extends ServerPlugin
+{
+    public function initialize(Server $server): void
+    {
+        $server->on('afterMethod:PROPFIND', function (): void {
+            // Add custom behavior after PROPFIND handling.
+        });
+    }
+
+    public function getPluginName(): string
+    {
+        return 'app-custom-sabre-plugin';
+    }
+}
+```
+
+```php
+namespace App\Providers;
+
+use App\WebDav\Plugins\CustomSabrePlugin;
+use Illuminate\Support\ServiceProvider;
+use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
+
+final class AppServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->singleton(CustomSabrePlugin::class);
+        $this->app->tag(
+            [CustomSabrePlugin::class],
+            WebdavServerServiceProvider::sabrePluginTag(),
+        );
+    }
+}
+```
+
+That plugin will then be added alongside the package defaults during `SabreServerConfigurator::configure()`.
 
 ## Request Pipeline
 

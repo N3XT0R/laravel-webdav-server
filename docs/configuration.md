@@ -153,3 +153,66 @@ public function register(): void
 
 Tagged plugins are attached in addition to the package defaults such as the compatibility and missing-path handling
 plugins.
+
+## Extending The Server
+
+The package is designed so applications can customize WebDAV behavior without breaking the default runtime pipeline.
+
+Use this when you want to:
+
+- add extra SabreDAV protocol behavior
+- register listeners for SabreDAV lifecycle events
+- attach custom headers or diagnostics
+- keep the package defaults while extending the runtime
+
+Example plugin:
+
+```php
+namespace App\WebDav\Plugins;
+
+use Sabre\DAV\Server;
+use Sabre\DAV\ServerPlugin;
+
+final class CustomSabrePlugin extends ServerPlugin
+{
+    public function initialize(Server $server): void
+    {
+        $server->on('afterMethod:OPTIONS', function ($request, $response): void {
+            $response->setHeader('X-App-WebDav', 'enabled');
+        });
+    }
+
+    public function getPluginName(): string
+    {
+        return 'app-custom-sabre-plugin';
+    }
+}
+```
+
+Register it in your application service provider:
+
+```php
+namespace App\Providers;
+
+use App\WebDav\Plugins\CustomSabrePlugin;
+use Illuminate\Support\ServiceProvider;
+use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
+
+final class AppServiceProvider extends ServiceProvider
+{
+    public function register(): void
+    {
+        $this->app->singleton(CustomSabrePlugin::class);
+        $this->app->tag(
+            [CustomSabrePlugin::class],
+            WebdavServerServiceProvider::sabrePluginTag(),
+        );
+    }
+}
+```
+
+Result:
+
+- your plugin is added after the package-default plugins
+- `SabreServerConfigurator` remains the active configurator
+- existing package behavior stays intact unless your plugin intentionally changes it
