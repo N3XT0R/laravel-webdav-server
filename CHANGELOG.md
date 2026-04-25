@@ -14,12 +14,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       discovery reaches the DAV runtime instead of Laravel's method handling.
     - Hardened root-level `PROPFIND` handling with feature tests that cover `Depth: 0`, `Depth: 1`, empty storage
       roots, correct `207 Multi-Status` XML responses, and space-relative `href` values for `/webdav/{space}/`.
+    - Handled missing-target `PROPFIND` requests such as file-creation probes as normal `404` DAV responses instead of
+      bubbling `Sabre\DAV\Exception\NotFound` through the runtime and logging them as uncaught exceptions.
 - **logging**
     - Added SabreDAV-side debug logs for Windows-relevant request handling, including DAV method processing,
       root-collection `PROPFIND`, request depth, and the effective `baseUri`.
 - **documentation**
     - Documented Windows WebClient requirements and the package's `OPTIONS` / root-collection compatibility behavior in
       the README and RTD FAQ pages.
+    - Clarified that the package emits Windows-compatible `OPTIONS`, `PROPFIND`, `207 Multi-Status`, `DAV`, root
+      collection, and `MS-Author-Via: DAV` responses, while Windows Explorer itself still works most reliably over
+      `https://`.
 
 ## [1.0.0-beta.1] - 2026-04-25
 
