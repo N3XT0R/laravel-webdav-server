@@ -37,6 +37,7 @@ Core characteristics:
 - [Configuration Reference](configuration.md)
 - [Authentication & Authorization](authentication.md)
 - [Architecture](architecture.md)
+- [Commands](commands.md)
 - [Common Questions](common-questions.md)
 - [Architectural Decision Records](adr/README.md)
 

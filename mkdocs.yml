@@ -16,6 +16,7 @@ nav:
   - Configuration: configuration.md
   - Authentication & Authorization: authentication.md
   - Architecture: architecture.md
+  - Commands: commands.md
   - Common Questions: common-questions.md
   - ADRs:
       - Overview: adr/README.md
