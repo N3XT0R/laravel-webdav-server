@@ -12,6 +12,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Server\SpaceKeyResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Server\RequestContextDto;
 use N3XT0R\LaravelWebdavServer\Exception\DomainException;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 
 final readonly class DefaultRequestContextResolver implements RequestContextResolverInterface
 {
@@ -22,12 +23,14 @@ final readonly class DefaultRequestContextResolver implements RequestContextReso
      * @param  PrincipalAuthenticatorInterface  $principalAuthenticator  Authenticator used to validate credentials and resolve the principal.
      * @param  SpaceKeyResolverInterface  $spaceKeyResolver  Resolver used to determine the logical storage space key.
      * @param  SpaceResolverInterface  $spaceResolver  Resolver used to map the logical space key to a concrete disk and root path.
+     * @param  WebDavLoggingService  $logger  Package logger used to trace request-context resolution.
      */
     public function __construct(
         private RequestCredentialsExtractorInterface $credentialsExtractor,
         private PrincipalAuthenticatorInterface $principalAuthenticator,
         private SpaceKeyResolverInterface $spaceKeyResolver,
         private SpaceResolverInterface $spaceResolver,
+        private WebDavLoggingService $logger,
     ) {}
 
     /**
@@ -45,6 +48,15 @@ final readonly class DefaultRequestContextResolver implements RequestContextReso
         $principal = $this->principalAuthenticator->authenticate($username, $password);
         $spaceKey = $this->spaceKeyResolver->resolve($request);
         $space = $this->spaceResolver->resolve($principal, $spaceKey);
+
+        $this->logger->debug('Resolved WebDAV request context.', [
+            'webdav' => [
+                'principal_id' => $principal->id,
+                'space_key' => $spaceKey,
+                'disk' => $space->disk,
+                'root_path' => $space->rootPath,
+            ],
+        ]);
 
         return new RequestContextDto(
             principal: $principal,

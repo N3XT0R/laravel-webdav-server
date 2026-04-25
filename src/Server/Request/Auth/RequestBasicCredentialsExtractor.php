@@ -8,9 +8,17 @@ use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestCredentialsExtractorInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\MissingCredentialsException;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 
 final readonly class RequestBasicCredentialsExtractor implements RequestCredentialsExtractorInterface
 {
+    /**
+     * @param  WebDavLoggingService  $logger  Package logger used to trace credential extraction without logging secrets.
+     */
+    public function __construct(
+        private WebDavLoggingService $logger,
+    ) {}
+
     /**
      * Extract Basic Auth credentials from either PHP auth server values or the `Authorization` header.
      *
@@ -26,6 +34,17 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
         $serverCredentials = $this->extractServerCredentials($request);
 
         if ($serverCredentials !== null) {
+            $this->logger->debug('Extracted WebDAV credentials from PHP auth server values.', [
+                'auth' => [
+                    'username' => $serverCredentials[0],
+                    'source' => 'php_auth',
+                ],
+                'request' => [
+                    'method' => $request->getMethod(),
+                    'uri' => $request->getRequestUri(),
+                ],
+            ]);
+
             return $serverCredentials;
         }
 
@@ -60,6 +79,17 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
 
         $this->assertCredentialsAreComplete($request, $username, $password);
 
+        $this->logger->debug('Extracted WebDAV credentials from the Authorization header.', [
+            'auth' => [
+                'username' => $username,
+                'source' => 'authorization_header',
+            ],
+            'request' => [
+                'method' => $request->getMethod(),
+                'uri' => $request->getRequestUri(),
+            ],
+        ]);
+
         return [$username, $password];
     }
 
@@ -68,6 +98,13 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
         $authorization = $request->headers->get('Authorization');
 
         if (! is_string($authorization) || ! str_starts_with($authorization, 'Basic ')) {
+            $this->logger->info('Missing WebDAV Basic Auth credentials.', [
+                'request' => [
+                    'method' => $request->getMethod(),
+                    'uri' => $request->getRequestUri(),
+                ],
+            ]);
+
             throw new MissingCredentialsException(
                 message: 'Basic Auth credentials are required to access the WebDAV server.',
                 context: [
@@ -88,6 +125,13 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
         $decoded = base64_decode(substr($authorization, 6), true);
 
         if (! is_string($decoded) || ! str_contains($decoded, ':')) {
+            $this->logger->info('Malformed WebDAV Basic Auth header.', [
+                'request' => [
+                    'method' => $request->getMethod(),
+                    'uri' => $request->getRequestUri(),
+                ],
+            ]);
+
             throw new InvalidCredentialsException(
                 message: 'Malformed Basic Auth header.',
                 context: [
@@ -113,6 +157,16 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
     private function assertCredentialsAreComplete(Request $request, string $username, string $password): void
     {
         if ($username === '' || $password === '') {
+            $this->logger->info('Incomplete WebDAV Basic Auth credentials.', [
+                'auth' => [
+                    'username' => $username,
+                ],
+                'request' => [
+                    'method' => $request->getMethod(),
+                    'uri' => $request->getRequestUri(),
+                ],
+            ]);
+
             throw new InvalidCredentialsException(
                 message: 'Incomplete Basic Auth credentials.',
                 context: [

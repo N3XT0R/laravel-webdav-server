@@ -33,6 +33,7 @@ final readonly class WebDavRegisterFactory
         return [
             RepositoryRegister::class,
             AuthRegister::class,
+            LoggingRegister::class,
             StorageRegister::class,
             ServerRegister::class,
             ServerFactoryRegister::class,

@@ -10,10 +10,12 @@ use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerConfiguratorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Server\RequestContextDto;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use N3XT0R\LaravelWebdavServer\Providers\Registers\ServerFactoryRegister;
 use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Logging\RecordingLogger;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use PHPUnit\Framework\TestCase;
 use Sabre\DAV\Server;
@@ -45,6 +47,10 @@ final class ServerFactoryRegisterTest extends TestCase
         {
             public function configure(Server $server, string $spaceKey): void {}
         });
+        $container->instance(
+            WebDavLoggingService::class,
+            new WebDavLoggingService(new RecordingLogger, 'stderr', 'debug'),
+        );
 
         $register = new ServerFactoryRegister($container);
         $register->register();

@@ -7,8 +7,10 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Storage;
 use Illuminate\Contracts\Config\Repository;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidSpaceConfigurationException;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\SpaceNotConfiguredException;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Logging\RecordingLogger;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
@@ -16,7 +18,10 @@ final class DefaultSpaceResolverTest extends TestCase
 {
     private function makeResolver(): DefaultSpaceResolver
     {
-        return new DefaultSpaceResolver($this->app->make(Repository::class));
+        return new DefaultSpaceResolver(
+            $this->app->make(Repository::class),
+            new WebDavLoggingService(new RecordingLogger, 'stderr', 'debug'),
+        );
     }
 
     private function setPrincipal(string $id = '42'): WebDavPrincipalValueObject

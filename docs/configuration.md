@@ -7,6 +7,10 @@ All package configuration is loaded from `config/webdav-server.php` and accessed
 ```php
 return [
     'base_uri' => '/webdav/',
+    'logging' => [
+        'driver' => null,
+        'level' => 'info',
+    ],
     'storage' => [
         'default_space' => 'default',
         'spaces' => [
@@ -29,6 +33,31 @@ return [
 |------------------------------|------------|------------------------------------------------------|
 | `webdav-server.route_prefix` | `webdav`   | CSRF exclusion path in `WebdavServerServiceProvider` |
 | `webdav-server.base_uri`     | `/webdav/` | `SabreServerConfigurator`                            |
+| `webdav-server.logging.driver` | `null`   | package logging and SabreDAV logger wiring           |
+| `webdav-server.logging.level`  | `info`   | package log filtering for `info` and `debug` output  |
+
+## Logging
+
+Package logging is configured under `webdav-server.logging`.
+
+Relevant keys:
+
+- `webdav-server.logging.driver`
+- `webdav-server.logging.level`
+
+Behavior:
+
+- if `driver` is `null`, package logging is disabled entirely
+- if `driver` contains a Laravel log channel name such as `stack`, `single`, or `stderr`, package logs are written to
+  that channel
+- `level` defines the minimum package log level that will be emitted
+- the same logger is also attached to SabreDAV via `SabreServerConfigurator`
+
+Typical usage:
+
+- use `info` to record operational events such as authentication success or failure
+- use `debug` during development to trace credential extraction, request-context resolution, storage resolution, and
+  server setup
 
 ## Storage Spaces
 
@@ -96,5 +125,6 @@ Examples:
 
 - The package registers the WebDAV route shape `/webdav/{space}/{path?}`.
 - `route_prefix` is used for CSRF exclusion and falls back to `base_uri` when empty.
+- `logging.driver = null` disables all package and SabreDAV logging.
 - `storage.spaces.*` is the active storage configuration model.
 - The packaged reference policy is `src/Policies/PathPolicy.php`.

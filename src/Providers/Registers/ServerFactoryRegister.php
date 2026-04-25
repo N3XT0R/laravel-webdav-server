@@ -8,6 +8,7 @@ use Illuminate\Container\Container;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerConfiguratorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
 
 final readonly class ServerFactoryRegister extends AbstractRegister
@@ -27,6 +28,7 @@ final readonly class ServerFactoryRegister extends AbstractRegister
                 requestContextResolver: $app->make(RequestContextResolverInterface::class),
                 storageRootBuilder: $app->make(StorageRootBuilderInterface::class),
                 serverConfigurator: $app->make(ServerConfiguratorInterface::class),
+                logger: $app->make(WebDavLoggingService::class),
             );
         });
     }

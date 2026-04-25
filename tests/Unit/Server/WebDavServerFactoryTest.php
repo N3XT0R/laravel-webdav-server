@@ -7,10 +7,12 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\DTO\Server\RequestContextDto;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Logging\RecordingLogger;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\FixedRequestContextResolver;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\RecordingServerConfigurator;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\RecordingStorageRootBuilder;
@@ -41,11 +43,13 @@ final class WebDavServerFactoryTest extends TestCase
         $requestContextResolver = new FixedRequestContextResolver($context);
         $storageRootBuilder = new RecordingStorageRootBuilder($root);
         $serverConfigurator = new RecordingServerConfigurator;
+        $logger = new RecordingLogger;
 
         $factory = new WebDavServerFactory(
             requestContextResolver: $requestContextResolver,
             storageRootBuilder: $storageRootBuilder,
             serverConfigurator: $serverConfigurator,
+            logger: new WebDavLoggingService($logger, 'stderr', 'debug'),
         );
 
         $server = $factory->make($request);
@@ -55,5 +59,6 @@ final class WebDavServerFactoryTest extends TestCase
         $this->assertSame([['principal' => $principal, 'space' => $space]], $storageRootBuilder->calls);
         $this->assertCount(1, $serverConfigurator->calls);
         $this->assertSame('team-a', $serverConfigurator->calls[0]['spaceKey']);
+        $this->assertCount(2, $logger->records);
     }
 }

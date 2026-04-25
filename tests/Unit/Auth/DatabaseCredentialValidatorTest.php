@@ -8,6 +8,8 @@ use Illuminate\Hashing\BcryptHasher;
 use N3XT0R\LaravelWebdavServer\Auth\Validators\DatabaseCredentialValidator;
 use N3XT0R\LaravelWebdavServer\DTO\Auth\AccountRecordDto;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Logging\RecordingLogger;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Repositories\InMemoryAccountRepository;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use PHPUnit\Framework\TestCase;
@@ -20,12 +22,18 @@ final class DatabaseCredentialValidatorTest extends TestCase
         $this->expectException(InvalidCredentialsException::class);
 
         $repository = new InMemoryAccountRepository;
-        $validator = new DatabaseCredentialValidator($repository, new BcryptHasher);
+        $logger = new RecordingLogger;
+        $validator = new DatabaseCredentialValidator(
+            $repository,
+            new BcryptHasher,
+            new WebDavLoggingService($logger, 'stderr', 'debug'),
+        );
 
         try {
             $validator->validate('unknown', 'password');
         } finally {
             $this->assertSame(['unknown'], $repository->lookups);
+            $this->assertSame('WebDAV account lookup failed during credential validation.', $logger->records[0]['message']);
         }
     }
 
@@ -41,7 +49,11 @@ final class DatabaseCredentialValidatorTest extends TestCase
             ),
         ]);
 
-        $validator = new DatabaseCredentialValidator($repository, new BcryptHasher);
+        $validator = new DatabaseCredentialValidator(
+            $repository,
+            new BcryptHasher,
+            new WebDavLoggingService(new RecordingLogger, 'stderr', 'debug'),
+        );
 
         $validator->validate('alice', 'wrong');
     }
@@ -56,7 +68,11 @@ final class DatabaseCredentialValidatorTest extends TestCase
             ),
         ]);
 
-        $validator = new DatabaseCredentialValidator($repository, new BcryptHasher);
+        $validator = new DatabaseCredentialValidator(
+            $repository,
+            new BcryptHasher,
+            new WebDavLoggingService(new RecordingLogger, 'stderr', 'debug'),
+        );
         $result = $validator->validate('alice', 'secret');
 
         $this->assertInstanceOf(WebDavPrincipalValueObject::class, $result);
@@ -83,7 +99,11 @@ final class DatabaseCredentialValidatorTest extends TestCase
             ),
         ]);
 
-        $validator = new DatabaseCredentialValidator($repository, new BcryptHasher);
+        $validator = new DatabaseCredentialValidator(
+            $repository,
+            new BcryptHasher,
+            new WebDavLoggingService(new RecordingLogger, 'stderr', 'debug'),
+        );
         $result = $validator->validate('alice', 'secret');
 
         $this->assertSame($user, $result->user);
@@ -99,7 +119,11 @@ final class DatabaseCredentialValidatorTest extends TestCase
             ),
         ]);
 
-        $validator = new DatabaseCredentialValidator($repository, new BcryptHasher);
+        $validator = new DatabaseCredentialValidator(
+            $repository,
+            new BcryptHasher,
+            new WebDavLoggingService(new RecordingLogger, 'stderr', 'debug'),
+        );
         $result = $validator->validate('alice', 'secret');
 
         $this->assertNull($result->user);

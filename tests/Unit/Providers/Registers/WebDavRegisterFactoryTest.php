@@ -16,6 +16,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerRunnerInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\SpaceKeyResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Providers\Registers\WebDavRegisterFactory;
 use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
 use PHPUnit\Framework\TestCase;
@@ -40,6 +41,7 @@ final class WebDavRegisterFactoryTest extends TestCase
         $this->assertTrue($container->bound(RequestContextResolverInterface::class));
         $this->assertTrue($container->bound(ServerConfiguratorInterface::class));
         $this->assertTrue($container->bound(ServerRunnerInterface::class));
+        $this->assertTrue($container->bound(WebDavLoggingService::class));
         $this->assertTrue($container->bound(WebDavServerFactory::class));
     }
 }

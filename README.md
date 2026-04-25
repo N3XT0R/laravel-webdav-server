@@ -121,10 +121,21 @@ Policy abilities:
 1. `WebDavController` accepts the request.
 2. `WebDavServerFactory` resolves credentials, principal, `spaceKey`, and storage space through dedicated collaborators.
 3. `StorageRootBuilder` creates the SabreDAV node tree.
-4. `SabreServerConfigurator` applies runtime configuration such as the effective base URI.
+4. `SabreServerConfigurator` applies runtime configuration such as the effective base URI and optional SabreDAV
+   logging.
 5. `ServerRunnerInterface` hands execution off to the runtime adapter.
 
 The default runner is `SabreServerRunner`, which calls `Server::start()` and terminates the request lifecycle.
+
+## Logging
+
+Package logging is configured through `webdav-server.logging`.
+
+- set `driver` to a Laravel log channel such as `stack`, `single`, or `stderr` to enable logging
+- set `driver` to `null` to disable package and SabreDAV logging entirely
+- use `level = info` for operational events such as authentication success or failure
+- use `level = debug` to additionally trace credential extraction, request-context resolution, storage resolution, and
+  SabreDAV server setup during development
 
 ## Supported WebDAV Methods
 

@@ -10,6 +10,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Repositories\AccountRepositoryInterface
 use N3XT0R\LaravelWebdavServer\Exception\Auth\AccountDisabledException;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\AccountNotFoundException;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final readonly class DatabaseCredentialValidator implements CredentialValidatorInterface
@@ -19,10 +20,12 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
      *
      * @param  AccountRepositoryInterface  $repository  Repository used to resolve enabled account records by username.
      * @param  Hasher  $hasher  Laravel hasher used to verify the supplied password against the stored hash.
+     * @param  WebDavLoggingService  $logger  Package logger used to trace validator internals without logging secrets.
      */
     public function __construct(
         protected AccountRepositoryInterface $repository,
         protected Hasher $hasher,
+        protected WebDavLoggingService $logger,
     ) {}
 
     /**
@@ -39,6 +42,13 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
         try {
             $account = $this->repository->findEnabledByUsername($username);
         } catch (AccountNotFoundException|AccountDisabledException $exception) {
+            $this->logger->debug('WebDAV account lookup failed during credential validation.', [
+                'auth' => [
+                    'username' => $username,
+                    'exception' => $exception::class,
+                ],
+            ]);
+
             throw new InvalidCredentialsException(
                 message: 'Invalid WebDAV credentials.',
                 context: [
@@ -50,7 +60,21 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
             );
         }
 
+        $this->logger->debug('Resolved WebDAV account for credential validation.', [
+            'auth' => [
+                'username' => $username,
+                'principal_id' => $account->getPrincipalId(),
+            ],
+        ]);
+
         if (! $this->hasher->check($password, $account->getPasswordHash())) {
+            $this->logger->debug('WebDAV password verification failed.', [
+                'auth' => [
+                    'username' => $username,
+                    'principal_id' => $account->getPrincipalId(),
+                ],
+            ]);
+
             throw new InvalidCredentialsException(
                 message: 'Invalid WebDAV credentials.',
                 context: [
@@ -60,6 +84,13 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
                 ],
             );
         }
+
+        $this->logger->debug('WebDAV password verification succeeded.', [
+            'auth' => [
+                'username' => $username,
+                'principal_id' => $account->getPrincipalId(),
+            ],
+        ]);
 
         return new WebDavPrincipalValueObject(
             $account->getPrincipalId(),

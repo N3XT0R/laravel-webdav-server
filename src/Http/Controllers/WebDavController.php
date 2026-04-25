@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerRunnerInterface;
 use N3XT0R\LaravelWebdavServer\Exception\DomainException;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -18,10 +19,12 @@ final class WebDavController extends Controller
      *
      * @param  WebDavServerFactory  $factory  Factory used to construct the SabreDAV server for the request.
      * @param  ServerRunnerInterface  $serverRunner  Runtime adapter used to hand execution off to SabreDAV.
+     * @param  WebDavLoggingService  $logger  Package logger used to trace WebDAV request entry handling.
      */
     public function __construct(
         private readonly WebDavServerFactory $factory,
         private readonly ServerRunnerInterface $serverRunner,
+        private readonly WebDavLoggingService $logger,
     ) {}
 
     /**
@@ -35,12 +38,26 @@ final class WebDavController extends Controller
     public function __invoke(Request $request): Response
     {
         if (! $this->hasBasicAuthAttempt($request)) {
+            $this->logger->debug('Rejected WebDAV request without a Basic Auth attempt.', [
+                'request' => [
+                    'method' => $request->getMethod(),
+                    'uri' => $request->getRequestUri(),
+                ],
+            ]);
+
             return response('Unauthorized', Response::HTTP_UNAUTHORIZED, [
                 'WWW-Authenticate' => 'Basic realm="WebDAV"',
             ]);
         }
 
         $server = $this->factory->make($request);
+
+        $this->logger->debug('Handing WebDAV request off to the runtime adapter.', [
+            'request' => [
+                'method' => $request->getMethod(),
+                'uri' => $request->getRequestUri(),
+            ],
+        ]);
 
         return $this->serverRunner->run($server);
     }

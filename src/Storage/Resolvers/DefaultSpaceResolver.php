@@ -9,6 +9,7 @@ use Illuminate\Contracts\Config\Repository as Config;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidSpaceConfigurationException;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\SpaceNotConfiguredException;
+use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
@@ -18,9 +19,11 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
      * Create the default config-driven space resolver.
      *
      * @param  Repository  $config  Package configuration repository used to resolve storage spaces.
+     * @param  WebDavLoggingService  $logger  Package logger used to trace resolved storage targets.
      */
     public function __construct(
         private Config $config,
+        private WebDavLoggingService $logger,
     ) {}
 
     /**
@@ -79,9 +82,20 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
 
         $parts[] = (string) $principal->id;
 
-        return new WebDavStorageSpaceValueObject(
+        $space = new WebDavStorageSpaceValueObject(
             disk: trim($disk),
             rootPath: implode('/', $parts),
         );
+
+        $this->logger->debug('Resolved WebDAV storage space.', [
+            'webdav' => [
+                'principal_id' => $principal->id,
+                'space_key' => $spaceKey,
+                'disk' => $space->disk,
+                'root_path' => $space->rootPath,
+            ],
+        ]);
+
+        return $space;
     }
 }
