@@ -14,7 +14,7 @@ A WebDAV server package for Laravel powered by SabreDAV and Laravel Flysystem.
 Expose Laravel storage disks through `/webdav/{space}/{path?}` and map each request to a configured storage space plus a
 user-scoped root path.
 
-> Current version: **1.0.0-alpha.3**
+> Current version: **1.0.0-alpha.4**
 
 > [!WARNING]
 > This package is under active development and not yet production-ready.
