@@ -32,6 +32,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       override the packaged reference policy by registering their own policy for `PathResourceDto`.
     - Added `ADR 0008` to make SOLID compliance normative and to require established design patterns where they clearly
       fit recurring design problems.
+    - Documented the package-wide PHPDoc standard for public methods in `ADR 0013`, including DX-oriented method
+      descriptions, explicit parameter and exception docs, concrete array and collection element types, and the rule to
+      prefer imported short class names over fully qualified class names inside docblocks.
 
 ## [1.0.0-alpha.3] - 2026-04-22
 
