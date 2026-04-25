@@ -21,6 +21,7 @@ workbench:
     components: true
     factories: true
     views: true
+    config: true
   build:
     - package:drop-sqlite-db
     - asset-publish
