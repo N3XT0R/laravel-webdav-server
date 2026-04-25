@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Tests\Unit\DTO\Auth;
 
-use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavAccountRecordDto;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\AccountRecordDto;
 use PHPUnit\Framework\TestCase;
 use Workbench\App\Models\User;
 
-final class WebDavAccountRecordDtoTest extends TestCase
+final class AccountRecordDtoTest extends TestCase
 {
     public function test_it_returns_principal_id(): void
     {
-        $dto = new WebDavAccountRecordDto(
+        $dto = new AccountRecordDto(
             principalId: 'users/test',
             displayName: 'Test User',
             passwordHash: 'hashed-password',
@@ -23,7 +23,7 @@ final class WebDavAccountRecordDtoTest extends TestCase
 
     public function test_it_returns_display_name(): void
     {
-        $dto = new WebDavAccountRecordDto(
+        $dto = new AccountRecordDto(
             principalId: 'users/test',
             displayName: 'Test User',
             passwordHash: 'hashed-password',
@@ -34,7 +34,7 @@ final class WebDavAccountRecordDtoTest extends TestCase
 
     public function test_it_returns_password_hash(): void
     {
-        $dto = new WebDavAccountRecordDto(
+        $dto = new AccountRecordDto(
             principalId: 'users/test',
             displayName: 'Test User',
             passwordHash: 'hashed-password',
@@ -52,7 +52,7 @@ final class WebDavAccountRecordDtoTest extends TestCase
             'password' => 'secret',
         ], true);
 
-        $dto = new WebDavAccountRecordDto(
+        $dto = new AccountRecordDto(
             principalId: 'users/test',
             displayName: 'Test User',
             passwordHash: 'hashed-password',
@@ -64,7 +64,7 @@ final class WebDavAccountRecordDtoTest extends TestCase
 
     public function test_it_returns_null_user_when_no_user_was_provided(): void
     {
-        $dto = new WebDavAccountRecordDto(
+        $dto = new AccountRecordDto(
             principalId: 'users/test',
             displayName: 'Test User',
             passwordHash: 'hashed-password',

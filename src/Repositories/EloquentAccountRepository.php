@@ -6,24 +6,27 @@ namespace N3XT0R\LaravelWebdavServer\Repositories;
 
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Database\Eloquent\Model;
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\WebDavAccountInterface;
-use N3XT0R\LaravelWebdavServer\Contracts\Repositories\WebDavAccountRepositoryInterface;
-use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavAccountRecordDto;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\AccountInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Repositories\AccountRepositoryInterface;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\AccountRecordDto;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\AccountDisabledException;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\AccountNotFoundException;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidAccountConfigurationException;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidAccountRecordException;
 use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
-use RuntimeException;
 
-final readonly class EloquentWebDavAccountRepository implements WebDavAccountRepositoryInterface
+final readonly class EloquentAccountRepository implements AccountRepositoryInterface
 {
     public function __construct(
         private Config $config,
     ) {}
 
-    public function findEnabledByUsername(string $username): ?WebDavAccountInterface
+    public function findEnabledByUsername(string $username): AccountInterface
     {
         $modelClass = $this->config->get('webdav-server.auth.account_model');
 
         if (! is_string($modelClass) || ! is_subclass_of($modelClass, Model::class)) {
-            throw new RuntimeException('Invalid or missing webdav-server.auth.account_model configuration');
+            throw new InvalidAccountConfigurationException('Invalid or missing webdav-server.auth.account_model configuration.');
         }
 
         $usernameColumn = (string) $this->config->get('webdav-server.auth.username_column', 'username');
@@ -35,14 +38,14 @@ final readonly class EloquentWebDavAccountRepository implements WebDavAccountRep
         /** @var Model|WebDavAccountModel|null $account */
         $account = $modelClass::query()
             ->where($usernameColumn, $username)
-            ->when(
-                is_string($enabledColumn) && $enabledColumn !== '',
-                fn ($query) => $query->where($enabledColumn, true)
-            )
             ->first();
 
-        if (! $account) {
-            return null;
+        if ($account === null) {
+            throw new AccountNotFoundException("No WebDAV account found for username '{$username}'.");
+        }
+
+        if (is_string($enabledColumn) && $enabledColumn !== '' && ! (bool) $account->getAttribute($enabledColumn)) {
+            throw new AccountDisabledException("WebDAV account '{$username}' is disabled.");
         }
 
         $principalId = $account->getAttribute($principalIdColumn);
@@ -50,14 +53,14 @@ final readonly class EloquentWebDavAccountRepository implements WebDavAccountRep
         $passwordHash = $account->getAttribute($passwordColumn);
 
         if (! is_scalar($principalId) || ! is_scalar($displayName) || ! is_scalar($passwordHash)) {
-            throw new RuntimeException('WebDAV auth model returned invalid scalar attributes');
+            throw new InvalidAccountRecordException('WebDAV auth model returned invalid scalar attributes.');
         }
 
-        return new WebDavAccountRecordDto(
+        return new AccountRecordDto(
             (string) $principalId,
             (string) $displayName,
             (string) $passwordHash,
-            $account->user
+            $account->user,
         );
     }
 }

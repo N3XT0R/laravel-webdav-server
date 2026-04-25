@@ -1,11 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace N3XT0R\LaravelWebdavServer;
 
 use Illuminate\Support\Facades\Gate;
 use N3XT0R\LaravelWebdavServer\Commands\LaravelWebdavServerCommand;
-use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
-use N3XT0R\LaravelWebdavServer\Policies\WebDavPathPolicy;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
+use N3XT0R\LaravelWebdavServer\Policies\PathPolicy;
 use N3XT0R\LaravelWebdavServer\Providers\Registers\WebDavRegisterFactory;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -34,7 +36,7 @@ class WebdavServerServiceProvider extends PackageServiceProvider
 
     public function packageRegistered(): void
     {
-        new WebDavRegisterFactory($this->app)->registerAll();
+        $this->app->make(WebDavRegisterFactory::class)->registerAll();
     }
 
     public function packageBooted(): void
@@ -42,7 +44,7 @@ class WebdavServerServiceProvider extends PackageServiceProvider
         parent::packageBooted();
         $this->registerCsrfException();
         $this->registerRoutes();
-        Gate::policy(WebDavPathResourceDto::class, WebDavPathPolicy::class);
+        Gate::policy(PathResourceDto::class, PathPolicy::class);
     }
 
     private function registerCsrfException(): void
@@ -57,32 +59,29 @@ class WebdavServerServiceProvider extends PackageServiceProvider
             return;
         }
 
-        $csrfMiddleware = $this->resolveCsrfMiddlewareClass();
+        foreach ($this->csrfMiddlewareClasses() as $middlewareClass) {
+            if (! class_exists($middlewareClass)) {
+                continue;
+            }
 
-        if ($csrfMiddleware === null) {
+            // Exclude package WebDAV endpoints from CSRF checks.
+            $middlewareClass::except([
+                $routePrefix,
+                $routePrefix.'/*',
+            ]);
+
             return;
         }
-
-        // Exclude package WebDAV endpoints from CSRF checks.
-        call_user_func([$csrfMiddleware, 'except'], [
-            $routePrefix,
-            $routePrefix.'/*',
-        ]);
     }
 
-    private function resolveCsrfMiddlewareClass(): ?string
+    /**
+     * @return list<class-string>
+     */
+    private function csrfMiddlewareClasses(): array
     {
-        $candidates = [
+        return [
             'Illuminate\\Foundation\\Http\\Middleware\\PreventRequestForgery',
             'Illuminate\\Foundation\\Http\\Middleware\\VerifyCsrfToken',
         ];
-
-        foreach ($candidates as $middlewareClass) {
-            if (class_exists($middlewareClass) && method_exists($middlewareClass, 'except')) {
-                return $middlewareClass;
-            }
-        }
-
-        return null;
     }
 }

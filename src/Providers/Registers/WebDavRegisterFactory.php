@@ -14,9 +14,22 @@ final readonly class WebDavRegisterFactory
 
     public function registerAll(): void
     {
-        new RepositoryRegister($this->app)->register();
-        new AuthRegister($this->app)->register();
-        new StorageRegister($this->app)->register();
-        new ServerRegister($this->app)->register();
+        foreach ($this->registerClasses() as $registerClass) {
+            new $registerClass($this->app)->register();
+        }
+    }
+
+    /**
+     * @return list<class-string<AbstractRegister>>
+     */
+    private function registerClasses(): array
+    {
+        return [
+            RepositoryRegister::class,
+            AuthRegister::class,
+            StorageRegister::class,
+            ServerRegister::class,
+            ServerFactoryRegister::class,
+        ];
     }
 }

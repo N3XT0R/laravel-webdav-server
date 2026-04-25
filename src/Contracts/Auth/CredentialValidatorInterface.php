@@ -8,10 +8,5 @@ use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 interface CredentialValidatorInterface
 {
-    /**
-     * Validate the given credentials and return a principal on success.
-     *
-     * Return null if authentication fails.
-     */
-    public function validate(string $username, string $password): ?WebDavPrincipalValueObject;
+    public function validate(string $username, string $password): WebDavPrincipalValueObject;
 }

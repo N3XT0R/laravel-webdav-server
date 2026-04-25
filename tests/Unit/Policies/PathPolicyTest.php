@@ -6,14 +6,14 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Config\Repository;
-use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
-use N3XT0R\LaravelWebdavServer\Policies\WebDavPathPolicy;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
+use N3XT0R\LaravelWebdavServer\Policies\PathPolicy;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use Workbench\App\Models\User;
 
-final class WebDavPathPolicyTest extends TestCase
+final class PathPolicyTest extends TestCase
 {
-    private WebDavPathPolicy $policy;
+    private PathPolicy $policy;
 
     protected function setUp(): void
     {
@@ -34,7 +34,7 @@ final class WebDavPathPolicyTest extends TestCase
             ],
         ]);
 
-        $this->policy = new WebDavPathPolicy;
+        $this->policy = new PathPolicy;
     }
 
     private function makeUser(string|int $id): Authenticatable
@@ -53,7 +53,7 @@ final class WebDavPathPolicyTest extends TestCase
     public function test_read_allows_access_to_own_root_path(): void
     {
         $user = $this->makeUser(42);
-        $resource = new WebDavPathResourceDto('local', 'webdav/42');
+        $resource = new PathResourceDto('local', 'webdav/42');
 
         $this->assertTrue($this->policy->read($user, $resource));
     }
@@ -61,7 +61,7 @@ final class WebDavPathPolicyTest extends TestCase
     public function test_read_allows_access_to_a_nested_path_under_own_root(): void
     {
         $user = $this->makeUser(42);
-        $resource = new WebDavPathResourceDto('local', 'webdav/42/documents/report.pdf');
+        $resource = new PathResourceDto('local', 'webdav/42/documents/report.pdf');
 
         $this->assertTrue($this->policy->read($user, $resource));
     }
@@ -69,7 +69,7 @@ final class WebDavPathPolicyTest extends TestCase
     public function test_read_denies_access_to_another_users_path(): void
     {
         $user = $this->makeUser(42);
-        $resource = new WebDavPathResourceDto('local', 'webdav/99/private.txt');
+        $resource = new PathResourceDto('local', 'webdav/99/private.txt');
 
         $this->assertFalse($this->policy->read($user, $resource));
     }
@@ -77,7 +77,7 @@ final class WebDavPathPolicyTest extends TestCase
     public function test_read_denies_access_to_wrong_disk(): void
     {
         $user = $this->makeUser(42);
-        $resource = new WebDavPathResourceDto('s3', 'webdav/42/file.txt');
+        $resource = new PathResourceDto('s3', 'webdav/42/file.txt');
 
         $this->assertFalse($this->policy->read($user, $resource));
     }
@@ -85,7 +85,7 @@ final class WebDavPathPolicyTest extends TestCase
     public function test_read_allows_access_to_a_prefixed_space_for_the_same_user(): void
     {
         $user = $this->makeUser(42);
-        $resource = new WebDavPathResourceDto('s3', 'shared/members/42/file.txt');
+        $resource = new PathResourceDto('s3', 'shared/members/42/file.txt');
 
         $this->assertTrue($this->policy->read($user, $resource));
     }
@@ -93,7 +93,7 @@ final class WebDavPathPolicyTest extends TestCase
     public function test_read_denies_access_to_storage_root_itself(): void
     {
         $user = $this->makeUser(42);
-        $resource = new WebDavPathResourceDto('local', 'webdav');
+        $resource = new PathResourceDto('local', 'webdav');
 
         $this->assertFalse($this->policy->read($user, $resource));
     }
@@ -101,7 +101,7 @@ final class WebDavPathPolicyTest extends TestCase
     public function test_read_denies_path_that_starts_with_user_id_but_is_a_different_user(): void
     {
         $user = $this->makeUser(4);
-        $resource = new WebDavPathResourceDto('local', 'webdav/42/file.txt');
+        $resource = new PathResourceDto('local', 'webdav/42/file.txt');
 
         $this->assertFalse($this->policy->read($user, $resource));
     }
@@ -110,38 +110,38 @@ final class WebDavPathPolicyTest extends TestCase
     {
         $user = $this->makeUser(42);
 
-        $this->assertTrue($this->policy->write($user, new WebDavPathResourceDto('local', 'webdav/42/file.txt')));
-        $this->assertFalse($this->policy->write($user, new WebDavPathResourceDto('local', 'webdav/99/file.txt')));
+        $this->assertTrue($this->policy->write($user, new PathResourceDto('local', 'webdav/42/file.txt')));
+        $this->assertFalse($this->policy->write($user, new PathResourceDto('local', 'webdav/99/file.txt')));
     }
 
     public function test_delete_follows_the_same_rules_as_read(): void
     {
         $user = $this->makeUser(42);
 
-        $this->assertTrue($this->policy->delete($user, new WebDavPathResourceDto('local', 'webdav/42/old.txt')));
-        $this->assertFalse($this->policy->delete($user, new WebDavPathResourceDto('s3', 'webdav/42/old.txt')));
+        $this->assertTrue($this->policy->delete($user, new PathResourceDto('local', 'webdav/42/old.txt')));
+        $this->assertFalse($this->policy->delete($user, new PathResourceDto('s3', 'webdav/42/old.txt')));
     }
 
     public function test_create_directory_follows_the_same_rules_as_read(): void
     {
         $user = $this->makeUser(42);
 
-        $this->assertTrue($this->policy->createDirectory($user, new WebDavPathResourceDto('local', 'webdav/42/newdir')));
-        $this->assertFalse($this->policy->createDirectory($user, new WebDavPathResourceDto('local', 'webdav/99/newdir')));
+        $this->assertTrue($this->policy->createDirectory($user, new PathResourceDto('local', 'webdav/42/newdir')));
+        $this->assertFalse($this->policy->createDirectory($user, new PathResourceDto('local', 'webdav/99/newdir')));
     }
 
     public function test_create_file_follows_the_same_rules_as_read(): void
     {
         $user = $this->makeUser(42);
 
-        $this->assertTrue($this->policy->createFile($user, new WebDavPathResourceDto('local', 'webdav/42/new.txt')));
-        $this->assertFalse($this->policy->createFile($user, new WebDavPathResourceDto('local', 'webdav/99/new.txt')));
+        $this->assertTrue($this->policy->createFile($user, new PathResourceDto('local', 'webdav/42/new.txt')));
+        $this->assertFalse($this->policy->createFile($user, new PathResourceDto('local', 'webdav/99/new.txt')));
     }
 
     public function test_it_strips_leading_and_trailing_slashes_from_path(): void
     {
         $user = $this->makeUser(42);
-        $resource = new WebDavPathResourceDto('local', '/webdav/42/');
+        $resource = new PathResourceDto('local', '/webdav/42/');
 
         $this->assertTrue($this->policy->read($user, $resource));
     }

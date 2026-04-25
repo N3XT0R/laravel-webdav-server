@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server;
 
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface;
-use N3XT0R\LaravelWebdavServer\DTO\Server\WebDavRequestContextDto;
+use N3XT0R\LaravelWebdavServer\DTO\Server\RequestContextDto;
 
 final class FixedRequestContextResolver implements RequestContextResolverInterface
 {
@@ -14,10 +14,10 @@ final class FixedRequestContextResolver implements RequestContextResolverInterfa
     public array $requests = [];
 
     public function __construct(
-        private readonly WebDavRequestContextDto $context,
+        private readonly RequestContextDto $context,
     ) {}
 
-    public function resolve(Request $request): WebDavRequestContextDto
+    public function resolve(Request $request): RequestContextDto
     {
         $this->requests[] = $request;
 

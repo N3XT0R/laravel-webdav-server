@@ -5,36 +5,36 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Policies;
 
 use Illuminate\Contracts\Auth\Authenticatable;
-use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
 
-final class WebDavPathPolicy
+final class PathPolicy
 {
-    public function read(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function read(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);
     }
 
-    public function write(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function write(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);
     }
 
-    public function delete(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function delete(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);
     }
 
-    public function createDirectory(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function createDirectory(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);
     }
 
-    public function createFile(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    public function createFile(Authenticatable $user, PathResourceDto $resource): bool
     {
         return $this->isAllowed($user, $resource);
     }
 
-    private function isAllowed(Authenticatable $user, WebDavPathResourceDto $resource): bool
+    private function isAllowed(Authenticatable $user, PathResourceDto $resource): bool
     {
         $path = trim($resource->path, '/');
 

@@ -10,7 +10,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestCredentialsExtractorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\SpaceKeyResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
-use N3XT0R\LaravelWebdavServer\DTO\Server\WebDavRequestContextDto;
+use N3XT0R\LaravelWebdavServer\DTO\Server\RequestContextDto;
 
 final readonly class DefaultRequestContextResolver implements RequestContextResolverInterface
 {
@@ -21,7 +21,7 @@ final readonly class DefaultRequestContextResolver implements RequestContextReso
         private SpaceResolverInterface $spaceResolver,
     ) {}
 
-    public function resolve(Request $request): WebDavRequestContextDto
+    public function resolve(Request $request): RequestContextDto
     {
         [$username, $password] = $this->credentialsExtractor->extract($request);
 
@@ -29,7 +29,7 @@ final readonly class DefaultRequestContextResolver implements RequestContextReso
         $spaceKey = $this->spaceKeyResolver->resolve($request);
         $space = $this->spaceResolver->resolve($principal, $spaceKey);
 
-        return new WebDavRequestContextDto(
+        return new RequestContextDto(
             principal: $principal,
             spaceKey: $spaceKey,
             space: $space,

@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Auth;
 
 use Illuminate\Auth\Access\Gate as IlluminateGate;
 use N3XT0R\LaravelWebdavServer\Auth\Authorization\GatePathAuthorization;
-use N3XT0R\LaravelWebdavServer\DTO\Auth\WebDavPathResourceDto;
+use N3XT0R\LaravelWebdavServer\DTO\Auth\PathResourceDto;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Exception\Forbidden;
@@ -26,7 +26,7 @@ final class GatePathAuthorizationTest extends TestCase
         $this->gate = new IlluminateGate($this->app, static fn (): null => null);
 
         foreach (['read', 'write', 'delete', 'createDirectory', 'createFile'] as $ability) {
-            $this->gate->define($ability, function (User $user, WebDavPathResourceDto $resource) use ($ability): bool {
+            $this->gate->define($ability, function (User $user, PathResourceDto $resource) use ($ability): bool {
                 $this->inspections[] = [
                     'ability' => $ability,
                     'disk' => $resource->disk,

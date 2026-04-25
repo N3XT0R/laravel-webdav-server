@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
 
 use Illuminate\Http\Request;
-use N3XT0R\LaravelWebdavServer\DTO\Server\WebDavRequestContextDto;
+use N3XT0R\LaravelWebdavServer\DTO\Server\RequestContextDto;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
 use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
@@ -25,7 +25,7 @@ final class WebDavServerFactoryTest extends TestCase
         $request = Request::create('/webdav', 'PROPFIND');
         $principal = new WebDavPrincipalValueObject('42', 'Alice');
         $space = new WebDavStorageSpaceValueObject('local', 'webdav/42');
-        $context = new WebDavRequestContextDto($principal, 'team-a', $space);
+        $context = new RequestContextDto($principal, 'team-a', $space);
 
         $root = new StorageRootCollection(
             name: $principal->id,

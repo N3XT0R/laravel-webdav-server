@@ -5,14 +5,16 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Repositories;
 
 use Illuminate\Contracts\Config\Repository;
-use N3XT0R\LaravelWebdavServer\Contracts\Auth\WebDavAccountInterface;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\AccountInterface;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\AccountDisabledException;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\AccountNotFoundException;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidAccountConfigurationException;
 use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
-use N3XT0R\LaravelWebdavServer\Repositories\EloquentWebDavAccountRepository;
+use N3XT0R\LaravelWebdavServer\Repositories\EloquentAccountRepository;
 use N3XT0R\LaravelWebdavServer\Tests\DatabaseTestCase;
-use RuntimeException;
 use Workbench\App\Models\User;
 
-final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
+final class EloquentAccountRepositoryTest extends DatabaseTestCase
 {
     protected function defineEnvironment($app): void
     {
@@ -22,28 +24,28 @@ final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
         $app->make(Repository::class)->set('webdav-server.auth.user_id_column', 'id');
     }
 
-    private function makeRepository(): EloquentWebDavAccountRepository
+    private function makeRepository(): EloquentAccountRepository
     {
-        return new EloquentWebDavAccountRepository($this->app->make(Repository::class));
+        return new EloquentAccountRepository($this->app->make(Repository::class));
     }
 
-    public function test_it_returns_null_when_username_is_not_found(): void
+    public function test_it_throws_when_username_is_not_found(): void
     {
-        $result = $this->makeRepository()->findEnabledByUsername('nonexistent');
+        $this->expectException(AccountNotFoundException::class);
 
-        $this->assertNull($result);
+        $this->makeRepository()->findEnabledByUsername('nonexistent');
     }
 
-    public function test_it_returns_null_for_a_disabled_account(): void
+    public function test_it_throws_for_a_disabled_account(): void
     {
+        $this->expectException(AccountDisabledException::class);
+
         WebDavAccountModel::factory()->create([
             'username' => 'disabled-user',
             'enabled' => false,
         ]);
 
-        $result = $this->makeRepository()->findEnabledByUsername('disabled-user');
-
-        $this->assertNull($result);
+        $this->makeRepository()->findEnabledByUsername('disabled-user');
     }
 
     public function test_it_returns_account_interface_for_an_enabled_account(): void
@@ -56,7 +58,7 @@ final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
 
         $result = $this->makeRepository()->findEnabledByUsername('alice');
 
-        $this->assertInstanceOf(WebDavAccountInterface::class, $result);
+        $this->assertInstanceOf(AccountInterface::class, $result);
         $this->assertSame((string) $account->id, $result->getPrincipalId());
         $this->assertSame('Alice', $result->getDisplayName());
     }
@@ -105,7 +107,7 @@ final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
 
     public function test_it_throws_when_account_model_is_not_configured(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidAccountConfigurationException::class);
 
         $config = $this->app->make(Repository::class);
         $config->set('webdav-server.auth.account_model', null);
@@ -115,7 +117,7 @@ final class EloquentWebDavAccountRepositoryTest extends DatabaseTestCase
 
     public function test_it_throws_when_account_model_is_not_an_eloquent_model(): void
     {
-        $this->expectException(RuntimeException::class);
+        $this->expectException(InvalidAccountConfigurationException::class);
 
         $config = $this->app->make(Repository::class);
         $config->set('webdav-server.auth.account_model', \stdClass::class);

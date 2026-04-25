@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Contracts\Auth;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 
-interface WebDavAccountInterface
+interface AccountInterface
 {
     public function getPrincipalId(): string;
 

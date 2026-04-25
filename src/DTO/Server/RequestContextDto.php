@@ -7,7 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\DTO\Server;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
-final readonly class WebDavRequestContextDto
+final readonly class RequestContextDto
 {
     public function __construct(
         public WebDavPrincipalValueObject $principal,

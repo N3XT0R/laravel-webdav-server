@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Auth;
 
 use N3XT0R\LaravelWebdavServer\Auth\Backends\BasicAuthBackend;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\UnauthenticatedPrincipalException;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\ArrayCredentialValidator;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use PHPUnit\Framework\TestCase;
@@ -12,11 +13,13 @@ use ReflectionMethod;
 
 final class BasicAuthBackendTest extends TestCase
 {
-    public function test_get_principal_returns_null_before_any_authentication(): void
+    public function test_get_principal_throws_before_any_authentication(): void
     {
+        $this->expectException(UnauthenticatedPrincipalException::class);
+
         $backend = new BasicAuthBackend(new ArrayCredentialValidator);
 
-        $this->assertNull($backend->getPrincipal());
+        $backend->getPrincipal();
     }
 
     public function test_get_realm_returns_default_realm(): void
@@ -70,13 +73,15 @@ final class BasicAuthBackendTest extends TestCase
         $this->assertSame([['username' => 'alice', 'password' => 'wrong']], $validator->calls);
     }
 
-    public function test_principal_remains_null_after_failed_authentication(): void
+    public function test_get_principal_throws_after_failed_authentication(): void
     {
+        $this->expectException(UnauthenticatedPrincipalException::class);
+
         $backend = new BasicAuthBackend(new ArrayCredentialValidator);
 
         $this->invokeValidateUserPass($backend, 'alice', 'wrong');
 
-        $this->assertNull($backend->getPrincipal());
+        $backend->getPrincipal();
     }
 
     private function invokeValidateUserPass(BasicAuthBackend $backend, string $username, string $password): bool

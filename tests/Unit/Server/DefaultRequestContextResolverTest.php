@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Unit\Server;
 
 use Illuminate\Http\Request;
-use N3XT0R\LaravelWebdavServer\DTO\Server\WebDavRequestContextDto;
+use N3XT0R\LaravelWebdavServer\DTO\Server\RequestContextDto;
 use N3XT0R\LaravelWebdavServer\Server\Request\Context\DefaultRequestContextResolver;
 use N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Server\FixedRequestCredentialsExtractor;
@@ -37,7 +37,7 @@ final class DefaultRequestContextResolverTest extends TestCase
 
         $context = $resolver->resolve($request);
 
-        $this->assertInstanceOf(WebDavRequestContextDto::class, $context);
+        $this->assertInstanceOf(RequestContextDto::class, $context);
         $this->assertSame($principal, $context->principal);
         $this->assertSame('default', $context->spaceKey);
         $this->assertSame($space, $context->space);

@@ -9,7 +9,7 @@ use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\Server\Storage\StorageRootBuilder;
 use N3XT0R\LaravelWebdavServer\Storage\Resolvers\DefaultSpaceResolver;
 
-final class StorageRegister extends AbstractRegister
+final readonly class StorageRegister extends AbstractRegister
 {
     protected function bindings(): array
     {
