@@ -85,6 +85,7 @@ Example:
 
 ```php
 Route::match([
+    'OPTIONS',
     'GET',
     'PUT',
     'DELETE',
@@ -143,14 +144,25 @@ Package logging is configured through `webdav-server.logging`.
 - use `level = info` for operational events such as authentication success or failure
 - use `level = debug` to additionally trace credential extraction, request-context resolution, storage resolution, and
   SabreDAV server setup during development
+- debug logging also traces Windows-relevant `OPTIONS` and root-level `PROPFIND` handling inside SabreDAV
 
 ## Supported WebDAV Methods
 
+- `OPTIONS`
 - `PROPFIND`
 - `GET`
 - `PUT`
 - `DELETE`
 - `MKCOL`
+
+## Windows WebClient Notes
+
+Windows Explorer / WebClient support depends on the client machine in addition to server behavior.
+
+- the `WebClient` Windows service must be running
+- Basic Auth over plain `http://` may require `BasicAuthLevel` to be enabled in the Windows registry, or use `https://`
+- the package answers `OPTIONS` and root `PROPFIND` requests for `/webdav/{space}/` in a WebDAV-compatible way, but
+  Windows client policy can still block non-HTTPS Basic Auth on the workstation
 
 ## Tested Clients
 

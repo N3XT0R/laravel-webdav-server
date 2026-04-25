@@ -120,6 +120,19 @@ Examples:
 The effective SabreDAV base URI is configured separately through `webdav-server.base_uri`, which defaults to
 `/webdav/`.
 
+## Q: What does Windows Explorer / WebClient additionally require?
+
+Server-side WebDAV compatibility is only one part of the setup.
+
+On Windows, also verify:
+
+- the `WebClient` service is running
+- Basic Auth over plain `http://` is allowed on the machine, or use `https://`
+- the target URL is entered with the trailing slash form, for example `http://localhost:8000/webdav/default/`
+
+The package now answers Windows-relevant `OPTIONS` and root `PROPFIND` requests correctly, but Windows client policy
+can still reject plain HTTP Basic Auth unless the workstation is configured for it.
+
 ## Q: How do I link a WebDAV account to a Laravel user?
 
 Set `webdav-server.auth.user_model` and make sure your configured account model exposes a `user()` relationship.

@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **compatibility**
+    - Routed `OPTIONS` requests for `/webdav/{space}/{path?}` into SabreDAV so Windows Explorer / WebClient capability
+      discovery reaches the DAV runtime instead of Laravel's method handling.
+    - Hardened root-level `PROPFIND` handling with feature tests that cover `Depth: 0`, `Depth: 1`, empty storage
+      roots, correct `207 Multi-Status` XML responses, and space-relative `href` values for `/webdav/{space}/`.
+- **logging**
+    - Added SabreDAV-side debug logs for Windows-relevant request handling, including DAV method processing,
+      root-collection `PROPFIND`, request depth, and the effective `baseUri`.
+- **documentation**
+    - Documented Windows WebClient requirements and the package's `OPTIONS` / root-collection compatibility behavior in
+      the README and RTD FAQ pages.
+
 ## [1.0.0-beta.1] - 2026-04-25
 
 ### Changed

@@ -46,6 +46,8 @@ Related decisions:
 ## Runtime Notes (Current State)
 
 - The package registers the route shape `'/webdav/{space}/{path?}'`.
+- `OPTIONS /webdav/{space}/` is routed into SabreDAV so capability discovery reaches the DAV runtime instead of Laravel's method handling.
+- Root-level `PROPFIND` requests for `/webdav/{space}/` return normal SabreDAV `207 Multi-Status` XML responses, even when the resolved storage root is still empty.
 - `spaceKey` is resolved from the `{space}` route parameter via `RequestSpaceKeyResolver`; falls back to `config('webdav-server.storage.default_space', 'default')` if the parameter is absent.
 - Auth-related extractor/authenticator failures throw domain exceptions:
   - `MissingCredentialsException`
@@ -72,3 +74,5 @@ Related decisions:
 - `info` is used for operational events such as authentication and authorization outcomes.
 - `debug` is used for request parsing, context resolution, storage resolution, Gate checks, server construction, and
   SabreDAV runtime configuration.
+- Additional debug logging traces Windows-relevant DAV handling such as `OPTIONS`, root `PROPFIND`, request depth, and
+  the effective SabreDAV `baseUri`.

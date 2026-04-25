@@ -42,6 +42,7 @@ Core characteristics:
 
 Supported WebDAV operations:
 
+- `OPTIONS`
 - `PROPFIND`
 - `GET`
 - `PUT`
