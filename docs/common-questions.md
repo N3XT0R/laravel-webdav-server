@@ -128,7 +128,16 @@ The resolved principal then carries the linked user as `$principal->user`, which
 
 ## Q: Is this package production-ready?
 
-Use it with caution.
+It is in `beta`, but production use should still be deliberate.
 
-The package is still in alpha. Validate HTTPS, credential handling, authorization rules, and expected filesystem load
+The public package API is treated as structurally stable, but the beta line is still intended as a hardening step.
+Validate HTTPS, credential handling, authorization rules, client interoperability, and expected filesystem load
 before exposing it publicly.
+
+## Q: Should I expect structural API changes within the `beta` line?
+
+No.
+
+The package contracts, DTOs, route shape, and documented configuration keys are now intended to remain structurally
+stable. Further changes should mainly be additive improvements, bug fixes, logging and documentation refinements, or
+compatibility work.

@@ -3,6 +3,9 @@
 This package is built around user-isolated storage through pluggable authentication, storage resolution, and path
 authorization.
 
+The package is in `beta`. The route shape, configuration structure, and documented extension points should be treated
+as structurally stable.
+
 ## Configure Storage Spaces
 
 ```php

@@ -31,6 +31,9 @@ All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, 
 The package architecture is intended to remain SOLID-compliant and to prefer established design patterns such as
 `Factory`, `Strategy`, `Builder`, and `Adapter` where they clearly fit recurring problems.
 
+The runtime pipeline and the documented extension boundaries are treated as structurally stable for the current
+`beta` release line.
+
 Related decisions:
 
 - [ADR 0001: Test Architecture And Layering](adr/0001-test-architecture-and-layering.md)

@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- **stability**
+    - Declared the public package API, configuration structure, route shape, and documented extension points as
+      structurally stable for the `1.0.0-beta.1` release line.
+    - Aligned package documentation and release messaging so the package can be communicated as a beta focused on
+      hardening, compatibility, and bug fixes instead of structural API changes.
 - **configuration**
     - Added package-level logging configuration via `webdav-server.logging.driver` and `webdav-server.logging.level`.
     - `driver = null` now disables both package logging and SabreDAV runtime logging completely.
