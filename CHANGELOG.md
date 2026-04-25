@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **extensibility**
+    - Added a package-defined container tag for user-defined SabreDAV `ServerPlugin` instances so applications can
+      inject additional plugins alongside the package defaults during server configuration.
+
 ### Changed
 
 - **compatibility**
@@ -27,9 +33,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       `https://`.
     - Documented how applications can register additional SabreDAV plugins through the package service-provider tag
       without replacing the default configurator.
-- **extensibility**
-    - Added a package-defined container tag for user-defined SabreDAV `ServerPlugin` instances so applications can
-      inject additional plugins alongside the package defaults during server configuration.
 
 ## [1.0.0-beta.1] - 2026-04-25
 
