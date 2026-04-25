@@ -17,8 +17,7 @@ class WebdavServerServiceProvider extends PackageServiceProvider
     /**
      * Declares the package resources that Laravel should register for this package.
      *
-     * @param Package $package Package-tools configuration object that collects commands, config, views, and migrations.
-     * @return void
+     * @param  Package  $package  Package-tools configuration object that collects commands, config, views, and migrations.
      */
     public function configurePackage(Package $package): void
     {
@@ -37,8 +36,6 @@ class WebdavServerServiceProvider extends PackageServiceProvider
 
     /**
      * Registers the package WebDAV routes from the bundled route file.
-     *
-     * @return void
      */
     protected function registerRoutes(): void
     {
@@ -47,8 +44,6 @@ class WebdavServerServiceProvider extends PackageServiceProvider
 
     /**
      * Registers all package bindings after the package itself has been registered.
-     *
-     * @return void
      */
     public function packageRegistered(): void
     {
@@ -57,8 +52,6 @@ class WebdavServerServiceProvider extends PackageServiceProvider
 
     /**
      * Finalizes package bootstrapping by wiring CSRF exceptions, routes, and the default path policy.
-     *
-     * @return void
      */
     public function packageBooted(): void
     {

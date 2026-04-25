@@ -36,6 +36,7 @@ final class WebDavAccountModel extends Model
      * Resolves the owning Laravel user model for this WebDAV account.
      *
      * @return BelongsTo<Model, $this> Belongs-to relation to the configured application user model.
+     *
      * @throws MissingUserModelConfigurationException When `webdav-server.auth.user_model` is not configured.
      */
     public function user(): BelongsTo

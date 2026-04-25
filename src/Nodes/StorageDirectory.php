@@ -4,13 +4,14 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Nodes;
 
+use Sabre\DAV\Exception\Forbidden;
+
 final class StorageDirectory extends AbstractStorageCollection
 {
     /**
      * Deletes the directory and all nested files and directories after per-node authorization checks.
      *
-     * @return void
-     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not delete the directory or one of its children.
+     * @throws Forbidden When the current principal may not delete the directory or one of its children.
      */
     public function delete(): void
     {

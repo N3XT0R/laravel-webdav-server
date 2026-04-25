@@ -19,8 +19,6 @@ final readonly class ServerFactoryRegister extends AbstractRegister
 
     /**
      * Registers the scoped WebDAV server factory that builds one configured SabreDAV server per request.
-     *
-     * @return void
      */
     public function register(): void
     {

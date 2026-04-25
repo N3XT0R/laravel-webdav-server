@@ -7,15 +7,16 @@ namespace N3XT0R\LaravelWebdavServer\Nodes;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use Sabre\DAV\Collection;
+use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\Exception\NotFound;
 use Sabre\DAV\INode;
 
 abstract class AbstractStorageCollection extends Collection
 {
     /**
-     * @param string $name Node name exposed to SabreDAV for this collection.
-     * @param string $path Relative storage path represented by this collection.
-     * @param StorageNodeContextDto $context Shared storage context with filesystem, principal, disk, and authorization service.
+     * @param  string  $name  Node name exposed to SabreDAV for this collection.
+     * @param  string  $path  Relative storage path represented by this collection.
+     * @param  StorageNodeContextDto  $context  Shared storage context with filesystem, principal, disk, and authorization service.
      */
     public function __construct(
         protected readonly string $name,
@@ -37,7 +38,7 @@ abstract class AbstractStorageCollection extends Collection
      * Lists the direct child nodes below the current collection after a read authorization check.
      *
      * @return list<INode>
-     * List of immediate child nodes. Directory entries are returned as `StorageDirectory`, file entries as `StorageFile`.
+     *                     List of immediate child nodes. Directory entries are returned as `StorageDirectory`, file entries as `StorageFile`.
      */
     public function getChildren(): array
     {
@@ -77,10 +78,11 @@ abstract class AbstractStorageCollection extends Collection
     /**
      * Resolves one direct child node by name.
      *
-     * @param mixed $name Child node name received from SabreDAV.
+     * @param  mixed  $name  Child node name received from SabreDAV.
      * @return INode Resolved child node as either `StorageDirectory` or `StorageFile`.
+     *
      * @throws NotFound When the requested child path does not exist.
-     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not read the requested child path.
+     * @throws Forbidden When the current principal may not read the requested child path.
      */
     public function getChild($name): INode
     {
@@ -116,7 +118,7 @@ abstract class AbstractStorageCollection extends Collection
     /**
      * Checks whether a direct child exists and is readable for the current principal.
      *
-     * @param mixed $name Child node name received from SabreDAV.
+     * @param  mixed  $name  Child node name received from SabreDAV.
      * @return bool `true` when the child exists and the principal may read it; otherwise `false`.
      */
     public function childExists($name): bool
@@ -139,9 +141,9 @@ abstract class AbstractStorageCollection extends Collection
     /**
      * Creates a new child directory below the current collection.
      *
-     * @param mixed $name Directory name received from SabreDAV.
-     * @return void
-     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not create the directory.
+     * @param  mixed  $name  Directory name received from SabreDAV.
+     *
+     * @throws Forbidden When the current principal may not create the directory.
      */
     public function createDirectory($name): void
     {
@@ -159,11 +161,11 @@ abstract class AbstractStorageCollection extends Collection
     /**
      * Creates a new child file below the current collection and stores the provided contents.
      *
-     * @param mixed $name File name received from SabreDAV.
-     * @param resource|string|null $data File contents as a stream, plain string, or `null` for an empty file.
-     * @return void
+     * @param  mixed  $name  File name received from SabreDAV.
+     * @param  resource|string|null  $data  File contents as a stream, plain string, or `null` for an empty file.
+     *
      * @throws StreamReadException When the provided stream cannot be read.
-     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not create the file.
+     * @throws Forbidden When the current principal may not create the file.
      */
     public function createFile($name, $data = null): void
     {

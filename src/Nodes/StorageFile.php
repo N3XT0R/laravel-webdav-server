@@ -6,14 +6,15 @@ namespace N3XT0R\LaravelWebdavServer\Nodes;
 
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
+use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\File;
 
 final class StorageFile extends File
 {
     /**
-     * @param string $name Node name exposed to SabreDAV for this file.
-     * @param string $path Relative storage path represented by this file.
-     * @param StorageNodeContextDto $context Shared storage context with filesystem, principal, disk, and authorization service.
+     * @param  string  $name  Node name exposed to SabreDAV for this file.
+     * @param  string  $path  Relative storage path represented by this file.
+     * @param  StorageNodeContextDto  $context  Shared storage context with filesystem, principal, disk, and authorization service.
      */
     public function __construct(
         private readonly string $name,
@@ -35,7 +36,8 @@ final class StorageFile extends File
      * Reads the current file contents after a read authorization check.
      *
      * @return string Full file contents as a UTF-8 or binary-safe PHP string.
-     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not read the file.
+     *
+     * @throws Forbidden When the current principal may not read the file.
      */
     public function get(): string
     {
@@ -52,10 +54,10 @@ final class StorageFile extends File
     /**
      * Overwrites the current file with the provided contents.
      *
-     * @param resource|string $data New file contents as a stream or plain string.
-     * @return void
+     * @param  resource|string  $data  New file contents as a stream or plain string.
+     *
      * @throws StreamReadException When the provided stream cannot be read.
-     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not update the file.
+     * @throws Forbidden When the current principal may not update the file.
      */
     public function put($data): void
     {
@@ -85,8 +87,7 @@ final class StorageFile extends File
     /**
      * Deletes the current file after a delete authorization check.
      *
-     * @return void
-     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not delete the file.
+     * @throws Forbidden When the current principal may not delete the file.
      */
     public function delete(): void
     {
@@ -104,7 +105,8 @@ final class StorageFile extends File
      * Returns the current file size in bytes.
      *
      * @return int File size in bytes.
-     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not read the file metadata.
+     *
+     * @throws Forbidden When the current principal may not read the file metadata.
      */
     public function getSize(): int
     {
@@ -122,7 +124,8 @@ final class StorageFile extends File
      * Returns the UNIX timestamp of the last file modification.
      *
      * @return int Last-modified timestamp in seconds.
-     * @throws \Sabre\DAV\Exception\Forbidden When the current principal may not read the file metadata.
+     *
+     * @throws Forbidden When the current principal may not read the file metadata.
      */
     public function getLastModified(): int
     {
