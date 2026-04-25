@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerConfiguratorInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface;
+use N3XT0R\LaravelWebdavServer\Exception\DomainException;
 use Sabre\DAV\Server;
 
 final readonly class WebDavServerFactory
@@ -15,9 +16,9 @@ final readonly class WebDavServerFactory
     /**
      * Create the WebDAV server factory that orchestrates request context resolution and SabreDAV server construction.
      *
-     * @param \N3XT0R\LaravelWebdavServer\Contracts\Server\RequestContextResolverInterface $requestContextResolver Resolver that gathers principal, space key, and storage space for the request.
-     * @param \N3XT0R\LaravelWebdavServer\Contracts\Server\StorageRootBuilderInterface $storageRootBuilder Builder that creates the SabreDAV tree root for the resolved space.
-     * @param \N3XT0R\LaravelWebdavServer\Contracts\Server\ServerConfiguratorInterface $serverConfigurator Configurator that applies runtime settings such as base URI and logger.
+     * @param  RequestContextResolverInterface  $requestContextResolver  Resolver that gathers principal, space key, and storage space for the request.
+     * @param  StorageRootBuilderInterface  $storageRootBuilder  Builder that creates the SabreDAV tree root for the resolved space.
+     * @param  ServerConfiguratorInterface  $serverConfigurator  Configurator that applies runtime settings such as base URI and logger.
      */
     public function __construct(
         private RequestContextResolverInterface $requestContextResolver,
@@ -28,11 +29,10 @@ final readonly class WebDavServerFactory
     /**
      * Build the SabreDAV server instance for the incoming WebDAV request.
      *
-     * @param \Illuminate\Http\Request $request Incoming HTTP request targeting the WebDAV endpoint.
+     * @param  Request  $request  Incoming HTTP request targeting the WebDAV endpoint.
+     * @return Server Configured SabreDAV server ready for runtime execution.
      *
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\DomainException When credentials, auth, or storage resolution fails during server construction.
-     *
-     * @return \Sabre\DAV\Server Configured SabreDAV server ready for runtime execution.
+     * @throws DomainException When credentials, auth, or storage resolution fails during server construction.
      */
     public function make(Request $request): Server
     {

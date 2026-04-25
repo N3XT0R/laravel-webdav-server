@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Storage\Resolvers;
 
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Config\Repository as Config;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidSpaceConfigurationException;
@@ -16,7 +17,7 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
     /**
      * Create the default config-driven space resolver.
      *
-     * @param \Illuminate\Contracts\Config\Repository $config Package configuration repository used to resolve storage spaces.
+     * @param  Repository  $config  Package configuration repository used to resolve storage spaces.
      */
     public function __construct(
         private Config $config,
@@ -25,13 +26,12 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
     /**
      * Resolve the concrete storage disk and user-scoped root path for the given principal and logical space key.
      *
-     * @param \N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject $principal Authenticated principal whose ID is appended to the resolved root path.
-     * @param string $spaceKey Logical storage space key resolved from the request URL.
+     * @param  WebDavPrincipalValueObject  $principal  Authenticated principal whose ID is appended to the resolved root path.
+     * @param  string  $spaceKey  Logical storage space key resolved from the request URL.
+     * @return WebDavStorageSpaceValueObject Concrete disk plus user-scoped root path for the request.
      *
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Storage\SpaceNotConfiguredException When the requested space key is missing from configuration.
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidSpaceConfigurationException When the configured space is incomplete or invalid.
-     *
-     * @return \N3XT0R\LaravelWebdavServer\Storage\Data\WebDavStorageSpaceValueObject Concrete disk plus user-scoped root path for the request.
+     * @throws SpaceNotConfiguredException When the requested space key is missing from configuration.
+     * @throws InvalidSpaceConfigurationException When the configured space is incomplete or invalid.
      */
     public function resolve(WebDavPrincipalValueObject $principal, string $spaceKey): WebDavStorageSpaceValueObject
     {

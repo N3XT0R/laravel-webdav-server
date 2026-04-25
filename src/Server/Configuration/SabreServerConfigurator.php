@@ -12,10 +12,8 @@ final readonly class SabreServerConfigurator implements ServerConfiguratorInterf
     /**
      * Configure the SabreDAV runtime for the resolved logical storage space.
      *
-     * @param \Sabre\DAV\Server $server Prepared SabreDAV server instance.
-     * @param string $spaceKey Logical storage space key currently being served.
-     *
-     * @return void
+     * @param  Server  $server  Prepared SabreDAV server instance.
+     * @param  string  $spaceKey  Logical storage space key currently being served.
      */
     public function configure(Server $server, string $spaceKey): void
     {

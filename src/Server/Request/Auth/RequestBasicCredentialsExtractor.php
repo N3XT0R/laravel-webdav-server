@@ -14,13 +14,12 @@ final readonly class RequestBasicCredentialsExtractor implements RequestCredenti
     /**
      * Extract Basic Auth credentials from either PHP auth server values or the `Authorization` header.
      *
-     * @param \Illuminate\Http\Request $request Incoming HTTP request targeting the WebDAV endpoint.
-     *
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\MissingCredentialsException When no usable Basic Auth credentials are present.
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException When the Basic Auth payload is malformed or incomplete.
-     *
+     * @param  Request  $request  Incoming HTTP request targeting the WebDAV endpoint.
      * @return array{0:string,1:string}
-     * Tuple of `[username, password]` extracted from the request.
+     *                                  Tuple of `[username, password]` extracted from the request.
+     *
+     * @throws MissingCredentialsException When no usable Basic Auth credentials are present.
+     * @throws InvalidCredentialsException When the Basic Auth payload is malformed or incomplete.
      */
     public function extract(Request $request): array
     {

@@ -13,9 +13,8 @@ final readonly class SabreServerRunner implements ServerRunnerInterface
     /**
      * Start the SabreDAV runtime and terminate the current request lifecycle.
      *
-     * @param \Sabre\DAV\Server $server Fully prepared SabreDAV server instance.
-     *
-     * @return \Symfony\Component\HttpFoundation\Response This method never returns control to Laravel in normal runtime flow because SabreDAV takes over and exits.
+     * @param  Server  $server  Fully prepared SabreDAV server instance.
+     * @return Response This method never returns control to Laravel in normal runtime flow because SabreDAV takes over and exits.
      */
     public function run(Server $server): Response
     {

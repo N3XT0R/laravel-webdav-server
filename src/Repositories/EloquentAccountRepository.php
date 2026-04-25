@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Repositories;
 
+use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Config\Repository as Config;
 use Illuminate\Database\Eloquent\Model;
 use N3XT0R\LaravelWebdavServer\Contracts\Auth\AccountInterface;
@@ -20,7 +21,7 @@ final readonly class EloquentAccountRepository implements AccountRepositoryInter
     /**
      * Create the default Eloquent-backed account repository.
      *
-     * @param \Illuminate\Contracts\Config\Repository $config Package configuration repository used to resolve account-model settings.
+     * @param  Repository  $config  Package configuration repository used to resolve account-model settings.
      */
     public function __construct(
         private Config $config,
@@ -29,14 +30,13 @@ final readonly class EloquentAccountRepository implements AccountRepositoryInter
     /**
      * Resolve the enabled WebDAV account for the supplied username from the configured Eloquent model.
      *
-     * @param string $username Username supplied through Basic Auth.
+     * @param  string  $username  Username supplied through Basic Auth.
+     * @return AccountInterface Enabled account record containing principal ID, display name, password hash, and optional linked user.
      *
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\AccountNotFoundException When no account exists for the username.
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\AccountDisabledException When the resolved account is disabled.
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidAccountConfigurationException When the configured account model is invalid.
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidAccountRecordException When the resolved record does not contain the required scalar fields.
-     *
-     * @return \N3XT0R\LaravelWebdavServer\Contracts\Auth\AccountInterface Enabled account record containing principal ID, display name, password hash, and optional linked user.
+     * @throws AccountNotFoundException When no account exists for the username.
+     * @throws AccountDisabledException When the resolved account is disabled.
+     * @throws InvalidAccountConfigurationException When the configured account model is invalid.
+     * @throws InvalidAccountRecordException When the resolved record does not contain the required scalar fields.
      */
     public function findEnabledByUsername(string $username): AccountInterface
     {

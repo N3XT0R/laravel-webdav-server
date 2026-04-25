@@ -13,11 +13,10 @@ final readonly class RequestSpaceKeyResolver implements SpaceKeyResolverInterfac
     /**
      * Resolve the logical storage space key from the request route or the configured default.
      *
-     * @param \Illuminate\Http\Request $request Incoming HTTP request targeting the WebDAV endpoint.
-     *
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidDefaultSpaceConfigurationException When no valid fallback space key is configured.
-     *
+     * @param  Request  $request  Incoming HTTP request targeting the WebDAV endpoint.
      * @return string Logical storage space key used for downstream storage resolution.
+     *
+     * @throws InvalidDefaultSpaceConfigurationException When no valid fallback space key is configured.
      */
     public function resolve(Request $request): string
     {

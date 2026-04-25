@@ -11,16 +11,17 @@ use N3XT0R\LaravelWebdavServer\Contracts\Server\RequestCredentialsExtractorInter
 use N3XT0R\LaravelWebdavServer\Contracts\Server\SpaceKeyResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Server\RequestContextDto;
+use N3XT0R\LaravelWebdavServer\Exception\DomainException;
 
 final readonly class DefaultRequestContextResolver implements RequestContextResolverInterface
 {
     /**
      * Create the default request-context resolver for WebDAV requests.
      *
-     * @param \N3XT0R\LaravelWebdavServer\Contracts\Server\RequestCredentialsExtractorInterface $credentialsExtractor Extractor used to parse Basic Auth credentials from the request.
-     * @param \N3XT0R\LaravelWebdavServer\Contracts\Server\PrincipalAuthenticatorInterface $principalAuthenticator Authenticator used to validate credentials and resolve the principal.
-     * @param \N3XT0R\LaravelWebdavServer\Contracts\Server\SpaceKeyResolverInterface $spaceKeyResolver Resolver used to determine the logical storage space key.
-     * @param \N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface $spaceResolver Resolver used to map the logical space key to a concrete disk and root path.
+     * @param  RequestCredentialsExtractorInterface  $credentialsExtractor  Extractor used to parse Basic Auth credentials from the request.
+     * @param  PrincipalAuthenticatorInterface  $principalAuthenticator  Authenticator used to validate credentials and resolve the principal.
+     * @param  SpaceKeyResolverInterface  $spaceKeyResolver  Resolver used to determine the logical storage space key.
+     * @param  SpaceResolverInterface  $spaceResolver  Resolver used to map the logical space key to a concrete disk and root path.
      */
     public function __construct(
         private RequestCredentialsExtractorInterface $credentialsExtractor,
@@ -32,11 +33,10 @@ final readonly class DefaultRequestContextResolver implements RequestContextReso
     /**
      * Resolve the full runtime context needed to construct the WebDAV server for the request.
      *
-     * @param \Illuminate\Http\Request $request Incoming HTTP request targeting the WebDAV endpoint.
+     * @param  Request  $request  Incoming HTTP request targeting the WebDAV endpoint.
+     * @return RequestContextDto Runtime DTO containing principal, space key, and resolved storage space.
      *
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\DomainException When credentials, auth, or storage resolution fails.
-     *
-     * @return \N3XT0R\LaravelWebdavServer\DTO\Server\RequestContextDto Runtime DTO containing principal, space key, and resolved storage space.
+     * @throws DomainException When credentials, auth, or storage resolution fails.
      */
     public function resolve(Request $request): RequestContextDto
     {

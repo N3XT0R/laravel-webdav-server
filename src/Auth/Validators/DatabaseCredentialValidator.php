@@ -17,8 +17,8 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
     /**
      * Create the default database-backed credential validator.
      *
-     * @param \N3XT0R\LaravelWebdavServer\Contracts\Repositories\AccountRepositoryInterface $repository Repository used to resolve enabled account records by username.
-     * @param \Illuminate\Contracts\Hashing\Hasher $hasher Laravel hasher used to verify the supplied password against the stored hash.
+     * @param  AccountRepositoryInterface  $repository  Repository used to resolve enabled account records by username.
+     * @param  Hasher  $hasher  Laravel hasher used to verify the supplied password against the stored hash.
      */
     public function __construct(
         protected AccountRepositoryInterface $repository,
@@ -28,12 +28,11 @@ final readonly class DatabaseCredentialValidator implements CredentialValidatorI
     /**
      * Validate database-backed credentials and resolve the authenticated WebDAV principal.
      *
-     * @param string $username Username extracted from the Basic Auth credentials.
-     * @param string $password Plain-text password extracted from the Basic Auth credentials.
+     * @param  string  $username  Username extracted from the Basic Auth credentials.
+     * @param  string  $password  Plain-text password extracted from the Basic Auth credentials.
+     * @return WebDavPrincipalValueObject Authenticated principal built from the resolved account record.
      *
-     * @throws \N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException When the account cannot be resolved or the password check fails.
-     *
-     * @return \N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject Authenticated principal built from the resolved account record.
+     * @throws InvalidCredentialsException When the account cannot be resolved or the password check fails.
      */
     public function validate(string $username, string $password): WebDavPrincipalValueObject
     {
