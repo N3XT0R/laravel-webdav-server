@@ -7,6 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\Server\Configuration;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerConfiguratorInterface;
 use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Server\Configuration\Plugins\CompatibilityLoggingPlugin;
+use N3XT0R\LaravelWebdavServer\Server\Configuration\Plugins\MissingPathPropFindPlugin;
 use Sabre\DAV\Server;
 
 final readonly class SabreServerConfigurator implements ServerConfiguratorInterface
@@ -30,6 +31,7 @@ final readonly class SabreServerConfigurator implements ServerConfiguratorInterf
         $space = trim($spaceKey, '/');
 
         $server->setBaseUri('/'.$baseUri.'/'.$space.'/');
+        $server->addPlugin(new MissingPathPropFindPlugin($this->logger));
         $server->addPlugin(new CompatibilityLoggingPlugin($this->logger));
 
         $sabreLogger = $this->logger->sabreLogger();

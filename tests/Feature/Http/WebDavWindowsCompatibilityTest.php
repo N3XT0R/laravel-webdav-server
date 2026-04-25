@@ -137,6 +137,16 @@ final class WebDavWindowsCompatibilityTest extends DatabaseTestCase
         $this->assertSame(1, $xpath->query('/d:multistatus/d:response[d:href="/webdav/default/"]')->length);
     }
 
+    public function test_propfind_for_a_missing_target_file_returns_a_plain_404_response(): void
+    {
+        $this->createAccount('testuser', 'password');
+
+        $response = $this->propfind('/webdav/default/test4.log', '0');
+
+        $response->assertNotFound();
+        $this->assertSame('', $response->getContent());
+    }
+
     private function createAccount(string $username, string $password): User
     {
         $user = User::factory()->create([
