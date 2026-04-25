@@ -46,6 +46,33 @@ Direct entry points:
 - [Common Questions](https://laravel-webdav-server.readthedocs.io/en/latest/common-questions/)
 - [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)
 
+## Use Cases
+
+This package is a good fit if you want to:
+
+- expose Laravel storage disks as a WebDAV server endpoint
+- map requests to user-scoped storage roots
+- integrate WebDAV access with Laravel-based authentication and authorization
+- customize storage resolution, request handling, or SabreDAV runtime behavior without forking the package
+
+This package is not a Flysystem WebDAV client disk.
+
+## Where To Start
+
+Use this README if you want a quick overview and a local development entry point.
+
+Use Read the Docs if you want the full package documentation.
+
+| If you want to... | Start here |
+|-------------------|------------|
+| run the package locally | [Quickstart](#quickstart) |
+| install it in an application | [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/) |
+| configure spaces, auth, or logging | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/) |
+| understand runtime flow and boundaries | [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/) |
+| customize auth, storage, or authorization | [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/) |
+| extend the SabreDAV runtime | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/) |
+| review architectural decisions | [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/) |
+
 ## Quickstart
 
 ```bash
