@@ -14,12 +14,37 @@ A WebDAV server package for Laravel powered by SabreDAV and Laravel Flysystem.
 Expose Laravel storage disks through `/webdav/{space}/{path?}` and map each request to a configured storage space plus a
 user-scoped root path.
 
+This README provides a quick overview. For full documentation, see Read the Docs.
+
 > Current version: **1.0.0-beta.1**
 
 > [!IMPORTANT]
 > The public package API, configuration structure, and extension points are treated as structurally stable.
 > The beta phase is focused on hardening, compatibility validation, documentation, and bug fixes rather than
 > structural API changes.
+
+## Documentation
+
+Full documentation is available on Read the Docs:
+
+👉 https://laravel-webdav-server.readthedocs.io/en/latest/
+
+Start there if you want to:
+
+- install and configure the package
+- understand the request pipeline
+- customize authentication, storage, or authorization
+- extend the SabreDAV runtime with additional plugins
+- explore architecture and extension points
+
+Direct entry points:
+
+- [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
+- [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
+- [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/)
+- [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)
+- [Common Questions](https://laravel-webdav-server.readthedocs.io/en/latest/common-questions/)
+- [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)
 
 ## Quickstart
 
@@ -47,6 +72,23 @@ Quick verification:
 curl -u testuser:password -X PROPFIND http://localhost:8000/webdav/default/
 ```
 
+For full setup, configuration, and extension guidance, use the documentation on Read the Docs.
+
+## Installation
+
+```bash
+composer require n3xt0r/laravel-webdav-server
+php artisan vendor:publish --tag="laravel-webdav-server-config"
+php artisan migrate
+```
+
+The package service provider is `N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider`.
+
+For full installation and configuration guidance, use:
+
+- [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
+- [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
+
 ## What This Package Does
 
 - provides a WebDAV server for Laravel
@@ -64,16 +106,6 @@ This package is a server integration, not a Flysystem WebDAV client disk.
 - the package is now in `beta`
 - package contracts, DTOs, configuration keys, and the route structure are now considered structurally stable
 - future beta changes should remain additive or bug-fix oriented instead of reshaping the public package API
-
-## Installation
-
-```bash
-composer require n3xt0r/laravel-webdav-server
-php artisan vendor:publish --tag="laravel-webdav-server-config"
-php artisan migrate
-```
-
-The package service provider is `N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider`.
 
 ## Route Shape
 
@@ -246,6 +278,8 @@ This package provides WebDAV responses compatible with Windows WebClient, includ
 - root collection handling
 - `MS-Author-Via: DAV`
 
+Client-side requirements still apply:
+
 - the `WebClient` Windows service must be running
 - Basic Auth over plain `http://` may require `BasicAuthLevel` to be enabled in the Windows registry, or use `https://`
 - the package answers `OPTIONS` and root `PROPFIND` requests for `/webdav/{space}/` in a WebDAV-compatible way, but
@@ -260,6 +294,21 @@ This package provides WebDAV responses compatible with Windows WebClient, includ
 - Cyberduck
 
 ## Documentation
+
+The README is intentionally a quick entry point. The full documentation lives on Read the Docs:
+
+👉 https://laravel-webdav-server.readthedocs.io/en/latest/
+
+Read the Docs entry points:
+
+- [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
+- [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
+- [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/)
+- [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)
+- [Common Questions](https://laravel-webdav-server.readthedocs.io/en/latest/common-questions/)
+- [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)
+
+Repository-local mirrors:
 
 - [Getting Started](docs/getting-started.md)
 - [Configuration](docs/configuration.md)
