@@ -23,7 +23,7 @@ final class LaravelWebdavServerCommandTest extends DatabaseTestCase
     {
         $this->artisan('laravel-webdav-server:account:create', [
             'username' => 'console-user',
-            'password' => 'secret-value',
+            'secret' => 'secret-value',
             '--display-name' => 'Console User',
             '--user-id' => '42',
         ])
@@ -83,7 +83,7 @@ final class LaravelWebdavServerCommandTest extends DatabaseTestCase
         $this->artisan('laravel-webdav-server:account:update', [
             'username' => 'before-update',
             '--new-username' => 'after-update',
-            '--password' => 'changed-password',
+            '--secret' => 'changed-password',
             '--display-name' => 'After Update',
             '--clear-user-id' => true,
             '--disable' => true,

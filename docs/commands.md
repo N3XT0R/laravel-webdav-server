@@ -24,21 +24,21 @@ php artisan laravel-webdav-server
 Create a new WebDAV account in the configured account model. The password is hashed before storage.
 
 ```
-php artisan laravel-webdav-server:account:create <username> <password> [options]
+php artisan laravel-webdav-server:account:create <username> <secret> [options]
 ```
 
-| Argument / Option   | Required | Description                                                |
-|---------------------|----------|------------------------------------------------------------|
-| `username`          | yes      | Username used for HTTP Basic Auth                          |
-| `password`          | yes      | Plain-text password; hashed with `Hash::make()` on save    |
-| `--display-name=`   | no       | Principal display name shown to WebDAV clients             |
-| `--user-id=`        | no       | Linked Laravel user identifier                             |
-| `--disabled`        | no       | Create the account in a disabled state (default: enabled)  |
+| Argument / Option   | Required | Description                                                        |
+|---------------------|----------|--------------------------------------------------------------------|
+| `username`          | yes      | Username used for HTTP Basic Auth                                  |
+| `secret`            | yes      | Plain-text credential; hashed with `Hash::make()` before storage   |
+| `--display-name=`   | no       | Principal display name shown to WebDAV clients                     |
+| `--user-id=`        | no       | Linked Laravel user identifier                                     |
+| `--disabled`        | no       | Create the account in a disabled state (default: enabled)          |
 
 **Example — minimal account:**
 
 ```bash
-php artisan laravel-webdav-server:account:create alice secret
+php artisan laravel-webdav-server:account:create alice s3cr3t
 ```
 
 ```
@@ -57,7 +57,7 @@ php artisan laravel-webdav-server:account:create alice secret
 **Example — account with display name and linked user:**
 
 ```bash
-php artisan laravel-webdav-server:account:create bob secret \
+php artisan laravel-webdav-server:account:create bob s3cr3t \
     --display-name="Bob Smith" \
     --user-id=42
 ```
@@ -78,7 +78,7 @@ php artisan laravel-webdav-server:account:create bob secret \
 **Example — disabled account:**
 
 ```bash
-php artisan laravel-webdav-server:account:create service-account secret --disabled
+php artisan laravel-webdav-server:account:create service-account s3cr3t --disabled
 ```
 
 ```
@@ -97,7 +97,7 @@ php artisan laravel-webdav-server:account:create service-account secret --disabl
 **Error — username already taken:**
 
 ```bash
-php artisan laravel-webdav-server:account:create alice secret
+php artisan laravel-webdav-server:account:create alice s3cr3t
 ```
 
 ```
@@ -187,7 +187,7 @@ php artisan laravel-webdav-server:account:update <username> [options]
 | Option                | Description                                                            |
 |-----------------------|------------------------------------------------------------------------|
 | `--new-username=`     | Replace the current Basic Auth username                                |
-| `--password=`         | Replace the stored password with a newly hashed value                  |
+| `--secret=`           | Replace the stored credential with a newly hashed value                |
 | `--display-name=`     | Replace the stored display name                                        |
 | `--clear-display-name`| Set the display name to `null`; mutually exclusive with `--display-name` |
 | `--user-id=`          | Replace the linked Laravel user identifier                             |
@@ -195,10 +195,10 @@ php artisan laravel-webdav-server:account:update <username> [options]
 | `--enable`            | Mark the account as enabled; mutually exclusive with `--disable`       |
 | `--disable`           | Mark the account as disabled; mutually exclusive with `--enable`       |
 
-**Example — change password:**
+**Example — change credential:**
 
 ```bash
-php artisan laravel-webdav-server:account:update alice --password=new-secret
+php artisan laravel-webdav-server:account:update alice --secret=n3w-s3cr3t
 ```
 
 ```

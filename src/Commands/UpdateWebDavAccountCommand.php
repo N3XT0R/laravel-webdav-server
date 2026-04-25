@@ -12,7 +12,7 @@ final class UpdateWebDavAccountCommand extends AccountCommand
     protected $signature = 'laravel-webdav-server:account:update
         {username : Username of the WebDAV account that should be updated.}
         {--new-username= : Replace the current Basic Auth username.}
-        {--password= : Replace the stored password with a newly hashed password.}
+        {--secret= : Replace the stored credential with a newly hashed value.}
         {--display-name= : Replace the stored display name.}
         {--clear-display-name : Clear the stored display name.}
         {--user-id= : Replace the linked Laravel user identifier.}
@@ -45,7 +45,7 @@ final class UpdateWebDavAccountCommand extends AccountCommand
 
         $dto = new AccountUpdateDto(
             newUsername: $this->option('new-username'),
-            password: $this->option('password'),
+            password: $this->option('secret'),
             displayName: $this->option('display-name'),
             clearDisplayName: (bool) $this->option('clear-display-name'),
             userId: $this->option('user-id'),

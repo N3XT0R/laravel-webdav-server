@@ -10,7 +10,7 @@ final class CreateWebDavAccountCommand extends AccountCommand
 {
     protected $signature = 'laravel-webdav-server:account:create
         {username : Username used for HTTP Basic Auth.}
-        {password : Plain-text password that will be hashed before storage.}
+        {secret : Plain-text credential that will be hashed before storage.}
         {--display-name= : Optional principal display name shown to WebDAV clients.}
         {--user-id= : Optional linked Laravel user identifier.}
         {--disabled : Create the account in a disabled state.}';
@@ -28,7 +28,7 @@ final class CreateWebDavAccountCommand extends AccountCommand
         try {
             $account = $service->create(
                 username: (string) $this->argument('username'),
-                password: (string) $this->argument('password'),
+                password: (string) $this->argument('secret'),
                 displayName: $this->option('display-name'),
                 userId: $this->option('user-id'),
                 enabled: ! (bool) $this->option('disabled'),
