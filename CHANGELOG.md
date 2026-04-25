@@ -14,12 +14,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - `driver = null` now disables both package logging and SabreDAV runtime logging completely.
 - **logging**
     - Added structured `info` logs for authentication outcomes and `debug` logs for credential extraction, request
-      context resolution, storage resolution, WebDAV server construction, and SabreDAV runtime configuration.
+      context resolution, storage resolution, Gate-based path authorization checks, WebDAV server construction, and
+      SabreDAV runtime configuration.
     - Replaced the implicit SabreDAV logger wiring with a dedicated package logging service that resolves the
       configured Laravel log channel and applies package-level log filtering.
 - **documentation**
     - Documented the new logging configuration and runtime logging behavior in `README.md` and
       `docs/configuration.md`.
+    - Expanded the Read the Docs pages to cover the current logging behavior, available log levels, endpoint shape,
+      and the runtime flow around authentication, authorization, and SabreDAV configuration.
 
 ## [1.0.0-alpha.4] - 2026-04-25
 
