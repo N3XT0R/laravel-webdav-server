@@ -8,5 +8,13 @@ use Sabre\DAV\Server;
 
 interface ServerConfiguratorInterface
 {
+    /**
+     * Apply package-specific runtime configuration to the prepared SabreDAV server.
+     *
+     * @param \Sabre\DAV\Server $server Prepared SabreDAV server instance for the current request.
+     * @param string $spaceKey Logical storage space key resolved from the request.
+     *
+     * @return void
+     */
     public function configure(Server $server, string $spaceKey): void;
 }
