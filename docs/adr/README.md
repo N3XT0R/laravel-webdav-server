@@ -24,4 +24,4 @@ The records follow the Nygard ADR structure recommended by `adr.github.io`:
 - [0010. Explicit Type Checks Over Reflective Runtime Predicates](0010-explicit-type-checks-over-reflective-runtime-predicates.md)
 - [0011. Domain-Specific Exception Hierarchies](0011-domain-specific-exception-hierarchies.md)
 - [0012. Exception-Based Control Flow Over Null And False Sentinels](0012-exception-based-control-flow-over-null-and-false-sentinels.md)
-- [0008. SOLID Compliance And Established Design Patterns](0008-solid-compliance-and-established-design-patterns.md)
+- [0013. Method-Level PHPDoc And Import-Based Type References](0013-method-level-phpdoc-and-import-based-type-references.md)
