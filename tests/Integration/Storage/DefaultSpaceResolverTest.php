@@ -75,6 +75,15 @@ final class DefaultSpaceResolverTest extends TestCase
         $this->makeResolver()->resolve($this->setPrincipal(), 'missing');
     }
 
+    public function test_it_throws_when_the_named_space_configuration_is_not_an_array(): void
+    {
+        $this->expectException(InvalidSpaceConfigurationException::class);
+
+        config()->set('webdav-server.storage.spaces.bad', 'invalid');
+
+        $this->makeResolver()->resolve($this->setPrincipal(), 'bad');
+    }
+
     public function test_it_throws_when_disk_is_missing_from_space_config(): void
     {
         $this->expectException(InvalidSpaceConfigurationException::class);
@@ -108,5 +117,14 @@ final class DefaultSpaceResolverTest extends TestCase
         $result = $this->makeResolver()->resolve(new WebDavPrincipalValueObject('user-xyz', 'X'), 'default');
 
         $this->assertStringEndsWith('/user-xyz', $result->rootPath);
+    }
+
+    public function test_it_throws_when_the_spaces_configuration_is_not_an_array(): void
+    {
+        $this->expectException(SpaceNotConfiguredException::class);
+
+        config()->set('webdav-server.storage.spaces', 'invalid');
+
+        $this->makeResolver()->resolve($this->setPrincipal(), 'default');
     }
 }

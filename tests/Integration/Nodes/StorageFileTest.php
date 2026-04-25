@@ -7,8 +7,10 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Nodes;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Stream\UnreadableStreamWrapper;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
@@ -92,6 +94,18 @@ final class StorageFileTest extends TestCase
         $this->assertSame('write', $authorization->calls[0]['ability']);
     }
 
+    public function test_put_throws_when_resource_contents_cannot_be_read(): void
+    {
+        $this->expectException(StreamReadException::class);
+
+        $authorization = new AllowAllPathAuthorization;
+        $scheme = 'unreadable-storage-file';
+        $this->registerUnreadableStreamWrapper($scheme);
+        $resource = fopen($scheme.'://resource', 'r');
+
+        $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->put($resource);
+    }
+
     public function test_delete_calls_authorize_delete(): void
     {
         Storage::disk('local')->put('webdav/42/file.txt', 'delete-me');
@@ -124,5 +138,14 @@ final class StorageFileTest extends TestCase
         $this->assertIsInt($timestamp);
         $this->assertGreaterThan(0, $timestamp);
         $this->assertSame('read', $authorization->calls[0]['ability']);
+    }
+
+    private function registerUnreadableStreamWrapper(string $scheme): void
+    {
+        if (in_array($scheme, stream_get_wrappers(), true)) {
+            stream_wrapper_unregister($scheme);
+        }
+
+        stream_wrapper_register($scheme, UnreadableStreamWrapper::class);
     }
 }

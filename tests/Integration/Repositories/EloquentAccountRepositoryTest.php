@@ -9,9 +9,11 @@ use N3XT0R\LaravelWebdavServer\Contracts\Auth\AccountInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\AccountDisabledException;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\AccountNotFoundException;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidAccountConfigurationException;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidAccountRecordException;
 use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentAccountRepository;
 use N3XT0R\LaravelWebdavServer\Tests\DatabaseTestCase;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Models\InvalidDisplayNameAccountModel;
 use Workbench\App\Models\User;
 
 final class EloquentAccountRepositoryTest extends DatabaseTestCase
@@ -123,5 +125,22 @@ final class EloquentAccountRepositoryTest extends DatabaseTestCase
         $config->set('webdav-server.auth.account_model', \stdClass::class);
 
         $this->makeRepository()->findEnabledByUsername('alice');
+    }
+
+    public function test_it_throws_when_the_account_record_contains_non_scalar_attributes(): void
+    {
+        $this->expectException(InvalidAccountRecordException::class);
+
+        $config = $this->app->make(Repository::class);
+        $config->set('webdav-server.auth.account_model', InvalidDisplayNameAccountModel::class);
+
+        InvalidDisplayNameAccountModel::query()->create([
+            'username' => 'invalid-display-name',
+            'password_encrypted' => '$2y$10$fixedhashfortest',
+            'enabled' => true,
+            'display_name' => 'ignored-by-fixture',
+        ]);
+
+        $this->makeRepository()->findEnabledByUsername('invalid-display-name');
     }
 }

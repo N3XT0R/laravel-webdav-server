@@ -24,6 +24,30 @@ final class RequestBasicCredentialsExtractorTest extends TestCase
         $this->assertSame(['alice', 'secret'], $extractor->extract($request));
     }
 
+    public function test_it_throws_invalid_exception_when_php_auth_username_is_empty(): void
+    {
+        $this->expectException(InvalidCredentialsException::class);
+
+        $request = Request::create('/webdav', 'PROPFIND', server: [
+            'PHP_AUTH_USER' => '',
+            'PHP_AUTH_PW' => 'secret',
+        ]);
+
+        (new RequestBasicCredentialsExtractor)->extract($request);
+    }
+
+    public function test_it_throws_invalid_exception_when_php_auth_password_is_empty(): void
+    {
+        $this->expectException(InvalidCredentialsException::class);
+
+        $request = Request::create('/webdav', 'PROPFIND', server: [
+            'PHP_AUTH_USER' => 'alice',
+            'PHP_AUTH_PW' => '',
+        ]);
+
+        (new RequestBasicCredentialsExtractor)->extract($request);
+    }
+
     public function test_it_throws_when_no_basic_credentials_are_available(): void
     {
         $this->expectException(MissingCredentialsException::class);

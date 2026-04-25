@@ -145,4 +145,33 @@ final class PathPolicyTest extends TestCase
 
         $this->assertTrue($this->policy->read($user, $resource));
     }
+
+    public function test_read_denies_access_when_spaces_configuration_is_not_an_array(): void
+    {
+        $user = $this->makeUser(42);
+        config()->set('webdav-server.storage.spaces', 'invalid');
+
+        $this->assertFalse($this->policy->read($user, new PathResourceDto('local', 'webdav/42/file.txt')));
+    }
+
+    public function test_read_skips_invalid_space_entries_and_still_allows_matching_valid_entries(): void
+    {
+        $user = $this->makeUser(42);
+        config()->set('webdav-server.storage.spaces', [
+            'invalid-entry' => 'not-an-array',
+            'missing-disk' => [
+                'root' => 'broken',
+            ],
+            'missing-root' => [
+                'disk' => 'local',
+            ],
+            'valid' => [
+                'disk' => 'local',
+                'root' => 'webdav',
+                'prefix' => '/',
+            ],
+        ]);
+
+        $this->assertTrue($this->policy->read($user, new PathResourceDto('local', 'webdav/42/file.txt')));
+    }
 }

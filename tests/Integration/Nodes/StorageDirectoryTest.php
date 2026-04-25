@@ -7,10 +7,12 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Nodes;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageDirectory;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\DenyReadPathAuthorization;
+use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Stream\UnreadableStreamWrapper;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 use Sabre\DAV\Exception\NotFound;
@@ -158,6 +160,18 @@ final class StorageDirectoryTest extends TestCase
         $this->assertSame('from stream', Storage::disk('local')->get('webdav/42/new.txt'));
     }
 
+    public function test_create_file_throws_when_resource_contents_cannot_be_read(): void
+    {
+        $this->expectException(StreamReadException::class);
+
+        $authorization = new AllowAllPathAuthorization;
+        $scheme = 'unreadable-storage-directory';
+        $this->registerUnreadableStreamWrapper($scheme);
+        $resource = fopen($scheme.'://resource', 'r');
+
+        $this->makeDirectory('42', 'webdav/42', $authorization)->createFile('new.txt', $resource);
+    }
+
     public function test_delete_calls_authorize_delete_and_removes_directory_recursively(): void
     {
         Storage::disk('local')->makeDirectory('webdav/42/dir/sub');
@@ -171,5 +185,14 @@ final class StorageDirectoryTest extends TestCase
             $authorization->calls,
             static fn (array $call): bool => $call['ability'] === 'delete'
         ));
+    }
+
+    private function registerUnreadableStreamWrapper(string $scheme): void
+    {
+        if (in_array($scheme, stream_get_wrappers(), true)) {
+            stream_wrapper_unregister($scheme);
+        }
+
+        stream_wrapper_register($scheme, UnreadableStreamWrapper::class);
     }
 }
