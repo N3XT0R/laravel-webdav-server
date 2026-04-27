@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Nodes;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Events\WebDavFileDeletedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDavFileUpdatedEvent;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
@@ -72,16 +75,24 @@ final class StorageFileTest extends TestCase
 
     public function test_put_with_string_calls_authorize_write(): void
     {
+        Event::fake();
         $authorization = new AllowAllPathAuthorization;
 
         $this->makeFile('file.txt', 'webdav/42/file.txt', $authorization)->put('content');
 
         $this->assertSame('content', Storage::disk('local')->get('webdav/42/file.txt'));
         $this->assertSame('write', $authorization->calls[0]['ability']);
+        Event::assertDispatched(WebDavFileUpdatedEvent::class, function (WebDavFileUpdatedEvent $event): bool {
+            return $event->disk === 'local'
+                && $event->path === 'webdav/42/file.txt'
+                && $event->principal->id === '42'
+                && $event->bytes === 7;
+        });
     }
 
     public function test_put_with_resource_reads_stream_and_calls_authorize_write(): void
     {
+        Event::fake();
         $authorization = new AllowAllPathAuthorization;
         $resource = fopen('php://memory', 'r+');
         fwrite($resource, 'streamed content');
@@ -93,6 +104,10 @@ final class StorageFileTest extends TestCase
 
         $this->assertSame('streamed content', Storage::disk('local')->get('webdav/42/file.txt'));
         $this->assertSame('write', $authorization->calls[0]['ability']);
+        Event::assertDispatched(WebDavFileUpdatedEvent::class, function (WebDavFileUpdatedEvent $event): bool {
+            return $event->path === 'webdav/42/file.txt'
+                && $event->bytes === strlen('streamed content');
+        });
     }
 
     public function test_put_throws_when_resource_contents_cannot_be_read(): void
@@ -108,6 +123,7 @@ final class StorageFileTest extends TestCase
 
     public function test_delete_calls_authorize_delete(): void
     {
+        Event::fake();
         Storage::disk('local')->put('webdav/42/file.txt', 'delete-me');
         $authorization = new AllowAllPathAuthorization;
 
@@ -115,6 +131,11 @@ final class StorageFileTest extends TestCase
 
         $this->assertFalse(Storage::disk('local')->exists('webdav/42/file.txt'));
         $this->assertSame('delete', $authorization->calls[0]['ability']);
+        Event::assertDispatched(WebDavFileDeletedEvent::class, function (WebDavFileDeletedEvent $event): bool {
+            return $event->disk === 'local'
+                && $event->path === 'webdav/42/file.txt'
+                && $event->principal->id === '42';
+        });
     }
 
     public function test_get_size_calls_authorize_read_and_returns_size(): void

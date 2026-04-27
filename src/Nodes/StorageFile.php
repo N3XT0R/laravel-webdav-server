@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Nodes;
 
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Events\WebDavFileDeletedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDavFileUpdatedEvent;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use Sabre\DAV\Exception\Forbidden;
 use Sabre\DAV\File;
@@ -77,11 +79,14 @@ final class StorageFile extends File
             }
 
             $fs->put($this->path, $contents);
+            $this->dispatchUpdated($contents);
 
             return;
         }
 
-        $fs->put($this->path, (string) $data);
+        $contents = (string) $data;
+        $fs->put($this->path, $contents);
+        $this->dispatchUpdated($contents);
     }
 
     /**
@@ -99,6 +104,12 @@ final class StorageFile extends File
 
         $this->context->filesystem
             ->delete($this->path);
+
+        WebDavFileDeletedEvent::dispatch(
+            disk: $this->context->disk,
+            path: $this->path,
+            principal: $this->context->principal,
+        );
     }
 
     /**
@@ -137,5 +148,15 @@ final class StorageFile extends File
 
         return $this->context->filesystem
             ->lastModified($this->path);
+    }
+
+    private function dispatchUpdated(string $contents): void
+    {
+        WebDavFileUpdatedEvent::dispatch(
+            disk: $this->context->disk,
+            path: $this->path,
+            principal: $this->context->principal,
+            bytes: strlen($contents),
+        );
     }
 }

@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **events**
+    - Added real Laravel events for WebDAV node mutations so applications can hook into file uploads and other
+      filesystem changes without replacing node implementations or adding package-defined listeners.
+    - The package now dispatches dedicated events for file creation, file updates, file deletion, directory creation,
+      and directory deletion from the SabreDAV-backed storage nodes.
+    - Added the concrete event classes `WebDavFileCreatedEvent`, `WebDavFileUpdatedEvent`,
+      `WebDavFileDeletedEvent`, `WebDavDirectoryCreatedEvent`, and `WebDavDirectoryDeletedEvent`.
+    - Event classes follow the ADR `0003` suffix convention and are dispatched through the Laravel event classes
+      themselves.
+
 ### Changed
 
 - **documentation**

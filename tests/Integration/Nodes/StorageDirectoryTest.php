@@ -5,8 +5,12 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Nodes;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Events\WebDavDirectoryCreatedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDavDirectoryDeletedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDavFileCreatedEvent;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageDirectory;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
@@ -127,6 +131,7 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_create_directory_calls_authorize_and_makes_directory(): void
     {
+        Event::fake();
         $authorization = new AllowAllPathAuthorization;
         $directory = $this->makeDirectory('42', 'webdav/42', $authorization);
 
@@ -134,10 +139,15 @@ final class StorageDirectoryTest extends TestCase
 
         $this->assertTrue(Storage::disk('local')->exists('webdav/42/newdir'));
         $this->assertSame('createDirectory', $authorization->calls[0]['ability']);
+        Event::assertDispatched(WebDavDirectoryCreatedEvent::class, function (WebDavDirectoryCreatedEvent $event): bool {
+            return $event->path === 'webdav/42/newdir'
+                && $event->principal->id === '42';
+        });
     }
 
     public function test_create_file_with_string_data_calls_authorize_and_puts_content(): void
     {
+        Event::fake();
         $authorization = new AllowAllPathAuthorization;
         $directory = $this->makeDirectory('42', 'webdav/42', $authorization);
 
@@ -145,10 +155,15 @@ final class StorageDirectoryTest extends TestCase
 
         $this->assertSame('hello', Storage::disk('local')->get('webdav/42/new.txt'));
         $this->assertSame('createFile', $authorization->calls[0]['ability']);
+        Event::assertDispatched(WebDavFileCreatedEvent::class, function (WebDavFileCreatedEvent $event): bool {
+            return $event->path === 'webdav/42/new.txt'
+                && $event->bytes === 5;
+        });
     }
 
     public function test_create_file_with_resource_data_reads_stream_and_puts_content(): void
     {
+        Event::fake();
         $authorization = new AllowAllPathAuthorization;
         $resource = fopen('php://memory', 'r+');
         fwrite($resource, 'from stream');
@@ -159,6 +174,10 @@ final class StorageDirectoryTest extends TestCase
         fclose($resource);
 
         $this->assertSame('from stream', Storage::disk('local')->get('webdav/42/new.txt'));
+        Event::assertDispatched(WebDavFileCreatedEvent::class, function (WebDavFileCreatedEvent $event): bool {
+            return $event->path === 'webdav/42/new.txt'
+                && $event->bytes === strlen('from stream');
+        });
     }
 
     public function test_create_file_throws_when_resource_contents_cannot_be_read(): void
@@ -174,6 +193,7 @@ final class StorageDirectoryTest extends TestCase
 
     public function test_delete_calls_authorize_delete_and_removes_directory_recursively(): void
     {
+        Event::fake();
         Storage::disk('local')->makeDirectory('webdav/42/dir/sub');
         Storage::disk('local')->put('webdav/42/dir/file.txt', 'hello');
         $authorization = new AllowAllPathAuthorization;
@@ -185,5 +205,9 @@ final class StorageDirectoryTest extends TestCase
             $authorization->calls,
             static fn (array $call): bool => $call['ability'] === 'delete'
         ));
+        Event::assertDispatched(WebDavDirectoryDeletedEvent::class, function (WebDavDirectoryDeletedEvent $event): bool {
+            return $event->path === 'webdav/42/dir'
+                && $event->principal->id === '42';
+        });
     }
 }

@@ -5,8 +5,11 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Nodes;
 
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Events\WebDavDirectoryCreatedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDavFileCreatedEvent;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageDirectory;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageRootCollection;
@@ -124,6 +127,7 @@ final class StorageRootCollectionTest extends TestCase
 
     public function test_create_directory_authorizes_and_makes_directory(): void
     {
+        Event::fake();
         $authorization = new AllowAllPathAuthorization;
         $root = $this->makeRoot('webdav/42', $authorization);
 
@@ -132,10 +136,15 @@ final class StorageRootCollectionTest extends TestCase
         $this->assertTrue(Storage::disk('local')->exists('webdav/42/backups'));
         $this->assertSame('createDirectory', $authorization->calls[0]['ability']);
         $this->assertSame('webdav/42/backups', $authorization->calls[0]['path']);
+        Event::assertDispatched(WebDavDirectoryCreatedEvent::class, function (WebDavDirectoryCreatedEvent $event): bool {
+            return $event->path === 'webdav/42/backups'
+                && $event->principal->id === '42';
+        });
     }
 
     public function test_create_file_with_string_data_authorizes_and_puts_content(): void
     {
+        Event::fake();
         $authorization = new AllowAllPathAuthorization;
         $root = $this->makeRoot('webdav/42', $authorization);
 
@@ -143,6 +152,10 @@ final class StorageRootCollectionTest extends TestCase
 
         $this->assertSame('data', Storage::disk('local')->get('webdav/42/upload.txt'));
         $this->assertSame('createFile', $authorization->calls[0]['ability']);
+        Event::assertDispatched(WebDavFileCreatedEvent::class, function (WebDavFileCreatedEvent $event): bool {
+            return $event->path === 'webdav/42/upload.txt'
+                && $event->bytes === 4;
+        });
     }
 
     public function test_create_file_with_null_data_puts_empty_string(): void

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Nodes;
 
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
+use N3XT0R\LaravelWebdavServer\Events\WebDavDirectoryCreatedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDavFileCreatedEvent;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use Sabre\DAV\Collection;
 use Sabre\DAV\Exception\Forbidden;
@@ -156,6 +158,11 @@ abstract class AbstractStorageCollection extends Collection
         );
 
         $this->context->filesystem->makeDirectory($path);
+        WebDavDirectoryCreatedEvent::dispatch(
+            disk: $this->context->disk,
+            path: $path,
+            principal: $this->context->principal,
+        );
     }
 
     /**
@@ -187,11 +194,24 @@ abstract class AbstractStorageCollection extends Collection
             }
 
             $fs->put($path, $contents);
+            $this->dispatchFileCreated($path, $contents);
 
             return;
         }
 
-        $fs->put($path, (string) ($data ?? ''));
+        $contents = (string) ($data ?? '');
+        $fs->put($path, $contents);
+        $this->dispatchFileCreated($path, $contents);
+    }
+
+    protected function dispatchFileCreated(string $path, string $contents): void
+    {
+        WebDavFileCreatedEvent::dispatch(
+            disk: $this->context->disk,
+            path: $path,
+            principal: $this->context->principal,
+            bytes: strlen($contents),
+        );
     }
 
     private function buildChildPath(string $name): string
