@@ -177,77 +177,11 @@ Example:
 ## Path Resolution
 
 `PathResolverService` is the single authoritative location for the path assembly formula. `DefaultSpaceResolver`
-delegates to it instead of assembling the path inline.
+delegates to it internally. The `WebDavPath` Facade exposes both `resolvePath()` and `resolveUrl()` for use in
+controllers, views, and background jobs.
 
-The service is bound to `PathResolverInterface` and can be replaced via the Laravel container.
-
-### Methods
-
-`resolvePath(WebDavPrincipalValueObject $principal, string $spaceKey): string`
-
-Returns the user-scoped filesystem root path for the given principal and space. This is the disk-internal path, not
-a URL.
-
-```php
-// disk: local, root: webdav, principal.id: 42  →  webdav/42
-// disk: local, root: webdav, prefix: team, principal.id: 7  →  webdav/team/7
-```
-
-`resolveUrl(string $spaceKey): string`
-
-Returns the public WebDAV mount URL for the given space. This is the URL a WebDAV client connects to — it does not
-include any user-specific path segment.
-
-```php
-// route_prefix: webdav, spaceKey: default  →  https://app.test/webdav/default
-```
-
-### WebDavPath Facade
-
-The `WebDavPath` Facade exposes both methods for use in application controllers and views without triggering the full
-WebDAV request pipeline.
-
-`resolveUrl()` needs only the space key and can be called without a principal:
-
-```php
-use N3XT0R\LaravelWebdavServer\Facades\WebDavPath;
-
-$url = WebDavPath::resolveUrl('default');
-// → 'https://app.test/webdav/default'
-```
-
-`resolvePath()` accepts any `AccountInterface` — the type returned by `AccountRepositoryInterface::findEnabledByUsername()`.
-Outside of an active WebDAV request, retrieve the account from the repository and pass it directly:
-
-```php
-use N3XT0R\LaravelWebdavServer\Contracts\Repositories\AccountRepositoryInterface;
-use N3XT0R\LaravelWebdavServer\Facades\WebDavPath;
-
-$account = app(AccountRepositoryInterface::class)->findEnabledByUsername($username);
-
-$path = WebDavPath::resolvePath($account, 'default');
-// → 'webdav/42'
-```
-
-`resolvePath()` also accepts a `WebDavPrincipalValueObject` — both implement `WebDavPrincipalInterface`, which is the
-actual parameter type. During a WebDAV request the principal value object flows through the pipeline automatically;
-outside a request the repository is the natural entry point.
-
-This is useful for presenting WebDAV connection details to users in the frontend without requiring an active WebDAV
-request.
-
-To replace the path assembly logic, bind your own implementation to `PathResolverInterface` in your application
-service provider:
-
-```php
-use App\Services\CustomPathResolver;
-use N3XT0R\LaravelWebdavServer\Contracts\Storage\PathResolverInterface;
-
-public function register(): void
-{
-    $this->app->bind(PathResolverInterface::class, CustomPathResolver::class);
-}
-```
+See [Path Resolution](path-resolution.md) for the full reference including Facade usage, the path formula, and how
+to replace `PathResolverInterface`.
 
 ## Auth Mapping
 

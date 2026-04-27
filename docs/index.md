@@ -12,6 +12,7 @@ Use [Configuration Reference](configuration.md) when you need the available keys
 
 - [Getting Started](getting-started.md)
 - [Configuration Reference](configuration.md)
+- [Path Resolution](path-resolution.md)
 - [Events](events.md)
 - [Server Customization](server-customization.md)
 - [Authentication & Authorization](authentication.md)

@@ -15,6 +15,7 @@ nav:
   - Overview: index.md
   - Getting Started: getting-started.md
   - Configuration: configuration.md
+  - Path Resolution: path-resolution.md
   - Events: events.md
   - Server Customization: server-customization.md
   - Authentication & Authorization: authentication.md
@@ -37,3 +38,4 @@ nav:
       - "0012 Exception-Based Control Flow Over Null And False Sentinels": adr/0012-exception-based-control-flow-over-null-and-false-sentinels.md
       - "0013 Method-Level PHPDoc And Import-Based Type References": adr/0013-method-level-phpdoc-and-import-based-type-references.md
       - "0014 Additional SabreDAV Plugins Via Tagged Service Provider Registration": adr/0014-additional-sabredav-plugins-via-tagged-service-provider-registration.md
+      - "0015 PathResolverService And WebDavPath Facade For Centralized Path Resolution": adr/0015-path-resolver-service-and-webdav-path-facade.md
