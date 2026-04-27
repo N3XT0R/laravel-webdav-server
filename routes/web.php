@@ -8,6 +8,7 @@ use N3XT0R\LaravelWebdavServer\Http\Controllers\WebDavController;
 Route::match([
     'OPTIONS',
     'GET',
+    'POST',
     'PUT',
     'DELETE',
     'PROPFIND',
