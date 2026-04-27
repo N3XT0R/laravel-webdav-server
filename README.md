@@ -17,7 +17,7 @@ user-scoped root path.
 
 This README provides a quick overview. For full documentation, see Read the Docs.
 
-> Current version: **1.0.0-beta.1**
+> Current version: **beta**
 
 > [!IMPORTANT]
 > The public package API, configuration structure, and extension points are treated as structurally stable.
