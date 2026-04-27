@@ -174,6 +174,67 @@ Example:
 - `principal.id = 42`
 - effective root path: `webdav/uploads/42`
 
+## Path Resolution
+
+`PathResolverService` is the single authoritative location for the path assembly formula. `DefaultSpaceResolver`
+delegates to it instead of assembling the path inline.
+
+The service is bound to `PathResolverInterface` and can be replaced via the Laravel container.
+
+### Methods
+
+`resolvePath(WebDavPrincipalValueObject $principal, string $spaceKey): string`
+
+Returns the user-scoped filesystem root path for the given principal and space. This is the disk-internal path, not
+a URL.
+
+```php
+// disk: local, root: webdav, principal.id: 42  →  webdav/42
+// disk: local, root: webdav, prefix: team, principal.id: 7  →  webdav/team/7
+```
+
+`resolveUrl(string $spaceKey): string`
+
+Returns the public WebDAV mount URL for the given space. This is the URL a WebDAV client connects to — it does not
+include any user-specific path segment.
+
+```php
+// route_prefix: webdav, spaceKey: default  →  https://app.test/webdav/default
+```
+
+### WebDavPath Facade
+
+The `WebDavPath` Facade exposes both methods for use in application controllers and views without triggering the full
+WebDAV request pipeline.
+
+```php
+use N3XT0R\LaravelWebdavServer\Facades\WebDavPath;
+
+// Resolve the public WebDAV mount URL for a space:
+$url = WebDavPath::resolveUrl('default');
+// → 'https://app.test/webdav/default'
+
+// Resolve the user-scoped filesystem root path:
+$path = WebDavPath::resolvePath($principal, 'default');
+// → 'webdav/42'
+```
+
+This is useful for presenting WebDAV connection details to users in the frontend without requiring an active WebDAV
+request.
+
+To replace the path assembly logic, bind your own implementation to `PathResolverInterface` in your application
+service provider:
+
+```php
+use App\Services\CustomPathResolver;
+use N3XT0R\LaravelWebdavServer\Contracts\Storage\PathResolverInterface;
+
+public function register(): void
+{
+    $this->app->bind(PathResolverInterface::class, CustomPathResolver::class);
+}
+```
+
 ## Auth Mapping
 
 `EloquentAccountRepository` reads the account model and its column mapping from `webdav-server.auth`.

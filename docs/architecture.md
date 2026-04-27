@@ -16,7 +16,8 @@ Every WebDAV request passes through this runtime flow:
    - `RequestSpaceKeyResolver::resolve(request)` resolves `{space}` or falls back to
      `config('webdav-server.storage.default_space')`
    - `SpaceResolverInterface::resolve(principal, spaceKey)` resolves the effective storage target as a
-     `WebDavStorageSpaceValueObject`
+     `WebDavStorageSpaceValueObject`; the default implementation `DefaultSpaceResolver` delegates path assembly to
+     `PathResolverInterface` — the formula `{root}/{prefix}/{principal.id}` lives in exactly one place
    - the gathered runtime DTO is `RequestContextDto`
 5. `StorageRootBuilder::build(principal, space)` creates the SabreDAV root tree:
    - `StorageRootCollection`
@@ -63,6 +64,7 @@ The package architecture is intended to remain SOLID-compliant and to prefer est
   - `InvalidSpaceConfigurationException`
   - `InvalidDefaultSpaceConfigurationException`
   - `StreamReadException`
+- `PathResolverInterface` owns the user-scoped path assembly formula (`{root}/{prefix}/{principal.id}`); `DefaultSpaceResolver` delegates to it and the `WebDavPath` Facade exposes it to application code.
 - Controller runtime execution is delegated via `ServerRunnerInterface`.
 - Default runner is `SabreServerRunner`, which starts SabreDAV and terminates the request lifecycle.
 - CSRF bypass is registered in `WebdavServerServiceProvider::registerCsrfException()`.

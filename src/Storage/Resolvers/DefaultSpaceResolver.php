@@ -6,6 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Storage\Resolvers;
 
 use Illuminate\Contracts\Config\Repository;
 use Illuminate\Contracts\Config\Repository as Config;
+use N3XT0R\LaravelWebdavServer\Contracts\Storage\PathResolverInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\SpaceResolverInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidSpaceConfigurationException;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\SpaceNotConfiguredException;
@@ -20,10 +21,12 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
      *
      * @param  Repository  $config  Package configuration repository used to resolve storage spaces.
      * @param  WebDavLoggingService  $logger  Package logger used to trace resolved storage targets.
+     * @param  PathResolverInterface  $pathResolver  Resolves the user-scoped filesystem root path for the space.
      */
     public function __construct(
         private Config $config,
         private WebDavLoggingService $logger,
+        private PathResolverInterface $pathResolver,
     ) {}
 
     /**
@@ -57,8 +60,6 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
         }
 
         $disk = $space['disk'] ?? null;
-        $root = $space['root'] ?? null;
-        $prefix = $space['prefix'] ?? null;
 
         if (! is_string($disk) || trim($disk) === '') {
             throw new InvalidSpaceConfigurationException(sprintf(
@@ -67,24 +68,9 @@ final readonly class DefaultSpaceResolver implements SpaceResolverInterface
             ));
         }
 
-        if (! is_string($root) || trim($root) === '') {
-            throw new InvalidSpaceConfigurationException(sprintf(
-                'WebDAV storage space "%s" is missing a valid "root" configuration.',
-                $spaceKey,
-            ));
-        }
-
-        $parts = [trim($root, '/')];
-
-        if (is_string($prefix) && trim($prefix) !== '' && trim($prefix) !== '/') {
-            $parts[] = trim($prefix, '/');
-        }
-
-        $parts[] = (string) $principal->id;
-
         $space = new WebDavStorageSpaceValueObject(
             disk: trim($disk),
-            rootPath: implode('/', $parts),
+            rootPath: $this->pathResolver->resolvePath($principal, $spaceKey),
         );
 
         $this->logger->debug('Resolved WebDAV storage space.', [

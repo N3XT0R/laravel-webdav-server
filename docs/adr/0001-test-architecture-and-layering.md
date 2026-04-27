@@ -64,6 +64,9 @@ Rules:
 - do not use PHPUnit mocks or stubs
 - if a collaborator needs test-specific behavior, provide a small concrete in-memory or recording implementation in
   `tests/Fixtures/`
+- instantiate container-registered classes through `$this->app->make()` rather than `new`; this exercises the full
+  dependency chain, respects application-level overrides via `bindIf()`, and keeps integration tests consistent with
+  how the class is resolved at runtime
 
 ### Unit tests
 

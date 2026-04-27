@@ -91,3 +91,45 @@ Result:
 - your plugin is added after the package-default plugins
 - `SabreServerConfigurator` remains the active configurator
 - existing package behavior stays intact unless your plugin intentionally changes it
+
+## Replacing PathResolverInterface
+
+`PathResolverInterface` controls how the user-scoped filesystem root path and the WebDAV mount URL are assembled.
+The default implementation is `PathResolverService`.
+
+To override the path assembly formula, implement the interface and bind it in your service provider:
+
+```php
+namespace App\Services;
+
+use N3XT0R\LaravelWebdavServer\Contracts\Storage\PathResolverInterface;
+use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
+
+final class CustomPathResolver implements PathResolverInterface
+{
+    public function resolvePath(WebDavPrincipalValueObject $principal, string $spaceKey): string
+    {
+        // Custom path assembly logic.
+        return 'custom/'.$spaceKey.'/'.$principal->id;
+    }
+
+    public function resolveUrl(string $spaceKey): string
+    {
+        // Custom URL assembly logic.
+        return 'https://files.example.com/'.$spaceKey;
+    }
+}
+```
+
+```php
+use App\Services\CustomPathResolver;
+use N3XT0R\LaravelWebdavServer\Contracts\Storage\PathResolverInterface;
+
+public function register(): void
+{
+    $this->app->bind(PathResolverInterface::class, CustomPathResolver::class);
+}
+```
+
+Replacing `PathResolverInterface` affects both `DefaultSpaceResolver` (which delegates path assembly to it) and the
+`WebDavPath` Facade (which resolves through the same binding).

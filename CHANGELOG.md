@@ -9,6 +9,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- **PathResolverService and WebDavPath Facade**
+    - Added `PathResolverInterface` contract with `resolvePath()` for the user-scoped filesystem root path and `resolveUrl()` for the public WebDAV mount URL.
+    - Added `PathResolverService` as the single authoritative implementation of the path assembly formula (`{root}/{prefix}/{principal.id}`); `DefaultSpaceResolver` now delegates to it internally instead of assembling the path inline.
+    - Added `WebDavPath` Facade so application code can resolve a user's storage path or WebDAV mount URL without triggering the full WebDAV request pipeline — useful for controllers, views, and API responses that need to expose WebDAV endpoints to users.
+
 - **events**
     - Added real Laravel events for WebDAV node mutations so applications can hook into file uploads and other
       filesystem changes without replacing node implementations or adding package-defined listeners.
