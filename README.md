@@ -50,7 +50,7 @@ Useful entry points:
 - Client behavior differs noticeably between Windows Explorer, macOS Finder, and WinSCP.
 - Windows WebClient is especially strict about `OPTIONS`, `PROPFIND`, and response correctness.
 
-This package does not try to revive WebDAV. It makes WebDAV usable inside a modern Laravel architecture.
+This package integrates WebDAV cleanly into a modern Laravel architecture.
 
 ## What This Package Provides
 
