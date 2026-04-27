@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Nodes;
 
-use N3XT0R\LaravelWebdavServer\Events\WebDavDirectoryDeletedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDav\DirectoryDeletedEvent;
 use Sabre\DAV\Exception\Forbidden;
 
 final class StorageDirectory extends AbstractStorageCollection
@@ -23,7 +23,7 @@ final class StorageDirectory extends AbstractStorageCollection
         );
 
         $this->deleteRecursively($this->context->filesystem, $this->path);
-        WebDavDirectoryDeletedEvent::dispatch(
+        DirectoryDeletedEvent::dispatch(
             disk: $this->context->disk,
             path: $this->path,
             principal: $this->context->principal,

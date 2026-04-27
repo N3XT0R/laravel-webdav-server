@@ -8,9 +8,9 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
-use N3XT0R\LaravelWebdavServer\Events\WebDavDirectoryCreatedEvent;
-use N3XT0R\LaravelWebdavServer\Events\WebDavDirectoryDeletedEvent;
-use N3XT0R\LaravelWebdavServer\Events\WebDavFileCreatedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDav\DirectoryCreatedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDav\DirectoryDeletedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDav\FileCreatedEvent;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageDirectory;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
@@ -139,7 +139,7 @@ final class StorageDirectoryTest extends TestCase
 
         $this->assertTrue(Storage::disk('local')->exists('webdav/42/newdir'));
         $this->assertSame('createDirectory', $authorization->calls[0]['ability']);
-        Event::assertDispatched(WebDavDirectoryCreatedEvent::class, function (WebDavDirectoryCreatedEvent $event): bool {
+        Event::assertDispatched(DirectoryCreatedEvent::class, function (DirectoryCreatedEvent $event): bool {
             return $event->path === 'webdav/42/newdir'
                 && $event->principal->id === '42';
         });
@@ -155,7 +155,7 @@ final class StorageDirectoryTest extends TestCase
 
         $this->assertSame('hello', Storage::disk('local')->get('webdav/42/new.txt'));
         $this->assertSame('createFile', $authorization->calls[0]['ability']);
-        Event::assertDispatched(WebDavFileCreatedEvent::class, function (WebDavFileCreatedEvent $event): bool {
+        Event::assertDispatched(FileCreatedEvent::class, function (FileCreatedEvent $event): bool {
             return $event->path === 'webdav/42/new.txt'
                 && $event->bytes === 5;
         });
@@ -174,7 +174,7 @@ final class StorageDirectoryTest extends TestCase
         fclose($resource);
 
         $this->assertSame('from stream', Storage::disk('local')->get('webdav/42/new.txt'));
-        Event::assertDispatched(WebDavFileCreatedEvent::class, function (WebDavFileCreatedEvent $event): bool {
+        Event::assertDispatched(FileCreatedEvent::class, function (FileCreatedEvent $event): bool {
             return $event->path === 'webdav/42/new.txt'
                 && $event->bytes === strlen('from stream');
         });
@@ -205,7 +205,7 @@ final class StorageDirectoryTest extends TestCase
             $authorization->calls,
             static fn (array $call): bool => $call['ability'] === 'delete'
         ));
-        Event::assertDispatched(WebDavDirectoryDeletedEvent::class, function (WebDavDirectoryDeletedEvent $event): bool {
+        Event::assertDispatched(DirectoryDeletedEvent::class, function (DirectoryDeletedEvent $event): bool {
             return $event->path === 'webdav/42/dir'
                 && $event->principal->id === '42';
         });

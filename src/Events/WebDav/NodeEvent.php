@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Events;
+namespace N3XT0R\LaravelWebdavServer\Events\WebDav;
 
 use Illuminate\Foundation\Events\Dispatchable;
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
-abstract readonly class WebDavNodeEvent
+abstract readonly class NodeEvent
 {
     use Dispatchable;
 

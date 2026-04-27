@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace N3XT0R\LaravelWebdavServer\Events;
+namespace N3XT0R\LaravelWebdavServer\Events\WebDav;
 
 use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
-abstract readonly class WebDavFileEvent extends WebDavNodeEvent
+abstract readonly class FileEvent extends NodeEvent
 {
     public function __construct(
         string $disk,

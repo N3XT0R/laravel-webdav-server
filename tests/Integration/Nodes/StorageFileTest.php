@@ -8,8 +8,8 @@ use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Storage;
 use N3XT0R\LaravelWebdavServer\DTO\Storage\StorageNodeContextDto;
-use N3XT0R\LaravelWebdavServer\Events\WebDavFileDeletedEvent;
-use N3XT0R\LaravelWebdavServer\Events\WebDavFileUpdatedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDav\FileDeletedEvent;
+use N3XT0R\LaravelWebdavServer\Events\WebDav\FileUpdatedEvent;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\StreamReadException;
 use N3XT0R\LaravelWebdavServer\Nodes\StorageFile;
 use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Auth\AllowAllPathAuthorization;
@@ -82,7 +82,7 @@ final class StorageFileTest extends TestCase
 
         $this->assertSame('content', Storage::disk('local')->get('webdav/42/file.txt'));
         $this->assertSame('write', $authorization->calls[0]['ability']);
-        Event::assertDispatched(WebDavFileUpdatedEvent::class, function (WebDavFileUpdatedEvent $event): bool {
+        Event::assertDispatched(FileUpdatedEvent::class, function (FileUpdatedEvent $event): bool {
             return $event->disk === 'local'
                 && $event->path === 'webdav/42/file.txt'
                 && $event->principal->id === '42'
@@ -104,7 +104,7 @@ final class StorageFileTest extends TestCase
 
         $this->assertSame('streamed content', Storage::disk('local')->get('webdav/42/file.txt'));
         $this->assertSame('write', $authorization->calls[0]['ability']);
-        Event::assertDispatched(WebDavFileUpdatedEvent::class, function (WebDavFileUpdatedEvent $event): bool {
+        Event::assertDispatched(FileUpdatedEvent::class, function (FileUpdatedEvent $event): bool {
             return $event->path === 'webdav/42/file.txt'
                 && $event->bytes === strlen('streamed content');
         });
@@ -131,7 +131,7 @@ final class StorageFileTest extends TestCase
 
         $this->assertFalse(Storage::disk('local')->exists('webdav/42/file.txt'));
         $this->assertSame('delete', $authorization->calls[0]['ability']);
-        Event::assertDispatched(WebDavFileDeletedEvent::class, function (WebDavFileDeletedEvent $event): bool {
+        Event::assertDispatched(FileDeletedEvent::class, function (FileDeletedEvent $event): bool {
             return $event->disk === 'local'
                 && $event->path === 'webdav/42/file.txt'
                 && $event->principal->id === '42';
