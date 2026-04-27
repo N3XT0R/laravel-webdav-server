@@ -8,6 +8,7 @@ Read the Docs uses [`index.md`](index.md) via `mkdocs.yml` and does not depend o
 - [Read the Docs home page source](index.md)
 - [Getting Started](getting-started.md)
 - [Configuration Reference](configuration.md)
+- [Server Customization](server-customization.md)
 - [Authentication & Authorization](authentication.md)
 - [Architecture](architecture.md)
 - [Commands](commands.md)

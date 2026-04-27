@@ -2,40 +2,91 @@
 
 All package configuration is loaded from `config/webdav-server.php` and accessed through the `webdav-server.*` key.
 
-## Quick Start
+## Most Important Settings
+
+Start with these keys in most integrations:
+
+- `webdav-server.base_uri` for the SabreDAV base URI
+- `webdav-server.storage.default_space` for the fallback space key
+- `webdav-server.storage.spaces.{space}.disk` and `.root` for storage routing
+- `webdav-server.auth.account_model` for the WebDAV account store
+- `webdav-server.auth.user_model` if policies should receive a linked Laravel user
+- `webdav-server.logging.driver` and `.level` for package and SabreDAV logging
+
+For SabreDAV runtime extensions and tagged plugins, see [Server Customization](server-customization.md).
+
+## Current Config Stub
+
+The published configuration currently looks like this:
 
 ```php
+use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
+
 return [
+    'route_prefix' => 'webdav',
     'base_uri' => '/webdav/',
+    'browser_listing' => false,
     'logging' => [
         'driver' => null,
         'level' => 'info',
     ],
+
     'storage' => [
         'default_space' => 'default',
         'spaces' => [
             'default' => [
                 'disk' => 'local',
                 'root' => 'webdav',
+                'prefix' => '/',
             ],
         ],
     ],
+
     'auth' => [
-        'account_model' => \App\Models\WebDavAccount::class,
-        'user_model' => \App\Models\User::class,
+        'account_model' => WebDavAccountModel::class,
+        'user_model' => null,
+
+        'username_column' => 'username',
+        'password_column' => 'password_encrypted',
+        'enabled_column' => 'enabled',
+
+        'user_id_column' => 'user_id',
+        'display_name_column' => 'display_name',
     ],
 ];
 ```
 
 ## Top-Level Keys
 
-| Key                              | Default    | Used by                                              |
-|----------------------------------|------------|------------------------------------------------------|
-| `webdav-server.route_prefix`     | `webdav`   | CSRF exclusion path in `WebdavServerServiceProvider` |
-| `webdav-server.base_uri`         | `/webdav/` | `SabreServerConfigurator`                            |
-| `webdav-server.browser_listing`  | `false`    | `SabreServerConfigurator` — enables SabreDAV browser UI |
-| `webdav-server.logging.driver`   | `null`     | package logging and SabreDAV logger wiring           |
-| `webdav-server.logging.level`    | `info`     | package log filtering for `info` and `debug` output  |
+| Key                              | Default    | Used by |
+|----------------------------------|------------|---------|
+| `webdav-server.route_prefix`     | `webdav`   | CSRF exclusion registration in `WebdavServerServiceProvider` |
+| `webdav-server.base_uri`         | `/webdav/` | SabreDAV base URI in `SabreServerConfigurator` |
+| `webdav-server.browser_listing`  | `false`    | Enables SabreDAV `Browser\Plugin` |
+| `webdav-server.logging.driver`   | `null`     | Package logging and SabreDAV logger wiring |
+| `webdav-server.logging.level`    | `info`     | Minimum package log level |
+
+## Route Prefix And Base URI
+
+These two settings affect different parts of the runtime.
+
+- `route_prefix` is used for CSRF exclusion registration
+- if `route_prefix` is empty, CSRF exclusion falls back to `base_uri`
+- `base_uri` is used by `SabreServerConfigurator` to build the effective SabreDAV base URI for the resolved space
+
+The package route itself is currently registered from `routes/web.php` as:
+
+```text
+/webdav/{space}/{path?}
+```
+
+That route shape is not derived dynamically from `route_prefix` or `base_uri`.
+
+With the default configuration and the `default` space key, the effective SabreDAV base URI becomes:
+
+```text
+/webdav/default/
+```
 
 ## Browser Listing
 
@@ -51,8 +102,8 @@ without any additional access control beyond the package's existing path authori
 
 When the browser listing is active, SabreDAV renders two HTML forms on every directory page:
 
-- **Create folder** — submits a `POST` request that SabreDAV converts to a `MKCOL` operation internally.
-- **Upload file** — submits a `POST` request that SabreDAV converts to a `PUT` operation internally.
+- **Create folder** - submits a `POST` request that SabreDAV converts to a `MKCOL` operation internally
+- **Upload file** - submits a `POST` request that SabreDAV converts to a `PUT` operation internally
 
 Both forms work out of the box. The package route accepts `POST` for this purpose, and the WebDAV endpoint is
 automatically excluded from Laravel's CSRF middleware so browser submissions are not rejected.
@@ -81,8 +132,8 @@ Behavior:
 Typical usage:
 
 - use `info` to record operational events such as authentication success or failure
-- use `debug` during development to trace credential extraction, request-context resolution, storage resolution, and
-  server setup
+- use `debug` during development to trace credential extraction, request-context resolution, storage resolution,
+  authorization checks, server setup, and Windows-relevant DAV handling
 
 ## Storage Spaces
 
@@ -96,18 +147,20 @@ Relevant keys:
 - `webdav-server.storage.spaces.{space}.root` (required)
 - `webdav-server.storage.spaces.{space}.prefix` (optional)
 
-`WebDavServerFactory` determines the `spaceKey` in this order:
+`RequestSpaceKeyResolver` determines the `spaceKey` in this order:
 
 1. route parameter `{space}`
 2. fallback `webdav-server.storage.default_space`
 
-The resolved runtime root is always:
+The resolved runtime root always appends the authenticated principal ID.
+
+If `prefix` is missing, empty, or exactly `/`, the effective root becomes:
 
 ```text
 {root}/{principal.id}
 ```
 
-If a space defines a non-empty `prefix`, the effective root becomes:
+If `prefix` is a non-empty path segment, the effective root becomes:
 
 ```text
 {root}/{prefix}/{principal.id}
@@ -123,19 +176,38 @@ Example:
 
 ## Auth Mapping
 
-`EloquentAccountRepository` and your configured account model use:
+`EloquentAccountRepository` reads the account model and its column mapping from `webdav-server.auth`.
 
-- `webdav-server.auth.account_model` (must be an Eloquent model class)
-- `webdav-server.auth.user_model` (required if policies should operate on `$principal->user`)
-- `webdav-server.auth.username_column` (default `username`)
-- `webdav-server.auth.password_column` (default `password_encrypted`)
-- `webdav-server.auth.enabled_column` (default `enabled`, set empty string to skip enabled checks)
-- `webdav-server.auth.user_id_column` (default `user_id`)
-- `webdav-server.auth.display_name_column` (default `username`)
+Relevant keys:
+
+- `webdav-server.auth.account_model`
+- `webdav-server.auth.user_model`
+- `webdav-server.auth.username_column`
+- `webdav-server.auth.password_column`
+- `webdav-server.auth.enabled_column`
+- `webdav-server.auth.user_id_column`
+- `webdav-server.auth.display_name_column`
+
+Current defaults:
+
+- `account_model` defaults to the package model `N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel`
+- `user_model` defaults to `null`
+- `username_column` defaults to `username`
+- `password_column` defaults to `password_encrypted`
+- `enabled_column` defaults to `enabled`
+- `user_id_column` defaults to `user_id`
+- `display_name_column` defaults to `display_name`
+
+Behavior notes:
+
+- `account_model` must be an Eloquent model class
+- `user_model` is required if your policies should operate on `$principal->user`
+- `enabled_column`, `user_id_column`, and `display_name_column` are treated as optional mappings
+- setting one of those optional column mappings to `null` or an empty string disables that mapping
 
 ## Failure Modes
 
-Invalid auth and storage configuration now raises domain-specific package exceptions instead of generic runtime
+Invalid auth and storage configuration raises domain-specific package exceptions instead of generic runtime
 exceptions.
 
 Examples:
@@ -150,97 +222,15 @@ Examples:
 
 - The package registers the WebDAV route shape `/webdav/{space}/{path?}`.
 - `route_prefix` is used for CSRF exclusion and falls back to `base_uri` when empty.
+- `base_uri` is used to build the effective SabreDAV base URI together with the resolved `spaceKey`.
 - `logging.driver = null` disables all package and SabreDAV logging.
 - `storage.spaces.*` is the active storage configuration model.
-- The packaged reference policy is `src/Policies/PathPolicy.php`.
+- `prefix = '/'` behaves like no extra prefix segment.
+- The package service provider registers `Gate::policy(PathResourceDto::class, PathPolicy::class)` by default.
 
-## Additional SabreDAV Plugins
+## Related Pages
 
-Applications can register additional SabreDAV `ServerPlugin` instances through the Laravel container without replacing
-the package configurator.
-
-Register the plugin in your application service provider and tag it with
-`WebdavServerServiceProvider::sabrePluginTag()`:
-
-```php
-use App\WebDav\Plugins\CustomSabrePlugin;
-use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
-
-public function register(): void
-{
-    $this->app->singleton(CustomSabrePlugin::class);
-    $this->app->tag(
-        [CustomSabrePlugin::class],
-        WebdavServerServiceProvider::sabrePluginTag(),
-    );
-}
-```
-
-Tagged plugins are attached in addition to the package defaults such as the compatibility and missing-path handling
-plugins.
-
-This extension mechanism is part of the package's stable server-customization model and is documented in
-[ADR 0014](adr/0014-additional-sabredav-plugins-via-tagged-service-provider-registration.md).
-
-## Extending The Server
-
-The package is designed so applications can customize WebDAV behavior without breaking the default runtime pipeline.
-
-Use this when you want to:
-
-- add extra SabreDAV protocol behavior
-- register listeners for SabreDAV lifecycle events
-- attach custom headers or diagnostics
-- keep the package defaults while extending the runtime
-
-Example plugin:
-
-```php
-namespace App\WebDav\Plugins;
-
-use Sabre\DAV\Server;
-use Sabre\DAV\ServerPlugin;
-
-final class CustomSabrePlugin extends ServerPlugin
-{
-    public function initialize(Server $server): void
-    {
-        $server->on('afterMethod:OPTIONS', function ($request, $response): void {
-            $response->setHeader('X-App-WebDav', 'enabled');
-        });
-    }
-
-    public function getPluginName(): string
-    {
-        return 'app-custom-sabre-plugin';
-    }
-}
-```
-
-Register it in your application service provider:
-
-```php
-namespace App\Providers;
-
-use App\WebDav\Plugins\CustomSabrePlugin;
-use Illuminate\Support\ServiceProvider;
-use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
-
-final class AppServiceProvider extends ServiceProvider
-{
-    public function register(): void
-    {
-        $this->app->singleton(CustomSabrePlugin::class);
-        $this->app->tag(
-            [CustomSabrePlugin::class],
-            WebdavServerServiceProvider::sabrePluginTag(),
-        );
-    }
-}
-```
-
-Result:
-
-- your plugin is added after the package-default plugins
-- `SabreServerConfigurator` remains the active configurator
-- existing package behavior stays intact unless your plugin intentionally changes it
+- [Getting Started](getting-started.md)
+- [Authentication & Authorization](authentication.md)
+- [Architecture](architecture.md)
+- [Server Customization](server-customization.md)
