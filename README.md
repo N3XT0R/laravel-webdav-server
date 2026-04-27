@@ -8,6 +8,9 @@
 [![Maintainability](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/maintainability.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Enterprise Ready](https://img.shields.io/badge/enterprise-ready-blue?style=flat-square)](#stability)
+
+---
+
 A WebDAV server package for Laravel powered by SabreDAV and Laravel Flysystem.
 
 It exposes Laravel storage disks through `/webdav/{space}/{path?}` and maps each request to a configured storage space
