@@ -17,13 +17,11 @@ php artisan laravel-webdav-server
   laravel-webdav-server:account:update  Update an existing WebDAV account in the configured account model.
 ```
 
----
-
-## account:create
+## `account:create`
 
 Create a new WebDAV account in the configured account model. The password is hashed before storage.
 
-```
+```text
 php artisan laravel-webdav-server:account:create <username> <secret> [options]
 ```
 
@@ -35,7 +33,7 @@ php artisan laravel-webdav-server:account:create <username> <secret> [options]
 | `--user-id=`        | no       | Linked Laravel user identifier                                     |
 | `--disabled`        | no       | Create the account in a disabled state (default: enabled)          |
 
-**Example — minimal account:**
+Example - minimal account:
 
 ```bash
 php artisan laravel-webdav-server:account:create alice s3cr3t
@@ -54,7 +52,7 @@ php artisan laravel-webdav-server:account:create alice s3cr3t
  +--------------+-------+
 ```
 
-**Example — account with display name and linked user:**
+Example - account with display name and linked user:
 
 ```bash
 php artisan laravel-webdav-server:account:create bob s3cr3t \
@@ -75,7 +73,7 @@ php artisan laravel-webdav-server:account:create bob s3cr3t \
  +--------------+-----------+
 ```
 
-**Example — disabled account:**
+Example - disabled account:
 
 ```bash
 php artisan laravel-webdav-server:account:create service-account s3cr3t --disabled
@@ -94,7 +92,7 @@ php artisan laravel-webdav-server:account:create service-account s3cr3t --disabl
  +--------------+-----------------+
 ```
 
-**Error — username already taken:**
+Error - username already taken:
 
 ```bash
 php artisan laravel-webdav-server:account:create alice s3cr3t
@@ -104,17 +102,15 @@ php artisan laravel-webdav-server:account:create alice s3cr3t
  ERROR  A WebDAV account with username 'alice' already exists.
 ```
 
----
-
-## account:list
+## `account:list`
 
 List all accounts from the configured account model, ordered by username.
 
-```
+```text
 php artisan laravel-webdav-server:account:list
 ```
 
-**Example — accounts present:**
+Example - accounts present:
 
 ```
  +----------+---------+---------+-----------+
@@ -125,27 +121,25 @@ php artisan laravel-webdav-server:account:list
  +----------+---------+---------+-----------+
 ```
 
-**Example — no accounts found:**
+Example - no accounts found:
 
 ```
  WARN  No WebDAV accounts found.
 ```
 
----
-
-## account:show
+## `account:show`
 
 Show the stored fields of one account by username.
 
-```
+```text
 php artisan laravel-webdav-server:account:show <username>
 ```
 
-| Argument   | Required | Description                              |
-|------------|----------|------------------------------------------|
-| `username` | yes      | Username of the account to display       |
+| Argument   | Required | Description                        |
+|------------|----------|------------------------------------|
+| `username` | yes      | Username of the account to display |
 
-**Example:**
+Example:
 
 ```bash
 php artisan laravel-webdav-server:account:show bob
@@ -163,7 +157,7 @@ php artisan laravel-webdav-server:account:show bob
  +--------------------+----------------------------------+
 ```
 
-**Error — username not found:**
+Error - username not found:
 
 ```bash
 php artisan laravel-webdav-server:account:show unknown
@@ -173,29 +167,27 @@ php artisan laravel-webdav-server:account:show unknown
  ERROR  No WebDAV account found for username 'unknown'.
 ```
 
----
-
-## account:update
+## `account:update`
 
 Update one or more fields on an existing account. Only the options you pass are applied; omitted options leave the
 field unchanged. At least one change option must be provided.
 
-```
+```text
 php artisan laravel-webdav-server:account:update <username> [options]
 ```
 
-| Option                | Description                                                            |
-|-----------------------|------------------------------------------------------------------------|
-| `--new-username=`     | Replace the current Basic Auth username                                |
-| `--secret=`           | Replace the stored credential with a newly hashed value                |
-| `--display-name=`     | Replace the stored display name                                        |
-| `--clear-display-name`| Set the display name to `null`; mutually exclusive with `--display-name` |
-| `--user-id=`          | Replace the linked Laravel user identifier                             |
-| `--clear-user-id`     | Set the linked user identifier to `null`; mutually exclusive with `--user-id` |
-| `--enable`            | Mark the account as enabled; mutually exclusive with `--disable`       |
-| `--disable`           | Mark the account as disabled; mutually exclusive with `--enable`       |
+| Option                 | Description                                                               |
+|------------------------|---------------------------------------------------------------------------|
+| `--new-username=`      | Replace the current Basic Auth username                                   |
+| `--secret=`            | Replace the stored credential with a newly hashed value                   |
+| `--display-name=`      | Replace the stored display name                                           |
+| `--clear-display-name` | Set the display name to `null`; mutually exclusive with `--display-name`  |
+| `--user-id=`           | Replace the linked Laravel user identifier                                |
+| `--clear-user-id`      | Set the linked user identifier to `null`; mutually exclusive with `--user-id` |
+| `--enable`             | Mark the account as enabled; mutually exclusive with `--disable`          |
+| `--disable`            | Mark the account as disabled; mutually exclusive with `--enable`          |
 
-**Example — change credential:**
+Example - change credential:
 
 ```bash
 php artisan laravel-webdav-server:account:update alice --secret=n3w-s3cr3t
@@ -214,7 +206,7 @@ php artisan laravel-webdav-server:account:update alice --secret=n3w-s3cr3t
  +--------------+-------+
 ```
 
-**Example — rename and disable:**
+Example - rename and disable:
 
 ```bash
 php artisan laravel-webdav-server:account:update alice --new-username=alice2 --disable
@@ -233,7 +225,7 @@ php artisan laravel-webdav-server:account:update alice --new-username=alice2 --d
  +--------------+--------+
 ```
 
-**Example — link a user and set a display name:**
+Example - link a user and set a display name:
 
 ```bash
 php artisan laravel-webdav-server:account:update alice2 --user-id=7 --display-name="Alice Doe"
@@ -252,7 +244,7 @@ php artisan laravel-webdav-server:account:update alice2 --user-id=7 --display-na
  +--------------+-----------+
 ```
 
-**Example — clear display name and re-enable:**
+Example - clear display name and re-enable:
 
 ```bash
 php artisan laravel-webdav-server:account:update alice2 --clear-display-name --enable
@@ -271,7 +263,7 @@ php artisan laravel-webdav-server:account:update alice2 --clear-display-name --e
  +--------------+--------+
 ```
 
-**Error — no options passed:**
+Error - no options passed:
 
 ```bash
 php artisan laravel-webdav-server:account:update alice2
@@ -281,7 +273,7 @@ php artisan laravel-webdav-server:account:update alice2
  WARN  No changes requested.
 ```
 
-**Error — conflicting options:**
+Error - conflicting options:
 
 ```bash
 php artisan laravel-webdav-server:account:update alice2 --enable --disable
@@ -291,7 +283,7 @@ php artisan laravel-webdav-server:account:update alice2 --enable --disable
  ERROR  Use either --enable or --disable, not both.
 ```
 
-**Error — new username already taken:**
+Error - new username already taken:
 
 ```bash
 php artisan laravel-webdav-server:account:update alice2 --new-username=bob
@@ -301,7 +293,7 @@ php artisan laravel-webdav-server:account:update alice2 --new-username=bob
  ERROR  A WebDAV account with username 'bob' already exists.
 ```
 
-**Error — account not found:**
+Error - account not found:
 
 ```bash
 php artisan laravel-webdav-server:account:update unknown --enable
@@ -311,8 +303,6 @@ php artisan laravel-webdav-server:account:update unknown --enable
  ERROR  No WebDAV account found for username 'unknown'.
 ```
 
----
-
 ## Optional Columns
 
 Fields shown as `-` in any command output indicate that the corresponding column is either not configured in
@@ -320,10 +310,10 @@ Fields shown as `-` in any command output indicate that the corresponding column
 
 The column mapping is configured under `webdav-server.auth`:
 
-| Config key                           | Default     | Command field   |
-|--------------------------------------|-------------|-----------------|
-| `webdav-server.auth.enabled_column`  | `enabled`   | `enabled`       |
-| `webdav-server.auth.user_id_column`  | `user_id`   | `user_id`       |
-| `webdav-server.auth.display_name_column` | username column | `display_name` |
+| Config key                                | Default         | Command field   |
+|-------------------------------------------|-----------------|-----------------|
+| `webdav-server.auth.enabled_column`       | `enabled`       | `enabled`       |
+| `webdav-server.auth.user_id_column`       | `user_id`       | `user_id`       |
+| `webdav-server.auth.display_name_column`  | username column | `display_name`  |
 
 Set any of these to `null` or an empty string in the config to disable that column entirely.

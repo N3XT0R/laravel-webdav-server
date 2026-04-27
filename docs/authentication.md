@@ -3,8 +3,9 @@
 This document explains how authentication and authorization work in the package and which extension points you can
 override.
 
-The authentication and authorization extension points documented here are part of the structurally stable public
-package surface for the current `beta` release line.
+!!! note
+    The authentication and authorization extension points documented here are part of the structurally stable public
+    package surface for the current `beta` release line.
 
 ## Authentication Overview
 

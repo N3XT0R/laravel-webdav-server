@@ -15,28 +15,19 @@ and extensible WebDAV integrations in Laravel applications.
 Expose Laravel storage disks through `/webdav/{space}/{path?}` and map each request to a configured storage space plus a
 user-scoped root path.
 
-This README provides a quick overview. For full documentation, see Read the Docs.
+This README is a quick overview. The full documentation lives on Read the Docs.
 
 > Current version: **beta**
-
+>
 > [!IMPORTANT]
 > The public package API, configuration structure, and extension points are treated as structurally stable.
 > The beta phase is focused on hardening, compatibility validation, documentation, and bug fixes rather than
 > structural API changes.
 
-## Documentation
+## Start Here
 
-Full documentation is available on Read the Docs:
-
-👉 https://laravel-webdav-server.readthedocs.io/en/latest/
-
-Start there if you want to:
-
-- install and configure the package
-- understand the request pipeline
-- customize authentication, storage, or authorization
-- extend the SabreDAV runtime with additional plugins
-- explore architecture and extension points
+- **Quickstart:** [jump to the local development entry point](#quickstart)
+- **Full documentation:** https://laravel-webdav-server.readthedocs.io/en/latest/
 
 Direct entry points:
 
@@ -44,6 +35,7 @@ Direct entry points:
 - [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
 - [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/)
 - [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)
+- [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)
 - [Common Questions](https://laravel-webdav-server.readthedocs.io/en/latest/common-questions/)
 - [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)
 
@@ -60,9 +52,9 @@ This package is not a Flysystem WebDAV client disk.
 
 ## Where To Start
 
-Use this README if you want a quick overview and a local development entry point.
+Use this README for a fast overview and a local development entry point.
 
-Use Read the Docs if you want the full package documentation.
+Use Read the Docs for installation, configuration, architecture, and extension guidance.
 
 | If you want to...                         | Start here                                                                                               |
 |-------------------------------------------|----------------------------------------------------------------------------------------------------------|
@@ -101,7 +93,10 @@ Quick verification:
 curl -u testuser:password -X PROPFIND http://localhost:8000/webdav/default/
 ```
 
-For full setup, configuration, and extension guidance, use the documentation on Read the Docs.
+For full setup, configuration, and extension guidance, use the documentation on Read the Docs:
+
+- [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
+- [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
 
 ## Installation
 
@@ -335,7 +330,7 @@ Client-side requirements still apply:
 
 ## Documentation
 
-The README is intentionally a quick entry point. The full documentation lives on Read the Docs:
+Read the Docs is the primary documentation set:
 
 👉 https://laravel-webdav-server.readthedocs.io/en/latest/
 

@@ -2,8 +2,22 @@
 
 A WebDAV server package for Laravel powered by SabreDAV and Laravel's filesystem abstraction.
 
-This package is now in `beta`. The package API, configuration structure, and extension points are documented as
-structurally stable.
+!!! note
+    This package is now in `beta`. The package API, configuration structure, and extension points are documented as
+    structurally stable.
+
+## Start Here
+
+Start with [Getting Started](getting-started.md) for installation and the first working setup.
+Use [Configuration Reference](configuration.md) when you need the available keys and runtime options quickly.
+
+- [Getting Started](getting-started.md)
+- [Configuration Reference](configuration.md)
+- [Authentication & Authorization](authentication.md)
+- [Architecture](architecture.md)
+- [Commands](commands.md)
+- [Common Questions](common-questions.md)
+- [Architectural Decision Records](adr/README.md)
 
 ## Overview
 
@@ -30,16 +44,6 @@ Core characteristics:
 - the package is now in `beta`
 - public contracts, DTOs, route shape, and configuration keys are now treated as structurally stable
 - further changes are expected to focus on hardening, interoperability, documentation, and bug fixes
-
-## Documentation
-
-- [Getting Started](getting-started.md)
-- [Configuration Reference](configuration.md)
-- [Authentication & Authorization](authentication.md)
-- [Architecture](architecture.md)
-- [Commands](commands.md)
-- [Common Questions](common-questions.md)
-- [Architectural Decision Records](adr/README.md)
 
 ## Current Support Scope
 

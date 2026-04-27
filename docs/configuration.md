@@ -57,8 +57,9 @@ When the browser listing is active, SabreDAV renders two HTML forms on every dir
 Both forms work out of the box. The package route accepts `POST` for this purpose, and the WebDAV endpoint is
 automatically excluded from Laravel's CSRF middleware so browser submissions are not rejected.
 
-> **Note:** Enable this in development or internal environments only. Do not enable it in production unless path
-> authorization is explicitly configured to restrict access.
+!!! note
+    Enable this in development or internal environments only. Do not enable it in production unless path
+    authorization is explicitly configured to restrict access.
 
 ## Logging
 

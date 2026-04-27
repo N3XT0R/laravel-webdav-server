@@ -4,6 +4,8 @@ Every WebDAV request passes through this runtime flow:
 
 ![Laravel WebDAV Server request flow](assets/architecture-request-flow.svg)
 
+## Request Pipeline
+
 1. `WebDavController::__invoke()` accepts the incoming request for `/webdav/{space}/{path?}`.
 2. If no Basic Auth attempt is present, the controller returns `401 Unauthorized` with `WWW-Authenticate`.
 3. If credentials are present, `WebDavServerFactory::make(request)` builds the SabreDAV server instance.
@@ -31,10 +33,11 @@ All extension points are bound via `bindIf()` in `WebdavServerServiceProvider`, 
 The package architecture is intended to remain SOLID-compliant and to prefer established design patterns such as
 `Factory`, `Strategy`, `Builder`, and `Adapter` where they clearly fit recurring problems.
 
-The runtime pipeline and the documented extension boundaries are treated as structurally stable for the current
-`beta` release line.
+!!! note
+    The runtime pipeline and the documented extension boundaries are treated as structurally stable for the current
+    `beta` release line.
 
-Related decisions:
+## Related Decisions
 
 - [ADR 0001: Test Architecture And Layering](adr/0001-test-architecture-and-layering.md)
 - [ADR 0002: WebDAV Request Pipeline And Runtime Boundary](adr/0002-webdav-request-pipeline-and-runtime-boundary.md)

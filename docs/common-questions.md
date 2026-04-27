@@ -91,8 +91,8 @@ Yes. Policies are checked before every filesystem operation.
 
 Mapped abilities:
 
-| Ability           | Operation       |
-|-------------------|-----------------|
+| Ability           | Operation           |
+|-------------------|---------------------|
 | `read`            | `PROPFIND`, `GET`   |
 | `write`           | `PUT` (overwrite)   |
 | `delete`          | `DELETE`            |

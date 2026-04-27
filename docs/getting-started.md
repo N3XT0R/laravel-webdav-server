@@ -3,8 +3,20 @@
 This package is built around user-isolated storage through pluggable authentication, storage resolution, and path
 authorization.
 
-The package is in `beta`. The route shape, configuration structure, and documented extension points should be treated
-as structurally stable.
+!!! note
+    The package is in `beta`. The route shape, configuration structure, and documented extension points should be treated
+    as structurally stable.
+
+## Overview
+
+This page walks through the default setup flow:
+
+1. configure a storage space
+2. configure logging if needed
+3. create a first WebDAV account
+4. understand how the URL resolves to user storage
+5. register a policy if you want application-specific authorization rules
+6. connect with a WebDAV client
 
 ## Configure Storage Spaces
 
@@ -153,7 +165,7 @@ The package uses independent Basic Auth, not Laravel's `auth()` middleware.
 - if logging is enabled, authentication outcomes are logged at `info`
 - debug logging traces credential extraction and principal resolution without logging secrets
 
-## Access from Clients
+## Access From Clients
 
 ```text
 macOS:   webdav://your-domain.test/webdav/default
