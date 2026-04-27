@@ -26,3 +26,4 @@ The records follow the Nygard ADR structure recommended by `adr.github.io`:
 - [0012. Exception-Based Control Flow Over Null And False Sentinels](0012-exception-based-control-flow-over-null-and-false-sentinels.md)
 - [0013. Method-Level PHPDoc And Import-Based Type References](0013-method-level-phpdoc-and-import-based-type-references.md)
 - [0014. Additional SabreDAV Plugins Via Tagged Service Provider Registration](0014-additional-sabredav-plugins-via-tagged-service-provider-registration.md)
+- [0015. PathResolverService And WebDavPath Facade For Centralized Path Resolution](0015-path-resolver-service-and-webdav-path-facade.md)

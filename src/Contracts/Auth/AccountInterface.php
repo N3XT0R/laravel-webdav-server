@@ -6,7 +6,7 @@ namespace N3XT0R\LaravelWebdavServer\Contracts\Auth;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 
-interface AccountInterface
+interface AccountInterface extends WebDavPrincipalInterface
 {
     /**
      * Return the principal identifier that should back the WebDAV principal URI.

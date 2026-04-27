@@ -207,17 +207,31 @@ include any user-specific path segment.
 The `WebDavPath` Facade exposes both methods for use in application controllers and views without triggering the full
 WebDAV request pipeline.
 
+`resolveUrl()` needs only the space key and can be called without a principal:
+
 ```php
 use N3XT0R\LaravelWebdavServer\Facades\WebDavPath;
 
-// Resolve the public WebDAV mount URL for a space:
 $url = WebDavPath::resolveUrl('default');
 // → 'https://app.test/webdav/default'
+```
 
-// Resolve the user-scoped filesystem root path:
-$path = WebDavPath::resolvePath($principal, 'default');
+`resolvePath()` accepts any `AccountInterface` — the type returned by `AccountRepositoryInterface::findEnabledByUsername()`.
+Outside of an active WebDAV request, retrieve the account from the repository and pass it directly:
+
+```php
+use N3XT0R\LaravelWebdavServer\Contracts\Repositories\AccountRepositoryInterface;
+use N3XT0R\LaravelWebdavServer\Facades\WebDavPath;
+
+$account = app(AccountRepositoryInterface::class)->findEnabledByUsername($username);
+
+$path = WebDavPath::resolvePath($account, 'default');
 // → 'webdav/42'
 ```
+
+`resolvePath()` also accepts a `WebDavPrincipalValueObject` — both implement `WebDavPrincipalInterface`, which is the
+actual parameter type. During a WebDAV request the principal value object flows through the pipeline automatically;
+outside a request the repository is the natural entry point.
 
 This is useful for presenting WebDAV connection details to users in the frontend without requiring an active WebDAV
 request.

@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Services;
 
 use Illuminate\Contracts\Config\Repository;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\WebDavPrincipalInterface;
 use N3XT0R\LaravelWebdavServer\Contracts\Storage\PathResolverInterface;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\InvalidSpaceConfigurationException;
 use N3XT0R\LaravelWebdavServer\Exception\Storage\SpaceNotConfiguredException;
-use N3XT0R\LaravelWebdavServer\ValueObjects\WebDavPrincipalValueObject;
 
 final readonly class PathResolverService implements PathResolverInterface
 {
@@ -22,14 +22,15 @@ final readonly class PathResolverService implements PathResolverInterface
     /**
      * Resolve the user-scoped filesystem root path for the given principal and space key.
      *
-     * @param  WebDavPrincipalValueObject  $principal  Authenticated principal whose ID is appended to the resolved path.
+     * @param  WebDavPrincipalInterface  $principal  Principal whose ID is appended to the resolved path.
+     *                                               Accepts any `AccountInterface` or `WebDavPrincipalValueObject`.
      * @param  string  $spaceKey  Logical storage space key.
      * @return string User-scoped filesystem root path, e.g. `webdav/42`.
      *
      * @throws SpaceNotConfiguredException When the requested space key is missing from configuration.
      * @throws InvalidSpaceConfigurationException When the configured space is incomplete or invalid.
      */
-    public function resolvePath(WebDavPrincipalValueObject $principal, string $spaceKey): string
+    public function resolvePath(WebDavPrincipalInterface $principal, string $spaceKey): string
     {
         $spaceConfig = $this->readSpaceConfig($spaceKey);
 
@@ -49,7 +50,7 @@ final readonly class PathResolverService implements PathResolverInterface
             $parts[] = trim($prefix, '/');
         }
 
-        $parts[] = (string) $principal->id;
+        $parts[] = $principal->getPrincipalId();
 
         return implode('/', $parts);
     }

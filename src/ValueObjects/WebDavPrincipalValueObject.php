@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\ValueObjects;
 
 use Illuminate\Contracts\Auth\Authenticatable;
+use N3XT0R\LaravelWebdavServer\Contracts\Auth\WebDavPrincipalInterface;
 
-final readonly class WebDavPrincipalValueObject
+final readonly class WebDavPrincipalValueObject implements WebDavPrincipalInterface
 {
     /**
      * Create the authenticated WebDAV principal value object.
@@ -20,6 +21,11 @@ final readonly class WebDavPrincipalValueObject
         public string $displayName,
         public ?Authenticatable $user = null,
     ) {}
+
+    public function getPrincipalId(): string
+    {
+        return $this->id;
+    }
 
     /**
      * Build the SabreDAV principal URI for the authenticated principal.
