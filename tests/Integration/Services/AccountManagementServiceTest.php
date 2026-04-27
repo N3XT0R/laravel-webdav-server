@@ -10,6 +10,7 @@ use N3XT0R\LaravelWebdavServer\DTO\Management\AccountUpdateDto;
 use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\DuplicateUsernameException;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentAccountRepository;
+use N3XT0R\LaravelWebdavServer\Services\AccountCreateService;
 use N3XT0R\LaravelWebdavServer\Services\AccountManagementService;
 use N3XT0R\LaravelWebdavServer\Services\AccountUpdateService;
 use N3XT0R\LaravelWebdavServer\Tests\DatabaseTestCase;
@@ -20,7 +21,11 @@ final class AccountManagementServiceTest extends DatabaseTestCase
     {
         $repository = new EloquentAccountRepository($this->app->make(Repository::class));
 
-        return new AccountManagementService($repository, new AccountUpdateService($repository));
+        return new AccountManagementService(
+            $repository,
+            new AccountCreateService($repository),
+            new AccountUpdateService($repository),
+        );
     }
 
     // --- columnMapping ---

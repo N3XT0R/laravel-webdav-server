@@ -23,9 +23,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 
 - **AccountManagementService**
-    - Extracted field-level update logic into a dedicated `AccountUpdateService` class to keep
-      `AccountManagementService` focused on account orchestration. `AccountUpdateService` handles username uniqueness
-      checks and applies all DTO field changes to the model. The public `update()` signature is unchanged.
+    - Extracted account creation logic into a dedicated `AccountCreateService` and field-level update logic into
+      `AccountUpdateService` so each class has a single, focused responsibility. `AccountManagementService` now
+      orchestrates only; both public method signatures are unchanged.
     - Replaced `\InvalidArgumentException` with the domain-scoped `DuplicateUsernameException` in `create()` and
       `update()` so duplicate-username failures carry explicit package context and fit the exception hierarchy.
 

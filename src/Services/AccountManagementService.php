@@ -6,7 +6,6 @@ namespace N3XT0R\LaravelWebdavServer\Services;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Hash;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\AccountManagementRepositoryInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Management\AccountColumnMappingDto;
 use N3XT0R\LaravelWebdavServer\DTO\Management\AccountUpdateDto;
@@ -16,11 +15,13 @@ final readonly class AccountManagementService
 {
     /**
      * @param  AccountManagementRepositoryInterface  $repository  Repository for account model access and persistence.
-     * @param  AccountUpdateService  $applier  Applies field-level changes from an update DTO to an account model.
+     * @param  AccountCreateService  $creator  Handles new account creation including uniqueness checks and field mapping.
+     * @param  AccountUpdateService  $updater  Handles field-level changes for existing account models.
      */
     public function __construct(
         private AccountManagementRepositoryInterface $repository,
-        private AccountUpdateService $applier,
+        private AccountCreateService $creator,
+        private AccountUpdateService $updater,
     ) {}
 
     /**
@@ -73,34 +74,7 @@ final readonly class AccountManagementService
         mixed $userId = null,
         bool $enabled = true,
     ): Model {
-        $mapping = $this->repository->columnMapping();
-
-        if ($this->repository->findByUsername($username) !== null) {
-            throw new DuplicateUsernameException("A WebDAV account with username '{$username}' already exists.");
-        }
-
-        $account = $this->repository->newModel();
-        $account->setAttribute($mapping->usernameColumn, $username);
-        $account->setAttribute($mapping->passwordColumn, Hash::make($password));
-
-        if ($mapping->enabledColumn !== null) {
-            $account->setAttribute($mapping->enabledColumn, $enabled);
-        }
-
-        if ($mapping->userIdColumn !== null && $userId !== null) {
-            $account->setAttribute($mapping->userIdColumn, $userId);
-        }
-
-        if ($mapping->displayNameColumn !== null) {
-            $account->setAttribute(
-                $mapping->displayNameColumn,
-                ($displayName !== null && trim($displayName) !== '') ? $displayName : $username,
-            );
-        }
-
-        $this->repository->save($account);
-
-        return $account;
+        return $this->creator->create($username, $password, $displayName, $userId, $enabled);
     }
 
     /**
@@ -115,7 +89,7 @@ final readonly class AccountManagementService
     public function update(Model $account, AccountUpdateDto $dto): bool
     {
         $mapping = $this->repository->columnMapping();
-        $changed = $this->applier->apply($account, $mapping, $dto);
+        $changed = $this->updater->apply($account, $mapping, $dto);
 
         if ($changed) {
             $this->repository->save($account);
