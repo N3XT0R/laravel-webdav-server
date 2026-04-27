@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+
+- **documentation**
+    - Polished the README and Read the Docs pages for the upcoming `1.0.0` release to improve scanability,
+      section flow, and entry-point visibility without changing the documented package behavior.
+    - Split server-extension guidance out of `docs/configuration.md` into a dedicated `Server Customization` page so
+      configuration reference content stays focused while SabreDAV runtime extension guidance remains fully documented.
+
 ## [1.0.0-beta.3] - 2026-04-27
 
 ### Added
