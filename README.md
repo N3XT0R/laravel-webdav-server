@@ -1,93 +1,31 @@
 # Laravel WebDAV Server (SabreDAV + Flysystem)
 
+[![Latest Version on Packagist](https://img.shields.io/packagist/v/n3xt0r/laravel-webdav-server.svg?style=flat-square)](https://packagist.org/packages/n3xt0r/laravel-webdav-server)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=N3XT0R_laravel-webdav-server&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=N3XT0R_laravel-webdav-server)
+[![Develop Status](https://img.shields.io/badge/develop-beta-yellow?style=flat-square)](https://github.com/N3XT0R/laravel-webdav-server/tree/develop)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/n3xt0r/laravel-webdav-server/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/n3xt0r/laravel-webdav-server/actions)
+[![Read the Docs](https://readthedocs.org/projects/laravel-webdav-server/badge/?version=latest)](https://laravel-webdav-server.readthedocs.io/en/latest/?badge=latest)
 [![Maintainability](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/maintainability.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
-
+[![Enterprise Ready](https://img.shields.io/badge/enterprise-ready-blue?style=flat-square)](#stability)
 A WebDAV server package for Laravel powered by SabreDAV and Laravel Flysystem.
 
-Expose Laravel storage disks through `/webdav/{space}/{path?}` and map each request to a configured storage space plus a
-user-scoped root path.
+It exposes Laravel storage disks through `/webdav/{space}/{path?}` and maps each request to a configured storage space
+with a user-scoped root path.
 
-This README is a quick overview. The full documentation lives on Read the Docs.
+## Documentation
 
-> [!IMPORTANT]
-> Public contracts, configuration keys, route shape, and extension points are part of the documented package surface.
+The full documentation is available on Read the Docs:
 
-## The Problem
+👉 https://laravel-webdav-server.readthedocs.io/en/latest/
 
-Laravel does not provide a native WebDAV server.
+The same documentation is also available in this repository:
 
-In practice, existing WebDAV-related packages in the Laravel and PHP ecosystem often fall into one of two categories:
+👉 [docs/](docs/)
 
-- they provide WebDAV clients, for example as Flysystem integrations, but not a WebDAV server
-- they provide a thin SabreDAV integration without a clear Laravel-oriented runtime model
+Read the Docs provides a structured and navigable version of the same content.
 
-That leaves several practical problems unresolved:
-
-- request flow is implicit and difficult to inspect
-- central decisions such as authentication, storage resolution, and routing are difficult to influence in a structured way
-- customization often requires replacing large parts of the integration instead of changing one clearly bounded step
-- responsibilities such as authentication, authorization, storage resolution, and server runtime are not cleanly separated
-
-Debugging is also difficult, especially with WebDAV:
-
-- many clients return generic errors or no useful error information at all
-- behavior differs noticeably between clients such as Windows Explorer, macOS Finder, and WinSCP
-
-Windows WebClient adds additional compatibility constraints:
-
-- it expects correct `OPTIONS` handling
-- it expects valid `PROPFIND` responses
-- small deviations can cause the client to fail without a useful diagnostic signal
-
-## What This Package Solves
-
-This package addresses those problems with an explicit Laravel-oriented server integration.
-
-- request handling follows an explicit pipeline instead of relying on implicit runtime behavior
-- authentication, authorization, storage resolution, and server configuration are separated into distinct responsibilities
-- storage uses Laravel Flysystem
-- authorization uses Laravel Gate / policies by default
-- each step in the request flow is inspectable and replaceable
-- extensions are made through defined contracts and extension points
-- structured customization does not require replacing the entire system
-- storage targets are mapped through configured `spaces`
-- logging supports tracing authentication, routing, storage resolution, and server behavior
-
-The package also implements the WebDAV behavior required by common clients, including:
-
-- correct `OPTIONS` handling
-- correct `PROPFIND` handling
-- valid `207 Multi-Status` responses
-- root collection handling
-- `MS-Author-Via` response headers
-
-Important limitation:
-
-The package implements WebDAV behavior compatible with common clients, including Windows WebClient.
-Client-side constraints such as `http://` versus `https://`, local system configuration, and operating-system policy
-still apply.
-
-Without this package:
-
-- implicit behavior
-- limited extensibility
-- difficult debugging
-
-With this package:
-
-- explicit request pipeline
-- structured extension points
-- predictable behavior
-
-## Start Here
-
-- **Quickstart:** [jump to the local development entry point](#quickstart)
-- **Full documentation:** https://laravel-webdav-server.readthedocs.io/en/latest/
-
-Direct entry points:
+Useful entry points:
 
 - [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
 - [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
@@ -96,35 +34,28 @@ Direct entry points:
 - [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)
 - [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)
 - [Common Questions](https://laravel-webdav-server.readthedocs.io/en/latest/common-questions/)
-- [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)
 
-## Use Cases
+## The Problem
 
-This package is a good fit if you want to:
+- Laravel does not provide a native WebDAV server.
+- Many existing packages provide WebDAV clients, for example for Flysystem, but not a server.
+- Thin SabreDAV integrations often behave like black boxes inside Laravel.
+- Request flow, authentication, storage resolution, and routing are often difficult to inspect or influence.
+- Customization often requires replacing large parts of the integration.
+- Debugging is difficult because many WebDAV clients return generic errors or no useful diagnostics.
+- Client behavior differs noticeably between Windows Explorer, macOS Finder, and WinSCP.
+- Windows WebClient is especially strict about `OPTIONS`, `PROPFIND`, and response correctness.
 
-- expose Laravel storage disks as a WebDAV server endpoint
-- map requests to user-scoped storage roots
-- integrate WebDAV access with Laravel-based authentication and authorization
-- customize storage resolution, request handling, or SabreDAV runtime behavior without forking the package
+## What This Package Provides
 
-This package is not a Flysystem WebDAV client disk.
-
-## Where To Start
-
-Use this README for a fast overview and a local development entry point.
-
-Use Read the Docs for installation, configuration, architecture, and extension guidance.
-
-| If you want to...                         | Start here                                                                                               |
-|-------------------------------------------|----------------------------------------------------------------------------------------------------------|
-| run the package locally                   | [Quickstart](#quickstart)                                                                                |
-| install it in an application              | [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)               |
-| configure spaces, auth, or logging        | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)                   |
-| understand runtime flow and boundaries    | [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)                     |
-| customize auth, storage, or authorization | [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/) |
-| manage WebDAV accounts via artisan        | [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)                             |
-| extend the SabreDAV runtime               | [Server Customization](https://laravel-webdav-server.readthedocs.io/en/latest/server-customization/)     |
-| review architectural decisions            | [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)                               |
+- a WebDAV server for Laravel
+- an explicit request pipeline
+- Laravel Flysystem integration for storage
+- Laravel Gate / policy-based authorization by default
+- structured storage mapping through `spaces`
+- defined contracts and extension points instead of a black-box runtime
+- logging for authentication, routing, storage resolution, and server behavior
+- WebDAV behavior compatible with common clients, including Windows WebClient
 
 ## Quickstart
 
@@ -152,11 +83,7 @@ Quick verification:
 curl -u testuser:password -X PROPFIND http://localhost:8000/webdav/default/
 ```
 
-For full setup, configuration, and extension guidance, use the documentation on Read the Docs:
-
-- [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
-- [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
-- [Server Customization](https://laravel-webdav-server.readthedocs.io/en/latest/server-customization/)
+For full setup and configuration details, use the documentation links above.
 
 ## Installation
 
@@ -168,245 +95,22 @@ php artisan migrate
 
 The package service provider is `N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider`.
 
-For full installation and configuration guidance, use:
+## Core Concepts
 
-- [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
-- [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
+- Route shape: `/webdav/{space}/{path?}`
+- Authentication: HTTP Basic Auth
+- Storage mapping: configured `spaces`
+- Authorization: `PathAuthorizationInterface`, backed by Laravel Gate / policies by default
 
-## Account Management Commands
+See Read the Docs for the complete request flow, configuration reference, and extension model.
 
-The package includes artisan commands for managing WebDAV account records in the configured
-`webdav-server.auth.account_model`.
+## Compatibility Notes
 
-Full command reference with all options, examples, and expected output:
-
-👉 [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)
-
-## What This Package Does
-
-- provides a WebDAV server for Laravel
-- exposes Flysystem disks such as `local` or `s3`
-- resolves storage through named `space` keys under `webdav-server.storage.spaces.*`
-- scopes each resolved storage root to `{root}[/prefix]/{principal.id}`
-- authenticates requests through package contracts, not Laravel session auth
-- authorizes path operations through `PathAuthorizationInterface`, backed by Laravel Gate / policies by default
-- allows server customization through documented extension points and additional SabreDAV plugins
-
-This package is a server integration, not a Flysystem WebDAV client disk.
-
-## Route Shape
-
-The effective WebDAV route shape is:
-
-```text
-/webdav/{space}/{path?}
-```
-
-Example:
-
-```php
-Route::match([
-    'OPTIONS',
-    'GET',
-    'POST',
-    'PUT',
-    'DELETE',
-    'PROPFIND',
-    'MKCOL',
-], '/webdav/{space}/{path?}', \N3XT0R\LaravelWebdavServer\Http\Controllers\WebDavController::class)
-    ->where('path', '.*');
-```
-
-## Authentication And Authorization
-
-- Authentication uses HTTP Basic Auth.
-- Default auth flow uses `DatabaseCredentialValidator` plus `EloquentAccountRepository`.
-- Authorization uses `PathAuthorizationInterface`.
-- The default adapter is `GatePathAuthorization`, which passes `PathResourceDto` into Laravel Gate / policies.
-- WebDAV account records can be created and maintained through the built-in artisan account commands.
-
-Policy abilities:
-
-- `read`
-- `write`
-- `delete`
-- `createDirectory`
-- `createFile`
-
-## Extension Points
-
-- `CredentialValidatorInterface`
-- `AccountRepositoryInterface`
-- `SpaceResolverInterface`
-- `PathAuthorizationInterface`
-- `RequestCredentialsExtractorInterface`
-- `PrincipalAuthenticatorInterface`
-- `RequestContextResolverInterface`
-- `SpaceKeyResolverInterface`
-- `StorageRootBuilderInterface`
-- `ServerConfiguratorInterface`
-- `ServerRunnerInterface`
-
-Additional SabreDAV `ServerPlugin` instances can be registered from your application service provider via the package
-container tag:
-
-```php
-use App\WebDav\Plugins\CustomSabrePlugin;
-use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
-
-public function register(): void
-{
-    $this->app->singleton(CustomSabrePlugin::class);
-    $this->app->tag(
-        [CustomSabrePlugin::class],
-        WebdavServerServiceProvider::sabrePluginTag(),
-    );
-}
-```
-
-Tagged plugins are added after the package defaults during SabreDAV server configuration.
-
-## Server Customization
-
-The package keeps its public WebDAV surface bounded, but the SabreDAV runtime itself can still be extended.
-
-Typical customization points:
-
-- replace package contracts such as `CredentialValidatorInterface`, `SpaceResolverInterface`, or
-  `PathAuthorizationInterface`
-- keep the default configurator and attach additional SabreDAV `ServerPlugin` instances
-- combine your own SabreDAV behavior with the package defaults instead of replacing the whole runtime setup
-
-Example: register a custom SabreDAV plugin from your application:
-
-```php
-namespace App\WebDav\Plugins;
-
-use Sabre\DAV\Server;
-use Sabre\DAV\ServerPlugin;
-
-final class CustomSabrePlugin extends ServerPlugin
-{
-    public function initialize(Server $server): void
-    {
-        $server->on('afterMethod:PROPFIND', function (): void {
-            // Add custom behavior after PROPFIND handling.
-        });
-    }
-
-    public function getPluginName(): string
-    {
-        return 'app-custom-sabre-plugin';
-    }
-}
-```
-
-```php
-namespace App\Providers;
-
-use App\WebDav\Plugins\CustomSabrePlugin;
-use Illuminate\Support\ServiceProvider;
-use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
-
-final class AppServiceProvider extends ServiceProvider
-{
-    public function register(): void
-    {
-        $this->app->singleton(CustomSabrePlugin::class);
-        $this->app->tag(
-            [CustomSabrePlugin::class],
-            WebdavServerServiceProvider::sabrePluginTag(),
-        );
-    }
-}
-```
-
-That plugin will then be added alongside the package defaults during `SabreServerConfigurator::configure()`.
-
-## Request Pipeline
-
-1. `WebDavController` accepts the request.
-2. `WebDavServerFactory` resolves credentials, principal, `spaceKey`, and storage space through dedicated collaborators.
-3. `StorageRootBuilder` creates the SabreDAV node tree.
-4. `SabreServerConfigurator` applies runtime configuration such as the effective base URI and optional SabreDAV
-   logging.
-5. `ServerRunnerInterface` hands execution off to the runtime adapter.
-
-The default runner is `SabreServerRunner`, which calls `Server::start()` and terminates the request lifecycle.
-
-## Logging
-
-Package logging is configured through `webdav-server.logging`.
-
-- set `driver` to a Laravel log channel such as `stack`, `single`, or `stderr` to enable logging
-- set `driver` to `null` to disable package and SabreDAV logging entirely
-- use `level = info` for operational events such as authentication success or failure
-- use `level = debug` to additionally trace credential extraction, request-context resolution, storage resolution, and
-  SabreDAV server setup during development
-- debug logging also traces Windows-relevant `OPTIONS` and root-level `PROPFIND` handling inside SabreDAV
-
-## Supported WebDAV Methods
-
-- `OPTIONS`
-- `PROPFIND`
-- `GET`
-- `PUT`
-- `DELETE`
-- `MKCOL`
-
-## Windows WebClient Notes
-
-Windows Explorer / WebClient support depends on the client machine in addition to server behavior.
-
-This package provides WebDAV responses compatible with Windows WebClient, including:
-
-- `OPTIONS`
-- `PROPFIND`
-- `207 Multi-Status`
-- `DAV` headers
-- root collection handling
-- `MS-Author-Via: DAV`
-
-Client-side requirements still apply:
-
-- the `WebClient` Windows service must be running
-- Basic Auth over plain `http://` may require `BasicAuthLevel` to be enabled in the Windows registry, or use `https://`
-- the package answers `OPTIONS` and root `PROPFIND` requests for `/webdav/{space}/` in a WebDAV-compatible way, but
-  Windows client policy can still block non-HTTPS Basic Auth on the workstation
-- for reliable Windows Explorer usage, prefer `https://`
-
-## Tested Clients
-
-- WinSCP
-- macOS Finder
-- Windows Explorer
-- Cyberduck
-
-## Documentation
-
-Read the Docs is the primary documentation set:
-
-👉 https://laravel-webdav-server.readthedocs.io/en/latest/
-
-Read the Docs entry points:
-
-- [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
-- [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
-- [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/)
-- [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)
-- [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)
-- [Common Questions](https://laravel-webdav-server.readthedocs.io/en/latest/common-questions/)
-- [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)
-
-Repository-local mirrors:
-
-- [Getting Started](docs/getting-started.md)
-- [Configuration](docs/configuration.md)
-- [Authentication & Authorization](docs/authentication.md)
-- [Architecture](docs/architecture.md)
-- [Commands](docs/commands.md)
-- [Common Questions](docs/common-questions.md)
-- [ADR Index](docs/adr/README.md)
+- The package implements WebDAV behavior compatible with common clients, including Windows WebClient.
+- Windows WebClient depends on correct `OPTIONS` handling, valid `PROPFIND` responses, valid `207 Multi-Status`
+  responses, root collection handling, and `MS-Author-Via: DAV`.
+- Prefer `https://`, especially for Windows clients.
+- Client-side constraints such as system configuration, local policy, and `http://` versus `https://` still apply.
 
 ## Developer Commands
 
