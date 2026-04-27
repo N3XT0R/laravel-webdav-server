@@ -159,6 +159,7 @@ Example:
 Route::match([
     'OPTIONS',
     'GET',
+    'POST',
     'PUT',
     'DELETE',
     'PROPFIND',

@@ -61,7 +61,7 @@ php artisan laravel-webdav-server:account:list
 Update an account:
 
 ```bash
-php artisan laravel-webdav-server:account:update testuser --password=new-password --disable
+php artisan laravel-webdav-server:account:update testuser --secret=new-password --disable
 ```
 
 Important behavior:
