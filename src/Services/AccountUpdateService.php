@@ -75,39 +75,38 @@ final readonly class AccountUpdateService
 
     private function applyDisplayNameChange(Model $account, AccountColumnMappingDto $mapping, AccountUpdateDto $dto): bool
     {
-        if ($mapping->displayNameColumn === null) {
-            return false;
-        }
-
-        if ($dto->clearDisplayName) {
-            $account->setAttribute($mapping->displayNameColumn, null);
-
-            return true;
-        }
-
-        if ($dto->displayName !== null) {
-            $account->setAttribute($mapping->displayNameColumn, $dto->displayName);
-
-            return true;
-        }
-
-        return false;
+        return $this->applyNullableColumnChange(
+            $account,
+            $mapping->displayNameColumn,
+            $dto->clearDisplayName,
+            $dto->displayName,
+        );
     }
 
     private function applyUserIdChange(Model $account, AccountColumnMappingDto $mapping, AccountUpdateDto $dto): bool
     {
-        if ($mapping->userIdColumn === null) {
+        return $this->applyNullableColumnChange(
+            $account,
+            $mapping->userIdColumn,
+            $dto->clearUserId,
+            $dto->userId,
+        );
+    }
+
+    private function applyNullableColumnChange(Model $account, ?string $column, bool $clear, mixed $value): bool
+    {
+        if ($column === null) {
             return false;
         }
 
-        if ($dto->clearUserId) {
-            $account->setAttribute($mapping->userIdColumn, null);
+        if ($clear) {
+            $account->setAttribute($column, null);
 
             return true;
         }
 
-        if ($dto->userId !== null) {
-            $account->setAttribute($mapping->userIdColumn, $dto->userId);
+        if ($value !== null) {
+            $account->setAttribute($column, $value);
 
             return true;
         }
