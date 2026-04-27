@@ -106,9 +106,9 @@ final class StorageFile extends File
             ->delete($this->path);
 
         FileDeletedEvent::dispatch(
-            disk: $this->context->disk,
-            path: $this->path,
-            principal: $this->context->principal,
+            $this->context->disk,
+            $this->path,
+            $this->context->principal,
         );
     }
 
@@ -153,10 +153,10 @@ final class StorageFile extends File
     private function dispatchUpdated(string $contents): void
     {
         FileUpdatedEvent::dispatch(
-            disk: $this->context->disk,
-            path: $this->path,
-            principal: $this->context->principal,
-            bytes: strlen($contents),
+            $this->context->disk,
+            $this->path,
+            $this->context->principal,
+            strlen($contents),
         );
     }
 }

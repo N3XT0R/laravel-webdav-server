@@ -159,9 +159,9 @@ abstract class AbstractStorageCollection extends Collection
 
         $this->context->filesystem->makeDirectory($path);
         DirectoryCreatedEvent::dispatch(
-            disk: $this->context->disk,
-            path: $path,
-            principal: $this->context->principal,
+            $this->context->disk,
+            $path,
+            $this->context->principal,
         );
     }
 
@@ -207,10 +207,10 @@ abstract class AbstractStorageCollection extends Collection
     protected function dispatchFileCreated(string $path, string $contents): void
     {
         FileCreatedEvent::dispatch(
-            disk: $this->context->disk,
-            path: $path,
-            principal: $this->context->principal,
-            bytes: strlen($contents),
+            $this->context->disk,
+            $path,
+            $this->context->principal,
+            strlen($contents),
         );
     }
 

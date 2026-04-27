@@ -24,9 +24,9 @@ final class StorageDirectory extends AbstractStorageCollection
 
         $this->deleteRecursively($this->context->filesystem, $this->path);
         DirectoryDeletedEvent::dispatch(
-            disk: $this->context->disk,
-            path: $this->path,
-            principal: $this->context->principal,
+            $this->context->disk,
+            $this->path,
+            $this->context->principal,
         );
     }
 
