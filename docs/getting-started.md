@@ -4,7 +4,7 @@ This package is built around user-isolated storage through pluggable authenticat
 authorization.
 
 !!! note
-    This guide describes the default package integration points for routing, configuration, and extension.
+This guide describes the default package integration points for routing, configuration, and extension.
 
 ## Overview
 
@@ -23,6 +23,7 @@ This page walks through the default setup flow:
 return [
     'route_prefix' => 'webdav',
     'base_uri' => '/webdav/',
+    'browser_listing' => false,
     'auth' => [
         'account_model' => \App\Models\WebDavAccount::class,
         'user_model' => \App\Models\User::class,
