@@ -11,7 +11,7 @@ use N3XT0R\LaravelWebdavServer\DTO\Management\AccountColumnMappingDto;
 use N3XT0R\LaravelWebdavServer\DTO\Management\AccountUpdateDto;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\DuplicateUsernameException;
 
-final readonly class AccountUpdateApplier
+final readonly class AccountUpdateService
 {
     /**
      * @param  AccountManagementRepositoryInterface  $repository  Repository used to check username uniqueness during updates.

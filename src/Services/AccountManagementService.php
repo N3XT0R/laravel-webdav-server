@@ -16,11 +16,11 @@ final readonly class AccountManagementService
 {
     /**
      * @param  AccountManagementRepositoryInterface  $repository  Repository for account model access and persistence.
-     * @param  AccountUpdateApplier  $applier  Applies field-level changes from an update DTO to an account model.
+     * @param  AccountUpdateService  $applier  Applies field-level changes from an update DTO to an account model.
      */
     public function __construct(
         private AccountManagementRepositoryInterface $repository,
-        private AccountUpdateApplier $applier,
+        private AccountUpdateService $applier,
     ) {}
 
     /**
