@@ -32,6 +32,7 @@ Useful entry points:
 
 - [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
 - [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
+- [Path Resolution](https://laravel-webdav-server.readthedocs.io/en/latest/path-resolution/)
 - [Events](https://laravel-webdav-server.readthedocs.io/en/latest/events/)
 - [Server Customization](https://laravel-webdav-server.readthedocs.io/en/latest/server-customization/)
 - [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/)
@@ -60,6 +61,7 @@ This package integrates WebDAV cleanly into a modern Laravel architecture.
 - Laravel Gate / policy-based authorization by default
 - structured storage mapping through `spaces`
 - defined contracts and extension points instead of a black-box runtime
+- `WebDavPath` Facade for resolving WebDAV mount URLs and user storage paths from controllers, views, and jobs — without triggering the WebDAV pipeline
 - Laravel events for WebDAV mutations such as file and directory create, update, and delete
 - events are dispatched after successful operations, so applications can integrate cleanly without internal overrides or hooks
 - logging for authentication, routing, storage resolution, and server behavior
@@ -111,6 +113,26 @@ The package service provider is `N3XT0R\LaravelWebdavServer\WebdavServerServiceP
 - Authorization: `PathAuthorizationInterface`, backed by Laravel Gate / policies by default
 
 See Read the Docs for the complete request flow, configuration reference, and extension model.
+
+## WebDavPath Facade
+
+Resolve WebDAV connection details for users without going through the WebDAV pipeline:
+
+```php
+use N3XT0R\LaravelWebdavServer\Facades\WebDavPath;
+use N3XT0R\LaravelWebdavServer\Contracts\Repositories\AccountRepositoryInterface;
+
+// Mount URL — same for every user of a space
+$url = WebDavPath::resolveUrl('default');
+// → 'https://your-app.test/webdav/default'
+
+// User-scoped storage path — pass the WebDAV account from the repository
+$account = app(AccountRepositoryInterface::class)->findEnabledByUsername($username);
+$path = WebDavPath::resolvePath($account, 'default');
+// → 'webdav/42'
+```
+
+See [Path Resolution](https://laravel-webdav-server.readthedocs.io/en/latest/path-resolution/) for the full reference.
 
 ## Compatibility Notes
 
