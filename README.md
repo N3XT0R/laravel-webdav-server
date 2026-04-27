@@ -1,15 +1,11 @@
 # Laravel WebDAV Server (SabreDAV + Flysystem)
 
-[![Latest Version on Packagist](https://img.shields.io/packagist/v/n3xt0r/laravel-webdav-server.svg?style=flat-square)](https://packagist.org/packages/n3xt0r/laravel-webdav-server)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=N3XT0R_laravel-webdav-server&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=N3XT0R_laravel-webdav-server)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/n3xt0r/laravel-webdav-server/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/n3xt0r/laravel-webdav-server/actions)
-[![Read the Docs](https://readthedocs.org/projects/laravel-webdav-server/badge/?version=latest)](https://laravel-webdav-server.readthedocs.io/en/latest/?badge=latest)
 [![Maintainability](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/maintainability.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
-[![Enterprise Ready](https://img.shields.io/badge/enterprise-ready-blue?style=flat-square)](#stability)
 
-A WebDAV server package for Laravel powered by SabreDAV and Laravel Flysystem. Designed for structured, policy-driven,
-and extensible WebDAV integrations in Laravel applications.
+A WebDAV server package for Laravel powered by SabreDAV and Laravel Flysystem.
 
 Expose Laravel storage disks through `/webdav/{space}/{path?}` and map each request to a configured storage space plus a
 user-scoped root path.
@@ -17,7 +13,74 @@ user-scoped root path.
 This README is a quick overview. The full documentation lives on Read the Docs.
 
 > [!IMPORTANT]
-> The public package API, configuration structure, and extension points are treated as structurally stable.
+> Public contracts, configuration keys, route shape, and extension points are part of the documented package surface.
+
+## The Problem
+
+Laravel does not provide a native WebDAV server.
+
+In practice, existing WebDAV-related packages in the Laravel and PHP ecosystem often fall into one of two categories:
+
+- they provide WebDAV clients, for example as Flysystem integrations, but not a WebDAV server
+- they provide a thin SabreDAV integration without a clear Laravel-oriented runtime model
+
+That leaves several practical problems unresolved:
+
+- request flow is implicit and difficult to inspect
+- central decisions such as authentication, storage resolution, and routing are difficult to influence in a structured way
+- customization often requires replacing large parts of the integration instead of changing one clearly bounded step
+- responsibilities such as authentication, authorization, storage resolution, and server runtime are not cleanly separated
+
+Debugging is also difficult, especially with WebDAV:
+
+- many clients return generic errors or no useful error information at all
+- behavior differs noticeably between clients such as Windows Explorer, macOS Finder, and WinSCP
+
+Windows WebClient adds additional compatibility constraints:
+
+- it expects correct `OPTIONS` handling
+- it expects valid `PROPFIND` responses
+- small deviations can cause the client to fail without a useful diagnostic signal
+
+## What This Package Solves
+
+This package addresses those problems with an explicit Laravel-oriented server integration.
+
+- request handling follows an explicit pipeline instead of relying on implicit runtime behavior
+- authentication, authorization, storage resolution, and server configuration are separated into distinct responsibilities
+- storage uses Laravel Flysystem
+- authorization uses Laravel Gate / policies by default
+- each step in the request flow is inspectable and replaceable
+- extensions are made through defined contracts and extension points
+- structured customization does not require replacing the entire system
+- storage targets are mapped through configured `spaces`
+- logging supports tracing authentication, routing, storage resolution, and server behavior
+
+The package also implements the WebDAV behavior required by common clients, including:
+
+- correct `OPTIONS` handling
+- correct `PROPFIND` handling
+- valid `207 Multi-Status` responses
+- root collection handling
+- `MS-Author-Via` response headers
+
+Important limitation:
+
+The package implements WebDAV behavior compatible with common clients, including Windows WebClient.
+Client-side constraints such as `http://` versus `https://`, local system configuration, and operating-system policy
+still apply.
+
+Without this package:
+
+- implicit behavior
+- limited extensibility
+- difficult debugging
+
+With this package:
+
+- explicit request pipeline
+- structured extension points
+- predictable behavior
 
 ## Start Here
 
@@ -28,6 +91,7 @@ Direct entry points:
 
 - [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
 - [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
+- [Server Customization](https://laravel-webdav-server.readthedocs.io/en/latest/server-customization/)
 - [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/)
 - [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)
 - [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)
@@ -59,7 +123,7 @@ Use Read the Docs for installation, configuration, architecture, and extension g
 | understand runtime flow and boundaries    | [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)                     |
 | customize auth, storage, or authorization | [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/) |
 | manage WebDAV accounts via artisan        | [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)                             |
-| extend the SabreDAV runtime               | [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)                   |
+| extend the SabreDAV runtime               | [Server Customization](https://laravel-webdav-server.readthedocs.io/en/latest/server-customization/)     |
 | review architectural decisions            | [ADRs](https://laravel-webdav-server.readthedocs.io/en/latest/adr/README/)                               |
 
 ## Quickstart
@@ -92,6 +156,7 @@ For full setup, configuration, and extension guidance, use the documentation on 
 
 - [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
 - [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
+- [Server Customization](https://laravel-webdav-server.readthedocs.io/en/latest/server-customization/)
 
 ## Installation
 
@@ -125,14 +190,9 @@ Full command reference with all options, examples, and expected output:
 - scopes each resolved storage root to `{root}[/prefix]/{principal.id}`
 - authenticates requests through package contracts, not Laravel session auth
 - authorizes path operations through `PathAuthorizationInterface`, backed by Laravel Gate / policies by default
-- allows server customization through stable extension points and additional SabreDAV plugins
+- allows server customization through documented extension points and additional SabreDAV plugins
 
 This package is a server integration, not a Flysystem WebDAV client disk.
-
-## Stability
-
-- package contracts, DTOs, configuration keys, and the route structure are now considered structurally stable
-- future changes should remain additive or bug-fix oriented instead of reshaping the public package API
 
 ## Route Shape
 
@@ -208,7 +268,7 @@ Tagged plugins are added after the package defaults during SabreDAV server confi
 
 ## Server Customization
 
-The package keeps its public WebDAV API stable, but the SabreDAV runtime itself can still be extended.
+The package keeps its public WebDAV surface bounded, but the SabreDAV runtime itself can still be extended.
 
 Typical customization points:
 

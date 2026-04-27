@@ -161,7 +161,6 @@ php artisan laravel-webdav-server:account:update testuser --user-id=1
 
 Production use should still be deliberate.
 
-The public package API is treated as structurally stable.
 Validate HTTPS, credential handling, authorization rules, client interoperability, and expected filesystem load
 before exposing it publicly.
 
@@ -169,6 +168,4 @@ before exposing it publicly.
 
 No.
 
-The package contracts, DTOs, route shape, and documented configuration keys are now intended to remain structurally
-stable. Further changes should mainly be additive improvements, bug fixes, logging and documentation refinements, or
-compatibility work.
+The package contracts, DTOs, route shape, and documented configuration keys are part of the documented package surface.

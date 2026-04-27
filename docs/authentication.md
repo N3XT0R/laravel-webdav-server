@@ -4,8 +4,7 @@ This document explains how authentication and authorization work in the package 
 override.
 
 !!! note
-    The authentication and authorization extension points documented here are part of the structurally stable public
-    package surface.
+    The authentication and authorization flow is documented through explicit contracts and package extension points.
 
 ## Authentication Overview
 

@@ -15,7 +15,7 @@ Start with these keys in most integrations:
 
 For SabreDAV runtime extensions and tagged plugins, see [Server Customization](server-customization.md).
 
-## Current Config Stub
+## Published Config Stub
 
 The published configuration currently looks like this:
 
@@ -218,7 +218,7 @@ Examples:
 - `InvalidSpaceConfigurationException`
 - `InvalidDefaultSpaceConfigurationException`
 
-## Current Notes
+## Notes
 
 - The package registers the WebDAV route shape `/webdav/{space}/{path?}`.
 - `route_prefix` is used for CSRF exclusion and falls back to `base_uri` when empty.

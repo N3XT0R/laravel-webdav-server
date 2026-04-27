@@ -2,8 +2,8 @@
 
 A WebDAV server package for Laravel powered by SabreDAV and Laravel's filesystem abstraction.
 
-!!! note
-    The package API, configuration structure, and extension points are documented as structurally stable.
+It exposes Laravel storage disks through a WebDAV endpoint and keeps request handling, storage resolution, and
+authorization explicit.
 
 ## Start Here
 
@@ -35,16 +35,11 @@ Core characteristics:
 - built-in artisan commands for creating, listing, showing, and updating WebDAV account records
 - path authorization through `PathAuthorizationInterface`, with Laravel Gate/Policy integration by default
 - optional package and SabreDAV logging through `webdav-server.logging`
-- server customization through stable extension points and additional SabreDAV plugins
+- server customization through documented extension points and additional SabreDAV plugins
 - SabreDAV runtime execution isolated behind package boundaries
 - SOLID-oriented design with established patterns for recurring architectural problems
 
-## Stability
-
-- public contracts, DTOs, route shape, and configuration keys are now treated as structurally stable
-- further changes are expected to focus on hardening, interoperability, documentation, and bug fixes
-
-## Current Support Scope
+## Supported WebDAV Operations
 
 Supported WebDAV operations:
 

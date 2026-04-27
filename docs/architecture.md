@@ -34,7 +34,7 @@ The package architecture is intended to remain SOLID-compliant and to prefer est
 `Factory`, `Strategy`, `Builder`, and `Adapter` where they clearly fit recurring problems.
 
 !!! note
-    The runtime pipeline and the documented extension boundaries are treated as structurally stable.
+    The runtime pipeline and its extension boundaries are documented as explicit parts of the package design.
 
 ## Related Decisions
 
@@ -46,7 +46,7 @@ The package architecture is intended to remain SOLID-compliant and to prefer est
 - [ADR 0008: SOLID Compliance And Established Design Patterns](adr/0008-solid-compliance-and-established-design-patterns.md)
 - [ADR 0014: Additional SabreDAV Plugins Via Tagged Service Provider Registration](adr/0014-additional-sabredav-plugins-via-tagged-service-provider-registration.md)
 
-## Runtime Notes (Current State)
+## Runtime Notes
 
 - The package registers the route shape `'/webdav/{space}/{path?}'`.
 - `OPTIONS /webdav/{space}/` is routed into SabreDAV so capability discovery reaches the DAV runtime instead of Laravel's method handling.
