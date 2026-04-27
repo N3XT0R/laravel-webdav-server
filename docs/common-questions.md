@@ -159,13 +159,13 @@ php artisan laravel-webdav-server:account:update testuser --user-id=1
 
 ## Q: Is this package production-ready?
 
-It is in `beta`, but production use should still be deliberate.
+Production use should still be deliberate.
 
-The public package API is treated as structurally stable, but the beta line is still intended as a hardening step.
+The public package API is treated as structurally stable.
 Validate HTTPS, credential handling, authorization rules, client interoperability, and expected filesystem load
 before exposing it publicly.
 
-## Q: Should I expect structural API changes within the `beta` line?
+## Q: Should I expect structural API changes?
 
 No.
 

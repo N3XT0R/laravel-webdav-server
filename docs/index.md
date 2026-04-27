@@ -3,8 +3,7 @@
 A WebDAV server package for Laravel powered by SabreDAV and Laravel's filesystem abstraction.
 
 !!! note
-    This package is now in `beta`. The package API, configuration structure, and extension points are documented as
-    structurally stable.
+    The package API, configuration structure, and extension points are documented as structurally stable.
 
 ## Start Here
 
@@ -42,7 +41,6 @@ Core characteristics:
 
 ## Stability
 
-- the package is now in `beta`
 - public contracts, DTOs, route shape, and configuration keys are now treated as structurally stable
 - further changes are expected to focus on hardening, interoperability, documentation, and bug fixes
 

@@ -5,7 +5,7 @@ override.
 
 !!! note
     The authentication and authorization extension points documented here are part of the structurally stable public
-    package surface for the current `beta` release line.
+    package surface.
 
 ## Authentication Overview
 

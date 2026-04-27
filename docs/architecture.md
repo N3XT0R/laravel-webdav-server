@@ -34,8 +34,7 @@ The package architecture is intended to remain SOLID-compliant and to prefer est
 `Factory`, `Strategy`, `Builder`, and `Adapter` where they clearly fit recurring problems.
 
 !!! note
-    The runtime pipeline and the documented extension boundaries are treated as structurally stable for the current
-    `beta` release line.
+    The runtime pipeline and the documented extension boundaries are treated as structurally stable.
 
 ## Related Decisions
 

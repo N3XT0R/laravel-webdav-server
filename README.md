@@ -2,7 +2,6 @@
 
 [![Latest Version on Packagist](https://img.shields.io/packagist/v/n3xt0r/laravel-webdav-server.svg?style=flat-square)](https://packagist.org/packages/n3xt0r/laravel-webdav-server)
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=N3XT0R_laravel-webdav-server&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=N3XT0R_laravel-webdav-server)
-[![Develop Status](https://img.shields.io/badge/develop-beta-yellow?style=flat-square)](https://github.com/N3XT0R/laravel-webdav-server/tree/develop)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/n3xt0r/laravel-webdav-server/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/n3xt0r/laravel-webdav-server/actions)
 [![Read the Docs](https://readthedocs.org/projects/laravel-webdav-server/badge/?version=latest)](https://laravel-webdav-server.readthedocs.io/en/latest/?badge=latest)
 [![Maintainability](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/maintainability.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
@@ -17,12 +16,8 @@ user-scoped root path.
 
 This README is a quick overview. The full documentation lives on Read the Docs.
 
-> Current version: **beta**
->
 > [!IMPORTANT]
 > The public package API, configuration structure, and extension points are treated as structurally stable.
-> The beta phase is focused on hardening, compatibility validation, documentation, and bug fixes rather than
-> structural API changes.
 
 ## Start Here
 
@@ -136,9 +131,8 @@ This package is a server integration, not a Flysystem WebDAV client disk.
 
 ## Stability
 
-- the package is now in `beta`
 - package contracts, DTOs, configuration keys, and the route structure are now considered structurally stable
-- future beta changes should remain additive or bug-fix oriented instead of reshaping the public package API
+- future changes should remain additive or bug-fix oriented instead of reshaping the public package API
 
 ## Route Shape
 

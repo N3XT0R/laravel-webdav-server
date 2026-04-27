@@ -4,8 +4,7 @@ This package is built around user-isolated storage through pluggable authenticat
 authorization.
 
 !!! note
-    The package is in `beta`. The route shape, configuration structure, and documented extension points should be treated
-    as structurally stable.
+    The route shape, configuration structure, and documented extension points should be treated as structurally stable.
 
 ## Overview
 
