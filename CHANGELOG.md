@@ -7,14 +7,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-04-27
+
 ### Added
 
 - **PathResolverService and WebDavPath Facade**
-    - Added `PathResolverInterface` contract with `resolvePath()` for the user-scoped filesystem root path and `resolveUrl()` for the public WebDAV mount URL.
-    - Added `PathResolverService` as the single authoritative implementation of the path assembly formula (`{root}/{prefix}/{principal.id}`); `DefaultSpaceResolver` now delegates to it internally instead of assembling the path inline.
-    - Added `WebDavPath` Facade so application code can resolve a user's storage path or WebDAV mount URL without triggering the full WebDAV request pipeline — useful for controllers, views, and API responses that need to expose WebDAV endpoints to users.
-    - Added `WebDavPrincipalInterface` contract (`Contracts\Auth`) with a single `getPrincipalId(): string` method; `AccountInterface` extends it and `WebDavPrincipalValueObject` implements it.
-    - `resolvePath()` now accepts any `WebDavPrincipalInterface` — pass an `AccountInterface` returned by `AccountRepositoryInterface::findEnabledByUsername()` directly instead of constructing a value object manually.
+    - Added `PathResolverInterface` contract with `resolvePath()` for the user-scoped filesystem root path and
+      `resolveUrl()` for the public WebDAV mount URL.
+    - Added `PathResolverService` as the single authoritative implementation of the path assembly formula (
+      `{root}/{prefix}/{principal.id}`); `DefaultSpaceResolver` now delegates to it internally instead of assembling the
+      path inline.
+    - Added `WebDavPath` Facade so application code can resolve a user's storage path or WebDAV mount URL without
+      triggering the full WebDAV request pipeline — useful for controllers, views, and API responses that need to expose
+      WebDAV endpoints to users.
+    - Added `WebDavPrincipalInterface` contract (`Contracts\Auth`) with a single `getPrincipalId(): string` method;
+      `AccountInterface` extends it and `WebDavPrincipalValueObject` implements it.
+    - `resolvePath()` now accepts any `WebDavPrincipalInterface` — pass an `AccountInterface` returned by
+      `AccountRepositoryInterface::findEnabledByUsername()` directly instead of constructing a value object manually.
 
 - **events**
     - Added real Laravel events for WebDAV node mutations so applications can hook into file uploads and other
