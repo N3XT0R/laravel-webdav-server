@@ -29,12 +29,28 @@ return [
 
 ## Top-Level Keys
 
-| Key                          | Default    | Used by                                              |
-|------------------------------|------------|------------------------------------------------------|
-| `webdav-server.route_prefix` | `webdav`   | CSRF exclusion path in `WebdavServerServiceProvider` |
-| `webdav-server.base_uri`     | `/webdav/` | `SabreServerConfigurator`                            |
-| `webdav-server.logging.driver` | `null`   | package logging and SabreDAV logger wiring           |
-| `webdav-server.logging.level`  | `info`   | package log filtering for `info` and `debug` output  |
+| Key                              | Default    | Used by                                              |
+|----------------------------------|------------|------------------------------------------------------|
+| `webdav-server.route_prefix`     | `webdav`   | CSRF exclusion path in `WebdavServerServiceProvider` |
+| `webdav-server.base_uri`         | `/webdav/` | `SabreServerConfigurator`                            |
+| `webdav-server.browser_listing`  | `false`    | `SabreServerConfigurator` — enables SabreDAV browser UI |
+| `webdav-server.logging.driver`   | `null`     | package logging and SabreDAV logger wiring           |
+| `webdav-server.logging.level`    | `info`     | package log filtering for `info` and `debug` output  |
+
+## Browser Listing
+
+When `browser_listing` is set to `true`, the SabreDAV `Browser\Plugin` is attached to the runtime. This renders an
+HTML directory listing when a WebDAV space is accessed from a browser.
+
+```php
+'browser_listing' => true,
+```
+
+The browser plugin is disabled by default because it exposes the directory tree to any authenticated HTTP client
+without any additional access control beyond the package's existing path authorization.
+
+> **Note:** Enable this in development or internal environments only. Do not enable it in production unless path
+> authorization is explicitly configured to restrict access.
 
 ## Logging
 

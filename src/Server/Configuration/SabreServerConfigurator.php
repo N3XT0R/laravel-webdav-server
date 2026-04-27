@@ -9,6 +9,7 @@ use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Server\Configuration\Plugins\CompatibilityLoggingPlugin;
 use N3XT0R\LaravelWebdavServer\Server\Configuration\Plugins\MissingPathPropFindPlugin;
 use N3XT0R\LaravelWebdavServer\WebdavServerServiceProvider;
+use Sabre\DAV\Browser\Plugin as BrowserPlugin;
 use Sabre\DAV\Server;
 use Sabre\DAV\ServerPlugin;
 
@@ -65,6 +66,10 @@ final readonly class SabreServerConfigurator implements ServerConfiguratorInterf
             new MissingPathPropFindPlugin($this->logger),
             new CompatibilityLoggingPlugin($this->logger),
         ];
+
+        if ((bool) config('webdav-server.browser_listing', false)) {
+            $plugins[] = new BrowserPlugin;
+        }
 
         foreach (app()->tagged(WebdavServerServiceProvider::sabrePluginTag()) as $plugin) {
             if ($plugin instanceof ServerPlugin) {

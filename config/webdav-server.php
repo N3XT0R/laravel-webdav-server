@@ -7,6 +7,7 @@ use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
 return [
     'route_prefix' => 'webdav',
     'base_uri' => '/webdav/',
+    'browser_listing' => false,
     'logging' => [
         'driver' => null,
         'level' => 'info',
