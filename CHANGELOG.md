@@ -20,6 +20,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
     - the browser listing's built-in forms (create folder, file upload) now work correctly — `POST` is accepted on the
       WebDAV route so SabreDAV can process both form submissions internally.
 
+### Changed
+
+- **AccountManagementService**
+    - Extracted field-level update logic into a dedicated `AccountUpdateApplier` class to keep
+      `AccountManagementService` focused on account orchestration. `AccountUpdateApplier` handles username uniqueness
+      checks and applies all DTO field changes to the model. The public `update()` signature is unchanged.
+    - Replaced `\InvalidArgumentException` with the domain-scoped `DuplicateUsernameException` in `create()` and
+      `update()` so duplicate-username failures carry explicit package context and fit the exception hierarchy.
+
 ## [1.0.0-beta.2] - 2026-04-25
 
 ### Added

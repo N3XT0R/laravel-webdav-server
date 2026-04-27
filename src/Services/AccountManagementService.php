@@ -10,14 +10,17 @@ use Illuminate\Support\Facades\Hash;
 use N3XT0R\LaravelWebdavServer\Contracts\Repositories\AccountManagementRepositoryInterface;
 use N3XT0R\LaravelWebdavServer\DTO\Management\AccountColumnMappingDto;
 use N3XT0R\LaravelWebdavServer\DTO\Management\AccountUpdateDto;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\DuplicateUsernameException;
 
 final readonly class AccountManagementService
 {
     /**
      * @param  AccountManagementRepositoryInterface  $repository  Repository for account model access and persistence.
+     * @param  AccountUpdateApplier  $applier  Applies field-level changes from an update DTO to an account model.
      */
     public function __construct(
         private AccountManagementRepositoryInterface $repository,
+        private AccountUpdateApplier $applier,
     ) {}
 
     /**
@@ -61,7 +64,7 @@ final readonly class AccountManagementService
      * @param  bool  $enabled  Whether the account should be active on creation.
      * @return Model Newly created and persisted account model.
      *
-     * @throws \InvalidArgumentException When a WebDAV account with the given username already exists.
+     * @throws DuplicateUsernameException When a WebDAV account with the given username already exists.
      */
     public function create(
         string $username,
@@ -73,7 +76,7 @@ final readonly class AccountManagementService
         $mapping = $this->repository->columnMapping();
 
         if ($this->repository->findByUsername($username) !== null) {
-            throw new \InvalidArgumentException("A WebDAV account with username '{$username}' already exists.");
+            throw new DuplicateUsernameException("A WebDAV account with username '{$username}' already exists.");
         }
 
         $account = $this->repository->newModel();
@@ -107,55 +110,12 @@ final readonly class AccountManagementService
      * @param  AccountUpdateDto  $dto  Requested field changes.
      * @return bool `true` when at least one change was applied and persisted, `false` when no fields were changed.
      *
-     * @throws \InvalidArgumentException When the requested new username is already taken by another account.
+     * @throws DuplicateUsernameException When the requested new username is already taken by another account.
      */
     public function update(Model $account, AccountUpdateDto $dto): bool
     {
         $mapping = $this->repository->columnMapping();
-        $changed = false;
-
-        if ($dto->newUsername !== null) {
-            $currentUsername = (string) $account->getAttribute($mapping->usernameColumn);
-
-            if ($dto->newUsername !== $currentUsername) {
-                if ($this->repository->findByUsername($dto->newUsername) !== null) {
-                    throw new \InvalidArgumentException("A WebDAV account with username '{$dto->newUsername}' already exists.");
-                }
-
-                $account->setAttribute($mapping->usernameColumn, $dto->newUsername);
-                $changed = true;
-            }
-        }
-
-        if ($dto->password !== null && $dto->password !== '') {
-            $account->setAttribute($mapping->passwordColumn, Hash::make($dto->password));
-            $changed = true;
-        }
-
-        if ($mapping->displayNameColumn !== null) {
-            if ($dto->clearDisplayName) {
-                $account->setAttribute($mapping->displayNameColumn, null);
-                $changed = true;
-            } elseif ($dto->displayName !== null) {
-                $account->setAttribute($mapping->displayNameColumn, $dto->displayName);
-                $changed = true;
-            }
-        }
-
-        if ($mapping->userIdColumn !== null) {
-            if ($dto->clearUserId) {
-                $account->setAttribute($mapping->userIdColumn, null);
-                $changed = true;
-            } elseif ($dto->userId !== null) {
-                $account->setAttribute($mapping->userIdColumn, $dto->userId);
-                $changed = true;
-            }
-        }
-
-        if ($mapping->enabledColumn !== null && $dto->enabled !== null) {
-            $account->setAttribute($mapping->enabledColumn, $dto->enabled);
-            $changed = true;
-        }
+        $changed = $this->applier->apply($account, $mapping, $dto);
 
         if ($changed) {
             $this->repository->save($account);

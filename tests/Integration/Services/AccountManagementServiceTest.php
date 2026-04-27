@@ -8,17 +8,19 @@ use Illuminate\Contracts\Config\Repository;
 use Illuminate\Support\Facades\Hash;
 use N3XT0R\LaravelWebdavServer\DTO\Management\AccountUpdateDto;
 use N3XT0R\LaravelWebdavServer\Models\WebDavAccountModel;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\DuplicateUsernameException;
 use N3XT0R\LaravelWebdavServer\Repositories\EloquentAccountRepository;
 use N3XT0R\LaravelWebdavServer\Services\AccountManagementService;
+use N3XT0R\LaravelWebdavServer\Services\AccountUpdateApplier;
 use N3XT0R\LaravelWebdavServer\Tests\DatabaseTestCase;
 
 final class AccountManagementServiceTest extends DatabaseTestCase
 {
     private function makeService(): AccountManagementService
     {
-        return new AccountManagementService(
-            new EloquentAccountRepository($this->app->make(Repository::class)),
-        );
+        $repository = new EloquentAccountRepository($this->app->make(Repository::class));
+
+        return new AccountManagementService($repository, new AccountUpdateApplier($repository));
     }
 
     // --- columnMapping ---
@@ -166,7 +168,7 @@ final class AccountManagementServiceTest extends DatabaseTestCase
 
     public function test_create_throws_when_username_is_already_taken(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(DuplicateUsernameException::class);
         $this->expectExceptionMessage("A WebDAV account with username 'existing' already exists.");
 
         WebDavAccountModel::factory()->create(['username' => 'existing']);
@@ -209,7 +211,7 @@ final class AccountManagementServiceTest extends DatabaseTestCase
 
     public function test_update_throws_when_new_username_is_already_taken(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(DuplicateUsernameException::class);
         $this->expectExceptionMessage("A WebDAV account with username 'bob' already exists.");
 
         WebDavAccountModel::factory()->create(['username' => 'bob']);
