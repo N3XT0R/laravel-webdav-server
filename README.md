@@ -32,6 +32,7 @@ Useful entry points:
 
 - [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
 - [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
+- [Events](https://laravel-webdav-server.readthedocs.io/en/latest/events/)
 - [Server Customization](https://laravel-webdav-server.readthedocs.io/en/latest/server-customization/)
 - [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/)
 - [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)
@@ -57,6 +58,7 @@ Useful entry points:
 - Laravel Gate / policy-based authorization by default
 - structured storage mapping through `spaces`
 - defined contracts and extension points instead of a black-box runtime
+- Laravel events for WebDAV-side file and directory mutations
 - logging for authentication, routing, storage resolution, and server behavior
 - WebDAV behavior compatible with common clients, including Windows WebClient
 

@@ -27,6 +27,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       section flow, and entry-point visibility without changing the documented package behavior.
     - Split server-extension guidance out of `docs/configuration.md` into a dedicated `Server Customization` page so
       configuration reference content stays focused while SabreDAV runtime extension guidance remains fully documented.
+    - Added a dedicated `events.md` page and linked it from Read the Docs, the repository `docs/` index, and the
+      README so WebDAV node events are documented in one place.
 
 ## [1.0.0-beta.3] - 2026-04-27
 
