@@ -4,7 +4,7 @@
 [![Security Rating](https://sonarcloud.io/api/project_badges/measure?project=N3XT0R_laravel-webdav-server&metric=security_rating)](https://sonarcloud.io/summary/new_code?id=N3XT0R_laravel-webdav-server)
 [![Develop Status](https://img.shields.io/badge/develop-beta-yellow?style=flat-square)](https://github.com/N3XT0R/laravel-webdav-server/tree/develop)
 [![GitHub Tests Action Status](https://img.shields.io/github/actions/workflow/status/n3xt0r/laravel-webdav-server/run-tests.yml?branch=main&label=tests&style=flat-square)](https://github.com/n3xt0r/laravel-webdav-server/actions)
-[![Read the Docs](https://readthedocs.org/projects/laravel-webdav-server/badge/?version=latest)](https://laravel-webdav-server.readthedocs.io/en/latest/?badge=latest)
+[![Read the Docs](https://readthedocs.org/projects/laravel-webdav-server/badge/?version=stable)](https://laravel-webdav-server.readthedocs.io/en/stable/?badge=stable)
 [![Maintainability](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/maintainability.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Enterprise Ready](https://img.shields.io/badge/enterprise-ready-blue?style=flat-square)](#stability)
@@ -20,7 +20,7 @@ with a user-scoped root path.
 
 The full documentation is available on Read the Docs:
 
-👉 https://laravel-webdav-server.readthedocs.io/en/latest/
+👉 https://laravel-webdav-server.readthedocs.io/en/stable/
 
 The same documentation is also available in this repository:
 
@@ -30,15 +30,15 @@ Read the Docs provides a structured and navigable version of the same content.
 
 Useful entry points:
 
-- [Getting Started](https://laravel-webdav-server.readthedocs.io/en/latest/getting-started/)
-- [Configuration](https://laravel-webdav-server.readthedocs.io/en/latest/configuration/)
-- [Path Resolution](https://laravel-webdav-server.readthedocs.io/en/latest/path-resolution/)
-- [Events](https://laravel-webdav-server.readthedocs.io/en/latest/events/)
-- [Server Customization](https://laravel-webdav-server.readthedocs.io/en/latest/server-customization/)
-- [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/latest/authentication/)
-- [Architecture](https://laravel-webdav-server.readthedocs.io/en/latest/architecture/)
-- [Commands](https://laravel-webdav-server.readthedocs.io/en/latest/commands/)
-- [Common Questions](https://laravel-webdav-server.readthedocs.io/en/latest/common-questions/)
+- [Getting Started](https://laravel-webdav-server.readthedocs.io/en/stable/getting-started/)
+- [Configuration](https://laravel-webdav-server.readthedocs.io/en/stable/configuration/)
+- [Path Resolution](https://laravel-webdav-server.readthedocs.io/en/stable/path-resolution/)
+- [Events](https://laravel-webdav-server.readthedocs.io/en/stable/events/)
+- [Server Customization](https://laravel-webdav-server.readthedocs.io/en/stable/server-customization/)
+- [Authentication & Authorization](https://laravel-webdav-server.readthedocs.io/en/stable/authentication/)
+- [Architecture](https://laravel-webdav-server.readthedocs.io/en/stable/architecture/)
+- [Commands](https://laravel-webdav-server.readthedocs.io/en/stable/commands/)
+- [Common Questions](https://laravel-webdav-server.readthedocs.io/en/stable/common-questions/)
 
 ## The Problem
 
@@ -132,7 +132,7 @@ $path = WebDavPath::resolvePath($account, 'default');
 // → 'webdav/42'
 ```
 
-See [Path Resolution](https://laravel-webdav-server.readthedocs.io/en/latest/path-resolution/) for the full reference.
+See [Path Resolution](https://laravel-webdav-server.readthedocs.io/en/stable/path-resolution/) for the full reference.
 
 ## Compatibility Notes
 
