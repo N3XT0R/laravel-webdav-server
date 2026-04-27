@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace N3XT0R\LaravelWebdavServer\Commands;
 
 use N3XT0R\LaravelWebdavServer\DTO\Management\AccountUpdateDto;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\DuplicateUsernameException;
 use N3XT0R\LaravelWebdavServer\Services\AccountManagementService;
 
 final class UpdateWebDavAccountCommand extends AccountCommand
@@ -55,7 +56,7 @@ final class UpdateWebDavAccountCommand extends AccountCommand
 
         try {
             $changed = $service->update($account, $dto);
-        } catch (\InvalidArgumentException $e) {
+        } catch (DuplicateUsernameException $e) {
             $this->components->error($e->getMessage());
 
             return self::FAILURE;

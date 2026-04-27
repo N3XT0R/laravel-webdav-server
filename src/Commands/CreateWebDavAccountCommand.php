@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace N3XT0R\LaravelWebdavServer\Commands;
 
+use N3XT0R\LaravelWebdavServer\Exception\Auth\DuplicateUsernameException;
 use N3XT0R\LaravelWebdavServer\Services\AccountManagementService;
 
 final class CreateWebDavAccountCommand extends AccountCommand
@@ -33,7 +34,7 @@ final class CreateWebDavAccountCommand extends AccountCommand
                 userId: $this->option('user-id'),
                 enabled: ! (bool) $this->option('disabled'),
             );
-        } catch (\InvalidArgumentException $e) {
+        } catch (DuplicateUsernameException $e) {
             $this->components->error($e->getMessage());
 
             return self::FAILURE;

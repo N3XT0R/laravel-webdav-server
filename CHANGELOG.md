@@ -28,6 +28,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
       orchestrates only; both public method signatures are unchanged.
     - Replaced `\InvalidArgumentException` with the domain-scoped `DuplicateUsernameException` in `create()` and
       `update()` so duplicate-username failures carry explicit package context and fit the exception hierarchy.
+- **account:create and account:update commands**
+    - Fixed the duplicate-username error handler in both commands to catch `DuplicateUsernameException` instead of
+      `\InvalidArgumentException`, which was never matched after the exception type was aligned with the package
+      exception hierarchy.
 
 ## [1.0.0-beta.2] - 2026-04-25
 
