@@ -26,6 +26,8 @@ CLAUDE.md
 /.vscode
 /.claude
 
+/docs/plans/
+
 # Misc
 phpstan.neon
 /coverage
