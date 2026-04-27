@@ -7,18 +7,14 @@ namespace N3XT0R\LaravelWebdavServer\Tests\Integration\Server;
 use Illuminate\Http\Request;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\InvalidCredentialsException;
 use N3XT0R\LaravelWebdavServer\Exception\Auth\MissingCredentialsException;
-use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Server\Request\Auth\RequestBasicCredentialsExtractor;
-use N3XT0R\LaravelWebdavServer\Tests\Fixtures\Logging\RecordingLogger;
 use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 
 final class RequestBasicCredentialsExtractorTest extends TestCase
 {
     private function makeExtractor(): RequestBasicCredentialsExtractor
     {
-        return new RequestBasicCredentialsExtractor(
-            new WebDavLoggingService(new RecordingLogger, 'stderr', 'debug'),
-        );
+        return $this->app->make(RequestBasicCredentialsExtractor::class);
     }
 
     public function test_it_extracts_credentials_from_php_auth_server_values(): void

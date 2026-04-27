@@ -28,7 +28,7 @@ final class EloquentAccountRepositoryTest extends DatabaseTestCase
 
     private function makeRepository(): EloquentAccountRepository
     {
-        return new EloquentAccountRepository($this->app->make(Repository::class));
+        return $this->app->make(EloquentAccountRepository::class);
     }
 
     public function test_it_throws_when_username_is_not_found(): void

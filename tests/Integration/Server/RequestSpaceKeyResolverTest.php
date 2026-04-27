@@ -11,9 +11,14 @@ use N3XT0R\LaravelWebdavServer\Tests\TestCase;
 
 final class RequestSpaceKeyResolverTest extends TestCase
 {
+    private function makeResolver(): RequestSpaceKeyResolver
+    {
+        return $this->app->make(RequestSpaceKeyResolver::class);
+    }
+
     public function test_it_uses_route_space_parameter_when_present(): void
     {
-        $resolver = new RequestSpaceKeyResolver;
+        $resolver = $this->makeResolver();
         $request = Request::create('/webdav', 'PROPFIND');
 
         $request->setRouteResolver(static fn () => new class
@@ -31,10 +36,9 @@ final class RequestSpaceKeyResolverTest extends TestCase
     {
         config()->set('webdav-server.storage.default_space', 'default');
 
-        $resolver = new RequestSpaceKeyResolver;
         $request = Request::create('/webdav', 'PROPFIND');
 
-        $this->assertSame('default', $resolver->resolve($request));
+        $this->assertSame('default', $this->makeResolver()->resolve($request));
     }
 
     public function test_it_throws_when_default_space_configuration_is_invalid(): void
@@ -43,9 +47,6 @@ final class RequestSpaceKeyResolverTest extends TestCase
 
         config()->set('webdav-server.storage.default_space', '');
 
-        $resolver = new RequestSpaceKeyResolver;
-        $request = Request::create('/webdav', 'PROPFIND');
-
-        $resolver->resolve($request);
+        $this->makeResolver()->resolve(Request::create('/webdav', 'PROPFIND'));
     }
 }
