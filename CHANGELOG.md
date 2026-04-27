@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- **Optional browser listing via SabreDAV Browser Plugin**
+    - New `webdav-server.browser_listing` configuration key (default: `false`) to enable an HTML directory listing when accessing a WebDAV space from a browser.
+    - When enabled, SabreDAV's `Browser\Plugin` is attached to the runtime, rendering a navigable file and directory view in the browser.
+    - When enabled and a request arrives without credentials or with invalid credentials, the server issues an HTTP Basic Auth challenge (`WWW-Authenticate: Basic realm="WebDAV"`) so the browser displays its native login dialog instead of an error page.
+
 ## [1.0.0-beta.2] - 2026-04-25
 
 ### Added

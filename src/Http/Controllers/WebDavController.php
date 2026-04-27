@@ -7,6 +7,7 @@ namespace N3XT0R\LaravelWebdavServer\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use N3XT0R\LaravelWebdavServer\Contracts\Server\ServerRunnerInterface;
+use N3XT0R\LaravelWebdavServer\Exception\Auth\AuthException;
 use N3XT0R\LaravelWebdavServer\Exception\DomainException;
 use N3XT0R\LaravelWebdavServer\Logging\WebDavLoggingService;
 use N3XT0R\LaravelWebdavServer\Server\Factory\WebDavServerFactory;
@@ -30,10 +31,13 @@ final class WebDavController extends Controller
     /**
      * Handle the incoming WebDAV request, ensure a Basic Auth attempt exists, and hand execution off to SabreDAV.
      *
+     * When `webdav-server.browser_listing` is enabled, auth failures from the factory are caught and answered with a
+     * Basic Auth challenge so that browsers re-prompt for credentials instead of displaying an error page.
+     *
      * @param  Request  $request  Incoming HTTP request for the WebDAV endpoint.
      * @return Response Unauthorized response when no Basic Auth attempt exists, otherwise the runtime adapter response.
      *
-     * @throws DomainException When auth, request-context resolution, or storage resolution fails while building the server.
+     * @throws DomainException When auth, request-context resolution, or storage resolution fails and browser listing is disabled.
      */
     public function __invoke(Request $request): Response
     {
@@ -45,12 +49,25 @@ final class WebDavController extends Controller
                 ],
             ]);
 
-            return response('Unauthorized', Response::HTTP_UNAUTHORIZED, [
-                'WWW-Authenticate' => 'Basic realm="WebDAV"',
-            ]);
+            return $this->basicAuthChallenge();
         }
 
-        $server = $this->factory->make($request);
+        try {
+            $server = $this->factory->make($request);
+        } catch (AuthException $e) {
+            if (! (bool) config('webdav-server.browser_listing', false)) {
+                throw $e;
+            }
+
+            $this->logger->debug('Issuing Basic Auth challenge after failed credential attempt.', [
+                'request' => [
+                    'method' => $request->getMethod(),
+                    'uri' => $request->getRequestUri(),
+                ],
+            ]);
+
+            return $this->basicAuthChallenge();
+        }
 
         $this->logger->debug('Handing WebDAV request off to the runtime adapter.', [
             'request' => [
@@ -60,6 +77,18 @@ final class WebDavController extends Controller
         ]);
 
         return $this->serverRunner->run($server);
+    }
+
+    /**
+     * Build a 401 response with a Basic Auth challenge header that causes browsers to show a native credential dialog.
+     *
+     * @return Response HTTP 401 response with `WWW-Authenticate: Basic realm="WebDAV"`.
+     */
+    private function basicAuthChallenge(): Response
+    {
+        return response('Unauthorized', Response::HTTP_UNAUTHORIZED, [
+            'WWW-Authenticate' => 'Basic realm="WebDAV"',
+        ]);
     }
 
     private function hasBasicAuthAttempt(Request $request): bool

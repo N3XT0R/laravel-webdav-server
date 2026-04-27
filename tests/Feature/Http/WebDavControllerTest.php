@@ -51,6 +51,7 @@ final class WebDavControllerTest extends DatabaseTestCase
 
     public function test_request_with_malformed_basic_auth_header_throws_invalid_credentials_exception(): void
     {
+        $this->app['config']->set('webdav-server.browser_listing', false);
         $this->withoutExceptionHandling();
         $this->expectException(InvalidCredentialsException::class);
 
@@ -61,6 +62,8 @@ final class WebDavControllerTest extends DatabaseTestCase
 
     public function test_request_with_invalid_credentials_throws_invalid_credentials_exception(): void
     {
+        $this->app['config']->set('webdav-server.browser_listing', false);
+
         $user = User::factory()->create();
         WebDavAccountModel::factory()
             ->withUserName('alice')
@@ -77,6 +80,38 @@ final class WebDavControllerTest extends DatabaseTestCase
             'PHP_AUTH_USER' => 'alice',
             'PHP_AUTH_PW' => 'wrong-password',
         ]);
+    }
+
+    public function test_browser_listing_returns_401_challenge_on_malformed_credentials(): void
+    {
+        $this->app['config']->set('webdav-server.browser_listing', true);
+
+        $response = $this->call('GET', '/webdav/default', server: [
+            'HTTP_AUTHORIZATION' => 'Basic Zm9v',
+        ]);
+
+        $response->assertUnauthorized();
+        $response->assertHeader('WWW-Authenticate', 'Basic realm="WebDAV"');
+    }
+
+    public function test_browser_listing_returns_401_challenge_on_invalid_credentials(): void
+    {
+        $this->app['config']->set('webdav-server.browser_listing', true);
+
+        $user = User::factory()->create();
+        WebDavAccountModel::factory()
+            ->withUserName('alice')
+            ->withPassword('secret')
+            ->withUserId((int) $user->getKey())
+            ->create(['display_name' => 'Alice']);
+
+        $response = $this->call('GET', '/webdav/default', server: [
+            'PHP_AUTH_USER' => 'alice',
+            'PHP_AUTH_PW' => 'wrong-password',
+        ]);
+
+        $response->assertUnauthorized();
+        $response->assertHeader('WWW-Authenticate', 'Basic realm="WebDAV"');
     }
 
     public function test_request_with_valid_basic_auth_runs_the_real_pipeline(): void
