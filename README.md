@@ -58,7 +58,8 @@ Useful entry points:
 - Laravel Gate / policy-based authorization by default
 - structured storage mapping through `spaces`
 - defined contracts and extension points instead of a black-box runtime
-- Laravel events for WebDAV-side file and directory mutations
+- Laravel events for WebDAV mutations such as file and directory create, update, and delete
+- events are dispatched after successful operations, so applications can integrate cleanly without internal overrides or hooks
 - logging for authentication, routing, storage resolution, and server behavior
 - WebDAV behavior compatible with common clients, including Windows WebClient
 
