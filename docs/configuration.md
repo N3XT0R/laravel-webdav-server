@@ -49,6 +49,14 @@ HTML directory listing when a WebDAV space is accessed from a browser.
 The browser plugin is disabled by default because it exposes the directory tree to any authenticated HTTP client
 without any additional access control beyond the package's existing path authorization.
 
+When the browser listing is active, SabreDAV renders two HTML forms on every directory page:
+
+- **Create folder** — submits a `POST` request that SabreDAV converts to a `MKCOL` operation internally.
+- **Upload file** — submits a `POST` request that SabreDAV converts to a `PUT` operation internally.
+
+Both forms work out of the box. The package route accepts `POST` for this purpose, and the WebDAV endpoint is
+automatically excluded from Laravel's CSRF middleware so browser submissions are not rejected.
+
 > **Note:** Enable this in development or internal environments only. Do not enable it in production unless path
 > authorization is explicitly configured to restrict access.
 
