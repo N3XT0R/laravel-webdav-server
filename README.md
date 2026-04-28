@@ -9,6 +9,8 @@
 [![Code Coverage](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server/coverage.svg)](https://qlty.sh/gh/N3XT0R/projects/laravel-webdav-server)
 [![Enterprise Ready](https://img.shields.io/badge/enterprise-ready-blue?style=flat-square)](#stability)
 
+![Laravel WebDAV Server Logo](art/logo.png)
+
 ---
 
 A WebDAV server package for Laravel powered by SabreDAV and Laravel Flysystem.
@@ -61,9 +63,11 @@ This package integrates WebDAV cleanly into a modern Laravel architecture.
 - Laravel Gate / policy-based authorization by default
 - structured storage mapping through `spaces`
 - defined contracts and extension points instead of a black-box runtime
-- `WebDavPath` Facade for resolving WebDAV mount URLs and user storage paths from controllers, views, and jobs — without triggering the WebDAV pipeline
+- `WebDavPath` Facade for resolving WebDAV mount URLs and user storage paths from controllers, views, and jobs — without
+  triggering the WebDAV pipeline
 - Laravel events for WebDAV mutations such as file and directory create, update, and delete
-- events are dispatched after successful operations, so applications can integrate cleanly without internal overrides or hooks
+- events are dispatched after successful operations, so applications can integrate cleanly without internal overrides or
+  hooks
 - logging for authentication, routing, storage resolution, and server behavior
 - WebDAV behavior compatible with common clients, including Windows WebClient
 
